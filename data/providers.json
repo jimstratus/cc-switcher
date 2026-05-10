@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "version": "3.1.0",
+  "_doc": {
+    "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1 translates to Claude Code's env var contract.",
+    "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",
+    "qualityTier": "Sort/tag label: flagship | standard | budget | free | slow.",
+    "envVars": "Extra ANTHROPIC_* or CLAUDE_CODE_* env vars to set during launch. Applied AFTER the auto-context block so a provider can override the auto-derived values.",
+    "_auto_context": "core.ps1 auto-sets CLAUDE_CODE_MAX_CONTEXT_TOKENS + DISABLE_COMPACT=1 whenever the flagship tier context is >=500K. Threshold cleanly separates 1M-class providers (deepseek, mimo, qwen, xiaomi v2.5-pro) from 256K models (kimi) and 200K models (minimax/glm) where losing auto-compact would be a bad trade. Source: contextByTier.flagship if present, else context. Tradeoff: when flagship/standard are large but fast is small (e.g. mimo flagship 1M / fast 256K), the env var stays at the flagship size for the whole session — /model haiku will display the larger value but the API will reject prompts beyond the fast model's real ceiling. Acceptable for opus-primary workflows. To opt a sub-500K provider in, set envVars explicitly in its block.",
+    "_note_nvidia": "NVIDIA NIM model IDs change frequently — verify at https://build.nvidia.com/explore/discover before relying on a tier mapping.",
+    "_tier_mapping": "flagship → /model opus, standard → /model sonnet, fast → /model haiku"
+  },
+  "providers": {
+    "deepseek": {
+      "command": "cc-deepseek",
+      "displayName": "DeepSeek V4",
+      "qualityTier": "flagship",
+      "baseUrl": "https://api.deepseek.com/anthropic",
+      "authVar": "DEEPSEEK_API_KEY",
+      "tiers": {
+        "flagship": "deepseek-v4-pro",
+        "standard": "deepseek-v4-pro",
+        "fast": "deepseek-v4-flash"
+      },
+      "context": 1000000,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "Direct API via Anthropic-native /anthropic endpoint. Only V4 Pro and V4 Flash exist — Standard tier maps to Pro (no middle SKU). All tiers are 1M context. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 from the 1M context (see _doc._auto_context). Tradeoff: no auto-compaction — use /compact manually near the limit.",
+      "docs": "https://api-docs.deepseek.com"
+    },
+    "glm": {
+      "command": "cc-glm",
+      "displayName": "GLM-5.1 (Z.AI via OpenRouter)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "z-ai/glm-5.1",
+        "standard": "z-ai/glm-5.1",
+        "fast": "z-ai/glm-4.5-air"
+      },
+      "context": 200000,
+      "timeoutMs": 3000000,
+      "disableNonEssential": false,
+      "notes": "GLM-5.1 SOTA open-weight, MIT licensed. Use cc-glm instead of cc-zai-glm51 (China endpoint is slow).",
+      "docs": "https://openrouter.ai/z-ai/glm-5.1"
+    },
+    "kimi": {
+      "command": "cc-kimi",
+      "displayName": "Kimi K2.6 (Moonshot via OpenRouter)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "moonshotai/kimi-k2.6",
+        "standard": "moonshotai/kimi-k2.6",
+        "fast": "moonshotai/kimi-k2.6"
+      },
+      "context": 256000,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "1T params / 32B active MoE, 256K context. Single-tier — same model on all three slots.",
+      "docs": "https://openrouter.ai/moonshotai/kimi-k2.6"
+    },
+    "minimax": {
+      "command": "cc-minimax",
+      "displayName": "MiniMax M2.7",
+      "qualityTier": "flagship",
+      "baseUrl": "https://api.minimax.io/anthropic",
+      "authVar": "MINIMAX_API_KEY",
+      "tiers": {
+        "flagship": "MiniMax-M2.7",
+        "standard": "MiniMax-M2.7",
+        "fast": "MiniMax-M2.7-highspeed"
+      },
+      "context": 204800,
+      "timeoutMs": 3000000,
+      "disableNonEssential": true,
+      "notes": "Direct API. ~200K context (verified 2026-05-03 against api-reference/text-anthropic-api). M2.7 on flagship/standard for quality, Highspeed on fast tier. Earlier catalog claim of 1M was wrong.",
+      "docs": "https://platform.minimax.io/docs/token-plan/claude-code"
+    },
+    "mimo": {
+      "command": "cc-mimo",
+      "displayName": "MiMo V2.5 (Xiaomi via OpenRouter)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "xiaomi/mimo-v2.5-pro",
+        "standard": "xiaomi/mimo-v2.5",
+        "fast": "xiaomi/mimo-v2-flash"
+      },
+      "context": 262144,
+      "contextByTier": { "flagship": 1048576, "standard": 1048576, "fast": 262144 },
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "Tier contexts differ: flagship/standard are 1M (1024K), V2-Flash (fast tier) is 256K. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship (see _doc._auto_context). Caveat: env var stays at 1M for the whole session, so /model haiku (v2-flash, 256K) will display 1M but the API will reject prompts beyond ~256K — acceptable for opus-primary workflows.",
+      "docs": "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
+    },
+    "nvidia": {
+      "command": "cc-nvidia",
+      "displayName": "NVIDIA NIM (free)",
+      "qualityTier": "free",
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "authVar": "NVIDIA_API_KEY",
+      "tiers": {
+        "flagship": "moonshotai/kimi-k2-instruct",
+        "standard": "meta/llama-4-maverick-17b-128e-instruct",
+        "fast": "meta/llama-4-scout-17b-16e-instruct"
+      },
+      "context": 128000,
+      "timeoutMs": 3000000,
+      "disableNonEssential": true,
+      "notes": "Free tier with rate limits. Tier IDs are best-guess defaults — verify at https://build.nvidia.com/explore/discover and edit this JSON to taste. cc-nvidia <model-id> overrides all three tiers.",
+      "docs": "https://build.nvidia.com"
+    },
+    "qwen": {
+      "command": "cc-qwen",
+      "displayName": "Qwen3 (Alibaba via OpenRouter)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "qwen/qwen3.6-plus",
+        "standard": "qwen/qwen3-coder",
+        "fast": "qwen/qwen3-coder-next"
+      },
+      "context": 262144,
+      "contextByTier": { "flagship": 1000000, "standard": 262144, "fast": 262144 },
+      "timeoutMs": 3000000,
+      "disableNonEssential": false,
+      "notes": "Tier contexts differ: only Qwen3.6-Plus (flagship) is 1M; Qwen3-Coder and Qwen3-Coder-Next are 256K each. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 from contextByTier.flagship (see _doc._auto_context). Caveat: /model sonnet|haiku (256K coders) will display 1M but the API will reject prompts beyond 256K — acceptable for opus-primary workflows.",
+      "docs": "https://openrouter.ai/qwen/qwen3.6-plus"
+    },
+    "xiaomi": {
+      "command": "cc-xiaomi",
+      "displayName": "Xiaomi MiMo (token-plan SGP, direct)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://token-plan-sgp.xiaomimimo.com/anthropic",
+      "authVar": "XIAOMI_API_KEY",
+      "tiers": {
+        "flagship": "mimo-v2.5-pro",
+        "standard": "mimo-v2.5",
+        "fast": "mimo-v2-pro"
+      },
+      "context": 262144,
+      "contextByTier": { "flagship": 1048576, "standard": 262144, "fast": 262144 },
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "Direct Xiaomi MiMo token-plan endpoint (Singapore region). Anthropic-native, distinct from cc-mimo (OpenRouter). Tier IDs verified 2026-05-09 against /v1/models listing — gateway exposes only mimo-v2.5-pro, mimo-v2.5, and mimo-v2-pro for chat (plus omni/TTS variants not used here). No 'flash' SKU exists on this gateway, so the fast slot maps to the older-gen mimo-v2-pro. Auth uses x-api-key header in Anthropic format. Flagship (mimo-v2.5-pro) is 1M context — confirmed by Ryan 2026-05-09. Standard/fast contexts on this direct gateway are not yet verified, so kept conservative at the 256K floor. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship.",
+      "docs": "https://xiaomimimo.com"
+    },
+    "codex": {
+      "command": "cc-codex",
+      "displayName": "OpenAI Codex (ChatGPT OAuth)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://api.openai.com/v1",
+      "authVar": "_codex_oauth_token",
+      "tiers": {
+        "flagship": "openai/gpt-5.4",
+        "standard": "openai/gpt-5.4",
+        "fast": "openai/gpt-5.4"
+      },
+      "context": 200000,
+      "timeoutMs": 3000000,
+      "disableNonEssential": true,
+      "requiresOAuth": true,
+      "notes": "Uses OAuth token cached at ~/.config/codex-oauth/token.json. Run cc-codex-login first.",
+      "docs": "https://codex.openai.com"
+    },
+    "opencode-minimax": {
+      "command": "cc-opencode-minimax",
+      "displayName": "MiniMax M2.7 via OpenCode Go (US endpoint)",
+      "qualityTier": "standard",
+      "baseUrl": "https://opencode.ai/zen/go",
+      "authVar": "OPENCODE_GO_API_KEY",
+      "tiers": {
+        "flagship": "minimax-m2.7",
+        "standard": "minimax-m2.7",
+        "fast": "minimax-m2.7"
+      },
+      "context": 204800,
+      "timeoutMs": 3000000,
+      "disableNonEssential": true,
+      "notes": "US-hosted MiniMax via OpenCode Go subscription. Anthropic-format compatible.",
+      "docs": "https://opencode.ai/docs/providers/#opencode-go"
+    },
+    "zai-glm51": {
+      "command": "cc-zai-glm51",
+      "displayName": "Z.AI GLM-5.1 [SLOW — China endpoint]",
+      "qualityTier": "slow",
+      "baseUrl": "https://api.z.ai/api/anthropic",
+      "authVar": "ZAI_API_KEY",
+      "tiers": {
+        "flagship": "glm-5.1",
+        "standard": "glm-5.1",
+        "fast": "glm-4.5-air"
+      },
+      "context": 200000,
+      "timeoutMs": 3000000,
+      "disableNonEssential": false,
+      "notes": "China-based endpoint. Use cc-glm (OpenRouter) instead for the same model with US/EU latency.",
+      "docs": "https://docs.z.ai/devpack/tool/claude"
+    }
+  }
+}
