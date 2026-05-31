@@ -4,20 +4,22 @@
    ┌──────────────────────────────────────────────────────────────┐
    │                                                              │
    │    ██████╗ ██████╗       ███████╗██╗    ██╗                  │
-   │   ██╔════╝██╔════╝       ██╔════╝██║    ██║   PowerShell     │
+   │   ██╔════╝██╔════╝       ██╔════╝██║    ██║   PowerShell    │
    │   ██║     ██║     █████╗ ███████╗██║ █╗ ██║                  │
    │   ██║     ██║     ╚════╝ ╚════██║██║███╗██║   ↳ Claude Code  │
    │   ╚██████╗╚██████╗       ███████║╚███╔███╔╝     ↳ any LLM    │
    │    ╚═════╝ ╚═════╝       ╚══════╝ ╚══╝╚══╝                   │
    │                                                              │
-   │    cc-switcher · v3.1.0                                      │
+   │    cc-switcher · v3.1.0  (PowerShell + Bash)                │
    │                                                              │
    └──────────────────────────────────────────────────────────────┘
 ```
 
-> PowerShell module for launching Claude Code against any Anthropic-compatible LLM provider — DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, and more.
+> Multi-shell module for launching Claude Code against any Anthropic-compatible LLM provider — DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, and more.
 
 `cc-switcher` flips the `ANTHROPIC_*` environment variables that Claude Code reads on startup, points them at an alternative provider's Anthropic-compatible endpoint, and launches `claude` for you. When the session exits it restores the previous environment, so your shell never gets stuck on a non-default provider.
+
+Available for both **PowerShell** (Windows/macOS) and **bash/zsh** (Linux/macOS). Both implementations share the same provider catalog and feature set.
 
 It also tracks token usage per session, caches OpenRouter pricing, ships a doctor command for health checks, and provides tab completion for OpenRouter / OpenCode Go / NVIDIA NIM model IDs.
 
@@ -29,13 +31,13 @@ It also tracks token usage per session, caches OpenRouter pricing, ships a docto
 
 ```mermaid
 flowchart LR
-    shell["PowerShell shell"] -->|"cc-mimo / cc-deepseek / etc"| sw["cc-switcher"]
+    shell["PowerShell shell / bash/zsh"] -->|"cc-mimo / cc-deepseek / etc"| sw["cc-switcher"]
     sw -->|"reads catalog"| cat["data/providers.json"]
     sw -->|"sets per-session env"| env["ANTHROPIC_BASE_URL<br/>ANTHROPIC_AUTH_TOKEN<br/>ANTHROPIC_DEFAULT_OPUS_MODEL<br/>ANTHROPIC_DEFAULT_SONNET_MODEL<br/>ANTHROPIC_DEFAULT_HAIKU_MODEL<br/>API_TIMEOUT_MS<br/>(auto) CLAUDE_CODE_MAX_CONTEXT_TOKENS<br/>(auto) DISABLE_COMPACT"]
-    sw -->|"&amp; claude"| cc["Claude Code"]
+    sw -->|"& claude"| cc["Claude Code"]
     env -.-> cc
     cc -->|"Anthropic API contract"| ep["Provider endpoint<br/>OpenRouter / direct / OAuth"]
-    cc -.->|"/model opus|sonnet|haiku<br/>swaps tier mid-session"| cc
+    cc -.->|"+model opus|sonnet|haiku<br/>swaps tier mid-session"| cc
     sw -.->|"on session exit"| restore["restores prior env"]
 ```
 
@@ -45,7 +47,7 @@ Each provider command sets all three Claude Code tiers (Opus / Sonnet / Haiku) a
 
 ## Quick start
 
-Clone and import:
+### PowerShell
 
 ```powershell
 git clone https://github.com/jimstratus/cc-switcher.git
@@ -60,11 +62,38 @@ Import-Module C:\path\to\cc-switcher\cc-switcher.psd1
 
 Reload (`. $PROFILE`) and type `cc-help` for the full command list.
 
+### bash / zsh (Linux / macOS)
+
+```bash
+git clone https://github.com/jimstratus/cc-switcher.git
+source ./cc-switcher/bash/cc-switcher.sh
+```
+
+Or add to your `~/.bashrc` (or `~/.zshrc`) for persistence:
+
+```bash
+source /path/to/cc-switcher/bash/cc-switcher.sh
+```
+
+Or use the Makefile for a proper installation:
+
+```bash
+# User install (~/.cc-switcher)
+make -C cc-switcher/bash install
+
+# System-wide install (/usr/local/etc/cc-switcher)
+sudo make -C cc-switcher/bash install-system
+```
+
+Run `cc-help` after sourcing to see all available commands.
+
 ---
 
 ## Usage
 
 Each provider command sets all three Claude Code model tiers (Opus / Sonnet / Haiku) for that provider. Inside a session, use `/model opus|sonnet|haiku` to switch which tier the next turn uses.
+
+### PowerShell
 
 ```powershell
 cc-mimo                        # MiMo V2.5-Pro / V2.5 / V2-Flash via OpenRouter
@@ -76,7 +105,19 @@ cc-yolo                        # native Anthropic + --dangerously-skip-permissio
 cc-reset                       # clear overrides, restore native Anthropic
 ```
 
-Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permissions`, or set `$env:CC_YOLO=1` to apply it to every launch in the current shell.
+### bash / zsh
+
+```bash
+cc-mimo                        # MiMo V2.5-Pro / V2.5 / V2-Flash via OpenRouter
+cc-deepseek                    # DeepSeek V4-Pro / V4-Pro / V4-Flash (direct, 1M context)
+cc-glm                         # GLM-5.1 via OpenRouter
+cc-openrouter <model-id>       # any OpenRouter model
+cc-nvidia                      # NVIDIA NIM defaults (free tier)
+cc-yolo                        # native Anthropic + --dangerously-skip-permissions
+cc-reset                       # clear overrides, restore native Anthropic
+```
+
+Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permissions`, or set `CC_YOLO=1` to apply it to every launch in the current shell.
 
 ---
 
@@ -98,7 +139,7 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 | `cc-openrouter <model>` | OpenRouter generic | model passed via arg |
 | `cc-zai-glm51` | Z.AI GLM-5.1 [SLOW — China endpoint] | glm-5.1 / glm-5.1 / glm-4.5-air |
 
-The provider catalog is JSON. Add or change providers by editing `data/providers.json` — no PowerShell function authoring required.
+The provider catalog is JSON. Add or change providers by editing `data/providers.json` (PowerShell) or `bash/data/providers.json` (bash) — no script authoring required.
 
 ---
 
@@ -108,7 +149,7 @@ The provider catalog is JSON. Add or change providers by editing `data/providers
 |---|---|
 | `cc-help` | Full command catalog |
 | `cc-launch` | Numbered interactive picker |
-| `cc-pick` | Searchable grid picker (requires `Microsoft.PowerShell.ConsoleGuiTools`) |
+| `cc-pick` | Searchable grid picker (PowerShell only, requires `Microsoft.PowerShell.ConsoleGuiTools`) |
 | `cc-doctor` | Validate API keys + ping endpoints |
 | `cc-pricing` | Live pricing from OpenRouter (5-min disk cache) |
 | `cc-status` | Print current provider env vars |
@@ -121,7 +162,9 @@ The provider catalog is JSON. Add or change providers by editing `data/providers
 
 ## Configuration
 
-`cc-switcher` reads provider API keys from environment variables. Set whichever you actually use in your `$PROFILE` before importing the module:
+`cc-switcher` reads provider API keys from environment variables. Set whichever you actually use in your shell profile:
+
+### PowerShell
 
 ```powershell
 $env:OPENROUTER_API_KEY   = "sk-or-..."   # OpenRouter (covers cc-glm, cc-kimi, cc-mimo, cc-qwen, cc-openrouter)
@@ -134,30 +177,26 @@ $env:ZAI_API_KEY          = "..."         # Z.AI direct (cc-zai-glm51)
 $env:KIMI_API_KEY         = "..."         # Moonshot direct (optional)
 ```
 
+### bash / zsh
+
+```bash
+export OPENROUTER_API_KEY="sk-or-..."     # OpenRouter (covers cc-glm, cc-kimi, cc-mimo, cc-qwen, cc-openrouter)
+export DEEPSEEK_API_KEY="sk-..."          # DeepSeek direct
+export MINIMAX_API_KEY="..."               # MiniMax direct
+export NVIDIA_API_KEY="nvapi-..."         # NVIDIA NIM
+export OPENCODE_GO_API_KEY="..."           # OpenCode Go (cc-opencode, cc-opencode-minimax)
+export XIAOMI_API_KEY="..."                # Xiaomi MiMo direct (token-plan SGP)
+export ZAI_API_KEY="..."                  # Z.AI direct (cc-zai-glm51)
+export KIMI_API_KEY="..."                 # Moonshot direct (optional)
+```
+
 Run `cc-doctor` to verify keys are present and reachable.
 
 ### Banner verbosity
 
-`$env:CC_BANNER` controls module-load output. One of `full` (default), `compact`, or `minimal`. Set in `$PROFILE` before `Import-Module` to make it sticky across shells.
+**PowerShell:** `$env:CC_BANNER` — one of `full` (default), `compact`, or `minimal`. Set in `$PROFILE` before `Import-Module`.
 
-### Tab completion
-
-`cc-openrouter`, `cc-opencode`, and `cc-nvidia` complete model arguments.
-- `cc-openrouter` pulls from OpenRouter's live model list (cached 5 min on disk).
-- `cc-opencode` and `cc-nvidia` use a curated list (edit `lib/completers.ps1`).
-
-### Token usage tracking
-
-After every session, the module recursively scans `~/.claude/projects/**/*.jsonl` for Claude Code's session transcripts and aggregates token counts to `data/.usage-log.jsonl`. Run `cc-usage` for the report.
-
----
-
-## Documentation
-
-- **[`AGENTS.md`](AGENTS.md)** — first-stop orientation for AI coding agents working in this repo. Cross-tool, lists invariants and verification steps.
-- **[`docs/architecture.md`](docs/architecture.md)** — internals: module load, launch lifecycle, env-var contract, snapshot/restore, auto-context derivation.
-- **[`docs/catalog-schema.md`](docs/catalog-schema.md)** — full field reference for `data/providers.json`.
-- **[`docs/adding-a-provider.md`](docs/adding-a-provider.md)** — step-by-step contributor walkthrough for adding a new provider.
+**bash/zsh:** `CC_BANNER` — same options. Set in shell profile before sourcing `cc-switcher.sh`.
 
 ---
 
@@ -165,32 +204,52 @@ After every session, the module recursively scans `~/.claude/projects/**/*.jsonl
 
 ```
 cc-switcher/
-├── cc-switcher.psd1            # module manifest
-├── cc-switcher.psm1            # entry point
-├── lib/
-│   ├── core.ps1                # Invoke-CCLaunch, Reset-CC, Get-CC-Status
-│   ├── providers.ps1           # catalog loader + dispatcher
-│   ├── codex.ps1               # OAuth flow
-│   ├── pricing.ps1             # OpenRouter live pricing
-│   ├── doctor.ps1              # cc-doctor health check
-│   ├── completers.ps1          # tab completion
-│   ├── usage.ps1               # token tracker
-│   ├── picker.ps1              # cc-launch + cc-pick
-│   └── update-check.ps1        # mtime delta on load
+├── cc-switcher.psd1                    # PowerShell module manifest
+├── cc-switcher.psm1                    # PowerShell entry point
+├── bash/
+│   ├── cc-switcher.sh                 # bash/zsh entry point
+│   ├── Makefile                       # install targets (user + system-wide)
+│   ├── data/
+│   │   └── providers.json              # bash port's catalog copy
+│   └── lib/
+│       ├── core.sh                    # invoke-cc-launch, reset-cc, get-cc-status
+│       ├── providers.sh               # catalog loader + dispatcher
+│       ├── codex.sh                   # OAuth device flow
+│       ├── pricing.sh                 # OpenRouter live pricing
+│       ├── doctor.sh                  # cc-doctor health check
+│       ├── completers.sh              # bash tab completion
+│       ├── usage.sh                   # token usage tracker (SQLite)
+│       └── update-check.sh            # version check + cc-help
+├── lib/                               # PowerShell lib (parallel to bash/lib/)
+│   ├── core.ps1
+│   ├── providers.ps1
+│   ├── codex.ps1
+│   ├── pricing.ps1
+│   ├── doctor.ps1
+│   ├── completers.ps1
+│   ├── usage.ps1
+│   ├── picker.ps1
+│   └── update-check.ps1
 ├── data/
-│   └── providers.json          # the catalog (edit me)
+│   └── providers.json                  # PowerShell catalog (shared format with bash/)
+├── docs/
+│   ├── architecture.md
+│   ├── catalog-schema.md
+│   └── adding-a-provider.md
 ├── README.md
 ├── CHANGELOG.md
-├── ISSUES.md                   # known issues / workarounds
+├── ISSUES.md
 ├── CONTRIBUTING.md
 └── LICENSE
 ```
 
-Runtime caches (`data/.pricing-cache.json`, `data/.usage-log.jsonl`, `data/.last-load`) are gitignored — they're regenerated as you use the module.
+Runtime caches (`data/.pricing-cache.json`, `data/.usage-log.jsonl`, `bash/data/.pricing-cache.json`, etc.) are gitignored — they're regenerated as you use the module.
 
 ---
 
 ## Requirements
+
+### PowerShell
 
 - PowerShell 7.0+
 - [Claude Code](https://docs.anthropic.com/claude/docs/claude-code) installed and on `PATH` as `claude`
@@ -199,6 +258,13 @@ Runtime caches (`data/.pricing-cache.json`, `data/.usage-log.jsonl`, `data/.last
   ```powershell
   Install-Module Microsoft.PowerShell.ConsoleGuiTools -Scope CurrentUser
   ```
+
+### bash / zsh
+
+- bash 5.0+ or zsh 5.8+
+- [Claude Code](https://docs.anthropic.com/claude/docs/claude-code) installed and on `PATH` as `claude`
+- `curl` (for `cc-doctor` and `cc-pricing`)
+- `sqlite3` (optional, for `cc-usage` enhanced history)
 
 ---
 
@@ -210,17 +276,27 @@ Runtime caches (`data/.pricing-cache.json`, `data/.usage-log.jsonl`, `data/.last
 - **MINOR** — new providers, new commands, new catalog fields.
 - **PATCH** — bug fixes, catalog tweaks (model IDs, context corrections), doc updates.
 
-The module manifest (`cc-switcher.psd1`), the in-script version constant (`cc-switcher.psm1`), and the catalog `version` field in `data/providers.json` are bumped together when any of them changes meaningfully.
+The version is synced across:
+- PowerShell module manifest (`cc-switcher.psd1`)
+- PowerShell entry point (`cc-switcher.psm1`)
+- bash entry point (`bash/cc-switcher.sh`)
+- catalog `version` field (`data/providers.json`, `bash/data/providers.json`)
 
 See [CHANGELOG.md](CHANGELOG.md) for the full release history and [GitHub releases](https://github.com/jimstratus/cc-switcher/releases) for downloadable tags.
 
+---
+
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). The short version: open an issue, run `cc-doctor` before reporting a problem, and add new providers by editing `data/providers.json` rather than writing PowerShell.
+See [CONTRIBUTING.md](CONTRIBUTING.md). The short version: open an issue, run `cc-doctor` before reporting a problem, and add new providers by editing `data/providers.json` (PowerShell) or `bash/data/providers.json` (bash) rather than writing script code.
+
+---
 
 ## Troubleshooting
 
 See [ISSUES.md](ISSUES.md) for known issues and workarounds.
+
+---
 
 ## License
 
