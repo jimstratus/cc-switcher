@@ -3,8 +3,6 @@
 # Cheap mtime comparison, no network.
 # =============================================================================
 
-set -euo pipefail
-
 CC_LAST_LOAD_FILE="${CCSWITCHER_ROOT}/data/.last-load"
 _cc_updated_flag=""
 
@@ -52,7 +50,7 @@ show_cc_help() {
     providers_sorted+=("$line")
   done <<< "$provider_lines"
 
-  # Sort: slow last, then alphabetical
+  # Sort: slow last, then alphabetical (display name carried through the sort)
   local line cmd tier
   for line in "${providers_sorted[@]}"; do
     IFS='|' read -r id command display_name quality_tier _ <<< "$line"
@@ -61,8 +59,8 @@ show_cc_help() {
       free)  cmd="free_$command" ;;
       *)     cmd="$command" ;;
     esac
-    printf '%s|%s|%s\n' "$cmd" "$command" "$quality_tier"
-  done | sort | while IFS='|' read -r _ cmd tier; do
+    printf '%s|%s|%s|%s\n' "$cmd" "$command" "$quality_tier" "$display_name"
+  done | sort | while IFS='|' read -r _ cmd tier display_name; do
     local tag=""
     case "$tier" in
       flagship) tag="          " ;;
@@ -70,11 +68,7 @@ show_cc_help() {
       slow)     tag="   [SLOW] " ;;
       *)        tag="   [$tier] " ;;
     esac
-    # Find display name
-    for l in "${providers_sorted[@]}"; do
-      IFS='|' read -r id command display_name _ <<< "$l"
-      [[ "$command" == "$cmd" ]] && echo "  $cmd  $tag  $display_name"
-    done
+    echo "  $cmd  $tag  $display_name"
   done
 
   echo ""

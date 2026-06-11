@@ -37,7 +37,7 @@ flowchart LR
     sw -->|"& claude"| cc["Claude Code"]
     env -.-> cc
     cc -->|"Anthropic API contract"| ep["Provider endpoint<br/>OpenRouter / direct / OAuth"]
-    cc -.->|"+model opus|sonnet|haiku<br/>swaps tier mid-session"| cc
+    cc -.->|"/model opus|sonnet|haiku<br/>swaps tier mid-session"| cc
     sw -.->|"on session exit"| restore["restores prior env"]
 ```
 

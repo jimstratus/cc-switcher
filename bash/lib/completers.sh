@@ -3,8 +3,6 @@
 # Registered for: cc-openrouter, cc-opencode, cc-nvidia
 # =============================================================================
 
-set -euo pipefail
-
 #------------------------------------------------------------------------------
 # Completion for cc-openrouter: offer model IDs from OpenRouter catalog
 #------------------------------------------------------------------------------
@@ -55,7 +53,7 @@ _cc_completer_openrouter() {
 _cc_completer_opencode() {
   local cur prev
   COMPREPLY=()
-  cur="${COMP_WORDS[COMP_CWORDS:-0]}"
+  cur="${COMP_WORDS[COMP_CWORD]}"
 
   local models=(
     "minimax-m2.7"
@@ -92,8 +90,8 @@ _cc_completer_nvidia() {
 
 # Register completions (called once at load time)
 _register_cc_completers() {
-  # Only register if complete builtin is available (bash >= 4)
-  if ! declare -f complete &>/dev/null; then
+  # Only register if the complete builtin is available (i.e. running under bash)
+  if ! type complete &>/dev/null; then
     return
   fi
 

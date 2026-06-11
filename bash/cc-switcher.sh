@@ -1,8 +1,8 @@
 # =============================================================================
 # cc-switcher.sh — Claude Code multi-provider launcher (bash port v3.1.0)
+# This file is sourced into interactive shells: it must not alter shell options
+# (set -e/-u/pipefail would leak into the user's session).
 # =============================================================================
-
-set -euo pipefail
 
 export CCSWITCHER_ROOT="${CCSWITCHER_ROOT:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)}"
 export CCSWITCHER_VERSION="3.1.0"
@@ -37,6 +37,7 @@ cc-mimo()           { invoke_cc_provider "mimo" "" "$@"; }
 cc-nvidia()         { invoke_cc_nvidia "$@"; }
 cc-qwen()           { invoke_cc_provider "qwen" "" "$@"; }
 cc-xiaomi()         { invoke_cc_provider "xiaomi" "" "$@"; }
+cc-openrouter()     { invoke_cc_openrouter "$@"; }
 cc-opencode()       { invoke_cc_opencode "$@"; }
 cc-opencode-minimax(){ invoke_cc_provider "opencode-minimax" "" "$@"; }
 cc-codex()          { invoke_cc_codex "$@"; }

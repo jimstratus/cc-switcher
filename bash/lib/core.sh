@@ -6,26 +6,42 @@
 # Associative array to hold the env snapshot for restore
 declare -A _CC_SNAPSHOT
 
+# Single source of truth for the env vars managed by snapshot/restore and reset
+_CC_MANAGED_VARS=(
+  ANTHROPIC_BASE_URL
+  ANTHROPIC_AUTH_TOKEN
+  ANTHROPIC_MODEL
+  ANTHROPIC_DEFAULT_OPUS_MODEL
+  ANTHROPIC_DEFAULT_SONNET_MODEL
+  ANTHROPIC_DEFAULT_HAIKU_MODEL
+  ANTHROPIC_SMALL_FAST_MODEL
+  API_TIMEOUT_MS
+  CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC
+  CLAUDE_CODE_MAX_OUTPUT_TOKENS
+  CLAUDE_CODE_MAX_CONTEXT_TOKENS
+  DISABLE_COMPACT
+)
+
+# API key env vars shown by cc-status and checked by cc-doctor
+_CC_API_KEY_VARS=(
+  ANTHROPIC_API_KEY
+  OPENROUTER_API_KEY
+  DEEPSEEK_API_KEY
+  MINIMAX_API_KEY
+  NVIDIA_API_KEY
+  OPENCODE_GO_API_KEY
+  ZAI_API_KEY
+  KIMI_API_KEY
+  XIAOMI_API_KEY
+)
+
 #------------------------------------------------------------------------------
 # Internal: snapshot all env vars we touch
 #------------------------------------------------------------------------------
 _cc_snapshot_save() {
   local key
-  local val
-  for key in \
-    ANTHROPIC_BASE_URL \
-    ANTHROPIC_AUTH_TOKEN \
-    ANTHROPIC_MODEL \
-    ANTHROPIC_DEFAULT_OPUS_MODEL \
-    ANTHROPIC_DEFAULT_SONNET_MODEL \
-    ANTHROPIC_DEFAULT_HAIKU_MODEL \
-    ANTHROPIC_SMALL_FAST_MODEL \
-    API_TIMEOUT_MS \
-    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC \
-    CLAUDE_CODE_MAX_OUTPUT_TOKENS \
-    CLAUDE_CODE_MAX_CONTEXT_TOKENS \
-    DISABLE_COMPACT \
-    CLAUDE_CODE_MAX_OUTPUT_TOKENS; do
+  _CC_SNAPSHOT=()
+  for key in "${_CC_MANAGED_VARS[@]}"; do
     _CC_SNAPSHOT["$key"]="${!key-}"
   done
 }
@@ -143,13 +159,18 @@ invoke_cc_launch() {
     echo "[cc]   Context-> $context_display (auto, DISABLE_COMPACT=1; /compact manually near limit)"
   fi
 
-  # Extra env vars set via CC_EXTRA_ENV_<NAME>
+  # Extra env vars set via CC_EXTRA_ENV_<NAME>. Applied after the auto-context
+  # block so a provider's envVars can override the auto-derived values, and
+  # added to the snapshot so they are restored when claude exits.
   local extra_env_vars
-  extra_env_vars=$(compgen -v CC_EXTRA_ENV_)
+  extra_env_vars=$(compgen -v CC_EXTRA_ENV_ || true)
   if [[ -n "$extra_env_vars" ]]; then
     for var in $extra_env_vars; do
       local env_name="${var#CC_EXTRA_ENV_}"
       local env_val="${!var}"
+      if [[ -z "${_CC_SNAPSHOT[$env_name]+x}" ]]; then
+        _CC_SNAPSHOT["$env_name"]="${!env_name-}"
+      fi
       export "$env_name=$env_val"
     done
   fi
@@ -211,19 +232,7 @@ reset_cc() {
     quiet=true
   fi
 
-  for var in \
-    ANTHROPIC_BASE_URL \
-    ANTHROPIC_AUTH_TOKEN \
-    ANTHROPIC_MODEL \
-    ANTHROPIC_DEFAULT_OPUS_MODEL \
-    ANTHROPIC_DEFAULT_SONNET_MODEL \
-    ANTHROPIC_DEFAULT_HAIKU_MODEL \
-    ANTHROPIC_SMALL_FAST_MODEL \
-    API_TIMEOUT_MS \
-    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC \
-    CLAUDE_CODE_MAX_OUTPUT_TOKENS \
-    CLAUDE_CODE_MAX_CONTEXT_TOKENS \
-    DISABLE_COMPACT; do
+  for var in "${_CC_MANAGED_VARS[@]}"; do
     unset "$var" 2>/dev/null || true
   done
 
@@ -240,22 +249,23 @@ get_cc_status() {
   echo " cc-switcher status "
   echo "----------------------------------------------------------------------"
 
+  # Subset of _CC_MANAGED_VARS whose values are safe to print (no auth token),
+  # plus CC_YOLO
   local rows=(
-    "ANTHROPIC_BASE_URL:ANTHROPIC_BASE_URL"
-    "ANTHROPIC_MODEL:ANTHROPIC_MODEL"
-    "ANTHROPIC_DEFAULT_OPUS_MODEL:ANTHROPIC_DEFAULT_OPUS_MODEL"
-    "ANTHROPIC_DEFAULT_SONNET_MODEL:ANTHROPIC_DEFAULT_SONNET_MODEL"
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL:ANTHROPIC_DEFAULT_HAIKU_MODEL"
-    "API_TIMEOUT_MS:API_TIMEOUT_MS"
-    "CLAUDE_CODE_MAX_CONTEXT_TOKENS:CLAUDE_CODE_MAX_CONTEXT_TOKENS"
-    "CLAUDE_CODE_MAX_OUTPUT_TOKENS:CLAUDE_CODE_MAX_OUTPUT_TOKENS"
-    "DISABLE_COMPACT:DISABLE_COMPACT"
-    "CC_YOLO:CC_YOLO"
+    ANTHROPIC_BASE_URL
+    ANTHROPIC_MODEL
+    ANTHROPIC_DEFAULT_OPUS_MODEL
+    ANTHROPIC_DEFAULT_SONNET_MODEL
+    ANTHROPIC_DEFAULT_HAIKU_MODEL
+    API_TIMEOUT_MS
+    CLAUDE_CODE_MAX_CONTEXT_TOKENS
+    CLAUDE_CODE_MAX_OUTPUT_TOKENS
+    DISABLE_COMPACT
+    CC_YOLO
   )
 
   local var val
-  for row in "${rows[@]}"; do
-    var="${row#*:}"
+  for var in "${rows[@]}"; do
     val="${!var-}"
     if [[ -z "$val" ]]; then
       val="(unset — Anthropic default)"
@@ -267,19 +277,7 @@ get_cc_status() {
   echo " API keys "
   echo "----------------------------------------------------------------------"
 
-  local keys=(
-    "ANTHROPIC_API_KEY"
-    "OPENROUTER_API_KEY"
-    "DEEPSEEK_API_KEY"
-    "MINIMAX_API_KEY"
-    "NVIDIA_API_KEY"
-    "OPENCODE_GO_API_KEY"
-    "ZAI_API_KEY"
-    "KIMI_API_KEY"
-    "XIAOMI_API_KEY"
-  )
-
-  for key in "${keys[@]}"; do
+  for key in "${_CC_API_KEY_VARS[@]}"; do
     local val="${!key-}"
     local status
     if [[ -z "$val" ]]; then
