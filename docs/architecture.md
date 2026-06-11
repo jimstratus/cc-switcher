@@ -1,6 +1,8 @@
 # Architecture
 
-Internal reference for `cc-switcher`. Read this before changing `lib/core.ps1`, `lib/providers.ps1`, or the env-var contract.
+Internal reference for `cc-switcher`. Read this before changing `lib/core.ps1`, `lib/providers.ps1`, the bash counterparts in `bash/lib/`, or the env-var contract.
+
+Sections below describe the PowerShell implementation, which is the reference; the bash port mirrors it function-for-function. Bash-specific deltas are collected in [The bash port](#the-bash-port) at the end.
 
 ## Overview
 
@@ -171,3 +173,58 @@ The log file is gitignored. Both write functions are wrapped in `Get-Command ...
 - Returns `$null` if `OPENROUTER_API_KEY` is unset and no cache is available.
 
 The completer for `cc-openrouter` (`lib/completers.ps1:8-19`) reads the same cached model list to drive tab completion of OpenRouter model ids.
+
+## The bash port
+
+`bash/` is a function-for-function port for Linux/macOS shells. It is **sourced** (from `~/.bashrc` or via `make install`), not executed — which imposes the port's one hard constraint: **nothing at source time may change shell state**. No `set -e`/`-u`/`pipefail`, no `shopt`, no traps. Anything set when the file is sourced leaks into the user's interactive session permanently. CI asserts `$-` is unchanged after sourcing.
+
+### File / function mapping
+
+| PowerShell | bash | Notes |
+|---|---|---|
+| `cc-switcher.psm1` | `bash/cc-switcher.sh` | sources `lib/`, defines `cc-*` functions (no alias layer), banner |
+| `lib/core.ps1` `Invoke-CCLaunch` | `bash/lib/core.sh` `invoke_cc_launch` | same env contract; snapshot in the `_CC_SNAPSHOT` assoc array |
+| `lib/core.ps1` `Reset-CC` / `Get-CC-Status` | `reset_cc` / `get_cc_status` | both driven by the shared `_CC_MANAGED_VARS` array |
+| `lib/providers.ps1` `Invoke-CCProvider` | `bash/lib/providers.sh` `invoke_cc_provider` | one `jq` pass fetches all provider fields |
+| `lib/providers.ps1` `Get-CCProviders` | `list_cc_providers` | one `jq` pass emits pipe-delimited rows |
+| `lib/picker.ps1` `cc-launch` / `cc-pick` | `invoke_cc_launch_menu` | numbered menu only; no gridview equivalent |
+| `lib/codex.ps1` | `bash/lib/codex.sh` | token cache written `0600` under `umask 077` |
+| `lib/usage.ps1` | `bash/lib/usage.sh` | adds a SQLite `sessions` table next to the JSONL log |
+| `lib/pricing.ps1` | `bash/lib/pricing.sh` | same `{fetchedAt, data}` disk-cache envelope |
+| `lib/doctor.ps1` | `bash/lib/doctor.sh` | key list shared with `cc-status` via `_CC_API_KEY_VARS` |
+| `lib/completers.ps1` | `bash/lib/completers.sh` | `complete -F`, registered at source time |
+| `lib/update-check.ps1` | `bash/lib/update-check.sh` | also hosts `show_cc_help` |
+
+### Launch lifecycle (bash)
+
+```mermaid
+sequenceDiagram
+    participant U as user shell
+    participant W as cc-deepseek()
+    participant P as invoke_cc_provider
+    participant L as invoke_cc_launch
+    participant C as claude
+
+    U->>W: cc-deepseek [args]
+    W->>P: invoke_cc_provider "deepseek" "" args
+    P->>P: jq .providers["deepseek"] (one pass)
+    P->>P: resolve auth via ${!authVar} or codex token
+    P->>P: catalog envVars -> CC_EXTRA_ENV_* locals
+    P->>L: launch(display, url, token, tiers, timeout, context)
+    L->>L: _cc_snapshot_save (_CC_MANAGED_VARS)
+    L->>L: export ANTHROPIC_* + auto-context (>=500K)
+    L->>L: apply CC_EXTRA_ENV_* (snapshot first, after auto-context)
+    L->>C: claude args
+    C-->>L: exit code
+    L->>L: _cc_snapshot_restore
+    L->>L: write_cc_session_end (token aggregation)
+    L-->>U: exit code
+```
+
+### Deltas worth knowing
+
+- **Env restore is best-effort, not `finally`-guaranteed.** PowerShell restores in a `try/finally`. Bash has no equivalent for a sourced function without installing traps (which would leak — see the constraint above), so restore runs on the normal path after `claude` returns. A `Ctrl+C` that kills the *function* (not just `claude`) can skip restore; `cc-reset` recovers.
+- **Catalog `envVars` travel as `CC_EXTRA_ENV_*` function-locals.** `invoke_cc_provider` declares them `local` (validated identifiers only); `invoke_cc_launch` discovers them via `compgen -v CC_EXTRA_ENV_` through bash's dynamic scoping, snapshots each target var, and applies them **after** the auto-context block — same ordering contract as PowerShell's `ExtraEnv`. Because they're locals, they vanish with the function frame even on interrupt. Users can also export `CC_EXTRA_ENV_<NAME>` manually for ad-hoc extra env.
+- **The catalog is duplicated.** The bash port reads `bash/data/providers.json` (`CC_CATALOG_PATH`), a copy of the root catalog. CI's "catalogs in sync" job fails the build when the two diverge; edit both in one commit.
+- **Usage tracking adds SQLite.** `write_cc_session_end` aggregates each modified transcript with a single `jq -s` pass per file and writes both the JSONL log and a `sessions` row in `bash/data/.usage.db` (when `sqlite3` is available). Both writes are `|| true`-guarded so usage tracking can never break a launch.
+- **`jq` is the parsing workhorse.** Catalog reads are single-pass per call site. Keep it that way: a per-line `echo | jq` loop over a multi-thousand-line transcript means thousands of process forks at session exit.
