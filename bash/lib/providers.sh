@@ -85,17 +85,16 @@ invoke_cc_provider() {
     haiku_model="$fast"
   fi
 
-  # Extra env vars from catalog (envVars block), passed via CC_EXTRA_ENV_* so
-  # core.sh applies them after the auto-context block and restores them on exit
-  local -a extra_env_names=()
+  # Extra env vars from catalog (envVars block), surfaced as CC_EXTRA_ENV_*
+  # function-locals: invoke_cc_launch sees them through dynamic scoping and
+  # applies them after the auto-context block (snapshotted, restored on exit),
+  # and they vanish with this function even if the launch is interrupted
   local ek ev
   while IFS=$'\t' read -r ek ev; do
-    [[ -z "$ek" ]] && continue
-    export "CC_EXTRA_ENV_${ek}=${ev}"
-    extra_env_names+=("CC_EXTRA_ENV_${ek}")
+    [[ "$ek" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+    local "CC_EXTRA_ENV_${ek}=${ev}"
   done < <(echo "$provider_json" | jq -r '(.envVars // {}) | to_entries[] | "\(.key)\t\(.value)"')
 
-  local rc=0
   invoke_cc_launch \
     "$display_name" \
     "$base_url" \
@@ -106,13 +105,7 @@ invoke_cc_provider() {
     "$timeout_ms" \
     "$context_flagship" \
     "$disable_noness" \
-    "${claude_args[@]}" || rc=$?
-
-  local n
-  for n in "${extra_env_names[@]}"; do
-    unset "$n"
-  done
-  return $rc
+    "${claude_args[@]}"
 }
 
 #------------------------------------------------------------------------------

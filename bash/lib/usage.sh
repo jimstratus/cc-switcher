@@ -133,8 +133,9 @@ get_cc_usage() {
     printf "%-19s %-32s %8s %7s %9s %9s\n" "When" "Provider" "Duration" "Turns" "Tokens In" "Tokens Out"
     echo "--------------------------------------------------------------------------------"
 
+    # -R + fromjson? tolerates malformed legacy lines instead of aborting
     tail -n "$last" "$CC_USAGE_LOG" 2>/dev/null \
-      | jq -r 'select(.ts and .provider)
+      | jq -rR 'fromjson? | objects | select(.ts and .provider)
           | [.ts, .provider, (.durationSec // 0), (.turns // 0), (.tokensIn // 0), (.tokensOut // 0)]
           | @tsv' 2>/dev/null \
       | while IFS=$'\t' read -r ts provider durationSec turns tokensIn tokensOut; do
@@ -156,8 +157,10 @@ get_cc_usage() {
   # Aggregate totals from JSONL
   if [[ -f "$CC_USAGE_LOG" ]]; then
     local total_in=0 total_out=0 total_sessions=0
+    # raw-line + fromjson? so one malformed legacy line doesn't zero the totals
     read -r total_in total_out total_sessions < <(
-      jq -rs '"\(map(.tokensIn // 0) | add // 0) \(map(.tokensOut // 0) | add // 0) \(length)"' \
+      jq -rRn '[inputs | fromjson? // empty | objects]
+        | "\(map(.tokensIn // 0) | add // 0) \(map(.tokensOut // 0) | add // 0) \(length)"' \
         "$CC_USAGE_LOG" 2>/dev/null
     ) || true
     echo "Total ($total_sessions sessions): $total_in in, $total_out out"
