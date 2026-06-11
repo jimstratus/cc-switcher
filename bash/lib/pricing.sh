@@ -97,7 +97,7 @@ get_cc_pricing() {
 
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    IFS='|' read -r id command display_name quality_tier base_url auth_var flagship standard fast context_flagship timeout_ms disable_noness <<< "$line"
+    IFS='|' read -r _ _ _ _ _ _ flagship standard fast _ _ _ <<< "$line"
 
     for mid in "$flagship" "$standard" "$fast"; do
       # Skip if already shown

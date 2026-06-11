@@ -193,10 +193,9 @@ invoke_cc_launch_menu() {
   echo " cc-launch — pick a provider "
   echo "======================================================================"
 
-  local -a display_lines=()
   local i=1
   for line in "${providers_sorted[@]}"; do
-    IFS='|' read -r id command display_name quality_tier _ <<< "$line"
+    IFS='|' read -r _ command display_name quality_tier _ <<< "$line"
     local tag=""
     case "$quality_tier" in
       flagship) tag="" ;;
@@ -227,7 +226,7 @@ invoke_cc_launch_menu() {
   fi
 
   local selected="${providers_sorted[$idx]}"
-  IFS='|' read -r id command _ <<< "$selected"
+  IFS='|' read -r _ command _ <<< "$selected"
 
   echo "Launching $command..."
   if declare -F "$command" >/dev/null 2>&1; then

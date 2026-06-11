@@ -7,7 +7,7 @@
 # Completion for cc-openrouter: offer model IDs from OpenRouter catalog
 #------------------------------------------------------------------------------
 _cc_completer_openrouter() {
-  local cur prev
+  local cur
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
 
@@ -44,14 +44,14 @@ _cc_completer_openrouter() {
     "mistralai/mistral-nemo-12b-instruct"
     "nvidia/llama-3.1-nemotron-70b-instruct"
   )
-  COMPREPLY=($(compgen -W "${catalog_models[*]}" -- "$cur"))
+  mapfile -t COMPREPLY < <(compgen -W "${catalog_models[*]}" -- "$cur")
 }
 
 #------------------------------------------------------------------------------
 # Completion for cc-opencode: curated list from OpenCode Go
 #------------------------------------------------------------------------------
 _cc_completer_opencode() {
-  local cur prev
+  local cur
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
 
@@ -64,14 +64,14 @@ _cc_completer_opencode() {
     "mimo-v2-pro"
     "mimo-v2-omni"
   )
-  COMPREPLY=($(compgen -W "${models[*]}" -- "$cur"))
+  mapfile -t COMPREPLY < <(compgen -W "${models[*]}" -- "$cur")
 }
 
 #------------------------------------------------------------------------------
 # Completion for cc-nvidia: well-known NVIDIA NIM model families
 #------------------------------------------------------------------------------
 _cc_completer_nvidia() {
-  local cur prev
+  local cur
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
 
@@ -85,7 +85,7 @@ _cc_completer_nvidia() {
     "nvidia/llama-3.1-nemotron-70b-instruct"
     "mistralai/mistral-nemo-12b-instruct"
   )
-  COMPREPLY=($(compgen -W "${models[*]}" -- "$cur"))
+  mapfile -t COMPREPLY < <(compgen -W "${models[*]}" -- "$cur")
 }
 
 # Register completions (called once at load time)

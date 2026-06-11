@@ -136,7 +136,7 @@ invoke_cc_doctor() {
 
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    IFS='|' read -r id command display_name quality_tier base_url auth_var flagship standard fast context_flagship timeout_ms disable_noness <<< "$line"
+    IFS='|' read -r _ command _ _ base_url auth_var _ _ _ _ _ _ <<< "$line"
 
     # Check if we have auth for this provider
     local has_key=false

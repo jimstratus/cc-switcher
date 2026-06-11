@@ -10,6 +10,7 @@ CC_USAGE_LOG="${CCSWITCHER_ROOT}/data/.usage-log.jsonl"
 # In-memory session tracking
 _CC_SESSION_STARTED_AT=""
 _CC_SESSION_PROVIDER=""
+_CC_SESSION_OPUS_MODEL=""
 
 #------------------------------------------------------------------------------
 # Internal: ensure SQLite DB and table exist
@@ -43,6 +44,7 @@ write_cc_session_start() {
 
   _CC_SESSION_STARTED_AT=$(date +%s)
   _CC_SESSION_PROVIDER="$provider_name"
+  _CC_SESSION_OPUS_MODEL="$opus_model"
 
   # Seed the jsonl log for compatibility
   mkdir -p "$(dirname "$CC_USAGE_LOG")"
@@ -99,12 +101,13 @@ write_cc_session_end() {
     --argjson cacheRead "$cache_read" --argjson cacheCreate "$cache_create" \
     '$ARGS.named' >> "$CC_USAGE_LOG" 2>/dev/null || true
 
-  # Insert into SQLite (single-quotes in provider doubled for SQL)
+  # Insert into SQLite (single-quotes doubled for SQL)
   local provider_sql="${provider_name//\'/\'\'}"
+  local opus_sql="${_CC_SESSION_OPUS_MODEL//\'/\'\'}"
   _usage_db_init
   sqlite3 "$CC_USAGE_DB" \
     "INSERT INTO sessions (ts, provider, opus_model, duration_sec, turns, tokens_in, tokens_out, cache_read, cache_create)
-     VALUES ('$ts_iso', '$provider_sql', '', $duration, $turns, $tokens_in, $tokens_out, $cache_read, $cache_create);" \
+     VALUES ('$ts_iso', '$provider_sql', '$opus_sql', $duration, $turns, $tokens_in, $tokens_out, $cache_read, $cache_create);" \
     2>/dev/null || true
 }
 

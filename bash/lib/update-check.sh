@@ -53,7 +53,7 @@ show_cc_help() {
   # Sort: slow last, then alphabetical (display name carried through the sort)
   local line cmd tier
   for line in "${providers_sorted[@]}"; do
-    IFS='|' read -r id command display_name quality_tier _ <<< "$line"
+    IFS='|' read -r _ command display_name quality_tier _ <<< "$line"
     case "$quality_tier" in
       slow)  cmd="zzz_$command" ;;
       free)  cmd="free_$command" ;;
