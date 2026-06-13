@@ -1,5 +1,47 @@
 # Changelog
 
+## 3.2.0 — 2026-05-26
+
+### Added
+
+- **Owl Alpha (`cc-owl`):** FREE cloaked 1M-context alpha model via OpenRouter
+  Stealth provider. Agentic-optimized, tool calling verified working through
+  the Anthropic Messages API. May be intermittent at peak times due to
+  free-tier demand; retry if first launch errors. Best for exploratory
+  sessions.
+- **NVIDIA Nemotron 3 Super (`cc-nemotron`):** FREE 1M-context 120B hybrid MoE
+  (Mamba+Transformer, 12B active) via OpenRouter. 50%+ faster than
+  transformer-only models. Good for multi-agent and cross-document reasoning.
+- **Menu reference section:** `cc-launch` now displays a "Recommended OpenRouter
+  Models" section below the numbered provider list, showing free and paid
+  1M-context model IDs usable with the `[O] Custom OpenRouter model` option.
+  Covers owl-alpha, nemotron, lyria-3, llama-4-scout (10M ctx), qwen3.6-flash,
+  claude-sonnet-4.6, and grok-4.20.
+- **Install point fix:** Restored `C:\Users\ryanm\ClaudeCodeProviders.ps1` as a
+  wrapper that loads the module from `d:\projects\scripts\cc-switcher`.
+
+### Provider catalog (`data/providers.json` v3.2.0)
+
+- New entries: `owl-alpha` (free, cc-owl), `nemotron` (free, cc-nemotron)
+- Both are 1M uniform-context, auto-derive `CLAUDE_CODE_MAX_CONTEXT_TOKENS`
+
+### Owl Alpha diagnosis
+
+- Full Anthropic Messages API test suite passed: basic text, single tool call,
+  full agent loop (tool_use → tool_result → final answer), and 8-tool complex
+  schema all returned 200 with correct Anthropic-format responses.
+- Usage log shows successful sessions: 24-turn (May 17) and 739-turn (May 26).
+- Root cause of intermittent failures: free cloaked model on Stealth provider
+  is subject to rate limiting and provider load. Not a compatibility issue.
+- Docs at https://openrouter.ai/openrouter/owl-alpha claim Claude Code support
+  — confirmed working.
+
+### Changed
+
+- Module version bumped 3.1.0 → 3.2.0.
+- All docs (README, AGENTS.md, ISSUES.md, architecture.md, catalog-schema.md,
+  adding-a-provider.md) updated for version and new providers.
+
 ## 3.1.0 — 2026-05-09
 
 ### Added (auto-context for 1M-class flagships)

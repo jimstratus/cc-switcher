@@ -5,7 +5,7 @@ Reference for `data/providers.json`. Edit this file to add, remove, or reconfigu
 ## File location and version
 
 - **Path:** `data/providers.json`
-- **Top-level `version`** (string): tracks schema + content revisions. Bumped whenever the file changes meaningfully. Currently `"3.1.0"`. Must move in lockstep with `cc-switcher.psd1`'s `ModuleVersion` and `cc-switcher.psm1`'s `$script:CCSwitcherVersion`.
+- **Top-level `version`** (string): tracks schema + content revisions. Bumped whenever the file changes meaningfully. Currently `"3.2.0"`. Must move in lockstep with `cc-switcher.psd1`'s `ModuleVersion` and `cc-switcher.psm1`'s `$script:CCSwitcherVersion`.
 - **Schema reference**: `"$schema": "https://json-schema.org/draft-07/schema#"` (advisory; no formal JSON Schema is published).
 
 ## Top-level structure
@@ -13,7 +13,7 @@ Reference for `data/providers.json`. Edit this file to add, remove, or reconfigu
 ```json
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "_doc": { ... },
   "providers": {
     "<id>": { <provider definition> },

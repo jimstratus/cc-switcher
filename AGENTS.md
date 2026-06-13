@@ -16,7 +16,7 @@ Order depends on intent:
 3. **`docs/architecture.md`** — internals: launch lifecycle, env-var contract, snapshot/restore, auto-context derivation.
 4. **`docs/catalog-schema.md`** — every field in `data/providers.json`.
 5. **`docs/adding-a-provider.md`** — step-by-step contributor walkthrough.
-6. **`CHANGELOG.md`** — recent changes, especially the v3.1.0 auto-context entry.
+6. **`CHANGELOG.md`** — recent changes, especially the v3.2.0 entry.
 7. **`ISSUES.md`** — known footguns and workarounds.
 
 If your task touches `lib/core.ps1`, `lib/providers.ps1`, or `data/providers.json`, read `docs/architecture.md` and `docs/catalog-schema.md` before editing.

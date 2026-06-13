@@ -17,6 +17,9 @@ desktop.ini
 *.swp
 *~
 
+# Local AI tooling state (oh-my-claudecode)
+.omc/
+
 # PowerShell module build artifacts
 *.nupkg
 
