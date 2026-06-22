@@ -1,5 +1,54 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **bash/zsh port** (`bash/`) — full Linux/macOS implementation of the
+  module: all `cc-*` provider commands, `cc-launch` menu, `cc-doctor`,
+  `cc-pricing`, `cc-status`, `cc-usage` (JSONL + SQLite), Codex OAuth
+  device flow, tab completion, and a Makefile installer (user and
+  system-wide). Sourced from `~/.bashrc`; shares the catalog format with
+  the PowerShell module via a synchronized copy at
+  `bash/data/providers.json`.
+- **CI** (`.github/workflows/ci.yml`) — bash syntax + ShellCheck, a
+  sourced-module smoke test against a stubbed `claude`, install-layout
+  verification, catalog validation and cross-copy sync check, and a
+  PowerShell parse/manifest check.
+
+### Fixed (bash port code review — issues #2–#14)
+
+- Provider lookup returned from a pipeline subshell, so **every catalog
+  command failed** with "Unknown provider id" (#2).
+- `set -euo pipefail` in sourced files leaked errexit/nounset/pipefail
+  into the user's interactive shell and could skip env restore when
+  `claude` exited nonzero (#3).
+- `make install` flattened `lib/` and `data/` so the installed module
+  never loaded (#4).
+- `cc-openrouter` was documented but never defined (#5).
+- Catalog `envVars` were exported permanently via `eval` and applied
+  before (not after) the auto-context block (#6).
+- Tab completion was never registered; `COMP_CWORDS` typo (#7).
+- `cc-nvidia` crashed with no args and ignored catalog edits (#8).
+- Codex OAuth token cache was world-readable; tokens without
+  `expires_at` were treated as valid (#9).
+- Session-end token aggregation crashed on empty file lists and on the
+  first turn increment; ~5 jq forks per transcript line (#10).
+- ~180 jq subprocess forks per launch / per catalog listing (#11);
+  managed env-var lists deduplicated (#12); menu dispatch made
+  catalog-driven (#13); README diagram `+model` → `/model` (#14).
+
+### Docs
+
+- `docs/architecture.md`: new "The bash port" section — file/function
+  mapping, launch-lifecycle sequence diagram, behavioral deltas.
+- `AGENTS.md`, `docs/catalog-schema.md`, `docs/adding-a-provider.md`,
+  `CONTRIBUTING.md`: dual-implementation invariants (catalog sync,
+  sourced-file constraints, five version markers), bash verification
+  recipes, CI documentation.
+- `README.md`: CI badge, flagship context-window chart, `jq` listed as
+  a required bash dependency.
+
 ## 3.2.0 — 2026-05-26
 
 ### Added

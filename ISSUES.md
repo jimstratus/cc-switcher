@@ -1,5 +1,8 @@
 # Known Issues
 
+Unless marked otherwise, entries apply to both the PowerShell module and the
+bash port — the two implementations share the catalog and feature set.
+
 ## Z.AI GLM-5.1 (`cc-zai-glm51`) — Slow
 
 The Z.AI Anthropic-compatible endpoint (`https://api.z.ai/api/anthropic`) is
@@ -106,7 +109,7 @@ These commands exist in the catalog but haven't been launched end-to-end. Run
 
 ---
 
-## `Out-ConsoleGridView` for `cc-pick`
+## `Out-ConsoleGridView` for `cc-pick` (PowerShell only)
 
 `cc-pick` requires `Microsoft.PowerShell.ConsoleGuiTools`. Install with:
 
@@ -114,7 +117,18 @@ These commands exist in the catalog but haven't been launched end-to-end. Run
 Install-Module Microsoft.PowerShell.ConsoleGuiTools -Scope CurrentUser
 ```
 
-Without it, `cc-pick` falls back to `cc-launch` (numbered menu).
+Without it, `cc-pick` falls back to `cc-launch` (numbered menu). The bash port
+has no `cc-pick` — use `cc-launch`.
+
+---
+
+## Bash port: env restore is best-effort on interrupt
+
+The PowerShell module restores the environment in a `try/finally`. The bash
+port restores after `claude` returns on the normal path; a `Ctrl+C` that kills
+the launching *function* itself (rare — `claude` normally receives the signal)
+can skip restore. If `cc-status` shows a provider URL after a session ended,
+run `cc-reset`.
 
 ---
 

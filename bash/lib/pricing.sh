@@ -1,0 +1,133 @@
+# =============================================================================
+# pricing.sh — OpenRouter live pricing with disk-persisted cache
+# =============================================================================
+
+OR_PRICING_CACHE_FILE="${CCSWITCHER_ROOT}/data/.pricing-cache.json"
+OR_PRICING_TTL_SEC=300
+
+# In-memory cache
+_OR_PRICING_CACHE=""
+_OR_PRICING_CACHE_TIME=0
+
+#------------------------------------------------------------------------------
+# get-cc-live-pricing — fetch from network or cache, return JSON array
+#------------------------------------------------------------------------------
+get_cc_live_pricing() {
+  local now
+  now=$(date +%s)
+
+  # Memory cache check
+  if [[ -n "$_OR_PRICING_CACHE" ]] && (( _OR_PRICING_CACHE_TIME > 0 )); then
+    local age=$(( now - _OR_PRICING_CACHE_TIME ))
+    if (( age < OR_PRICING_TTL_SEC )); then
+      echo "$_OR_PRICING_CACHE"
+      return 0
+    fi
+  fi
+
+  # Disk cache check
+  if [[ -f "$OR_PRICING_CACHE_FILE" ]]; then
+    local fetched_at cached_data age
+    fetched_at=$(jq -r '.fetchedAt // 0' "$OR_PRICING_CACHE_FILE" 2>/dev/null) || fetched_at=0
+    age=$(( now - fetched_at ))
+    if (( age < OR_PRICING_TTL_SEC )); then
+      cached_data=$(jq -c '.data' "$OR_PRICING_CACHE_FILE" 2>/dev/null) || cached_data="[]"
+      _OR_PRICING_CACHE="$cached_data"
+      _OR_PRICING_CACHE_TIME="$fetched_at"
+      echo "$cached_data"
+      return 0
+    fi
+  fi
+
+  # Network fetch
+  if [[ -z "${OPENROUTER_API_KEY:-}" ]]; then
+    echo "[]"
+    return 0
+  fi
+
+  local resp
+  resp=$(curl -s --max-time 10 \
+    -H "Authorization: Bearer ${OPENROUTER_API_KEY}" \
+    "https://openrouter.ai/api/v1/models") || {
+    echo "[]"
+    return 0
+  }
+
+  local data
+  data=$(echo "$resp" | jq -c '.data // []' 2>/dev/null) || data="[]"
+
+  # Persist to disk
+  local fetched_at
+  fetched_at=$(date +%s)
+  echo "{\"fetchedAt\":$fetched_at,\"data\":$data}" > "$OR_PRICING_CACHE_FILE"
+
+  _OR_PRICING_CACHE="$data"
+  _OR_PRICING_CACHE_TIME="$fetched_at"
+  echo "$data"
+}
+
+#------------------------------------------------------------------------------
+# get-cc-pricing — display pricing table
+#------------------------------------------------------------------------------
+get_cc_pricing() {
+  local models
+  models=$(get_cc_live_pricing) || models="[]"
+
+  echo ""
+  echo " Live pricing (OpenRouter, ${OR_PRICING_TTL_SEC}s cache) "
+  echo "======================================================================"
+  printf "%-35s %10s %12s %12s\n" "Model" " \$/1M in" "\$/1M out" "Context"
+  echo "----------------------------------------------------------------------"
+
+  # Index the models JSON once: id -> prompt price / completion price / context
+  local -A pp_map=() cp_map=() cl_map=()
+  local mid pp cp cl
+  while IFS=$'\t' read -r mid pp cp cl; do
+    [[ -z "$mid" ]] && continue
+    pp_map["$mid"]="$pp"
+    cp_map["$mid"]="$cp"
+    cl_map["$mid"]="$cl"
+  done < <(echo "$models" \
+    | jq -r '.[] | [.id, (.pricing.prompt // ""), (.pricing.completion // ""), (.context_length // "")] | @tsv' 2>/dev/null)
+
+  # Collect slash-model IDs from catalog
+  local provider_lines
+  provider_lines=$(list_cc_providers 2>/dev/null) || provider_lines=""
+  local seen_ids=""
+
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    IFS='|' read -r _ _ _ _ _ _ flagship standard fast _ _ _ <<< "$line"
+
+    for mid in "$flagship" "$standard" "$fast"; do
+      # Skip if already shown
+      if [[ "$seen_ids" == *" $mid "* ]]; then
+        continue
+      fi
+      # Only OpenRouter-style (slash in name)
+      if [[ "$mid" != *"/"* ]]; then
+        continue
+      fi
+
+      seen_ids=" $seen_ids$mid "
+      local prompt_price="-" comp_price="-" ctx_len="-"
+
+      pp="${pp_map[$mid]:-}"
+      cp="${cp_map[$mid]:-}"
+      cl="${cl_map[$mid]:-}"
+      if [[ -n "$pp" ]] && [[ "$pp" != "null" ]]; then
+        prompt_price=$(awk -v p="$pp" 'BEGIN {printf "%.2f", p * 1e6}' 2>/dev/null) || prompt_price="$pp"
+      fi
+      if [[ -n "$cp" ]] && [[ "$cp" != "null" ]]; then
+        comp_price=$(awk -v p="$cp" 'BEGIN {printf "%.2f", p * 1e6}' 2>/dev/null) || comp_price="$cp"
+      fi
+      if [[ -n "$cl" ]] && [[ "$cl" != "null" ]]; then
+        ctx_len="$cl"
+      fi
+
+      printf "%-35s %10s %12s %12s\n" "$mid" "$prompt_price" "$comp_price" "$ctx_len"
+    done
+  done <<< "$provider_lines"
+
+  echo ""
+}
