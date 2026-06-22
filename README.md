@@ -140,8 +140,8 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 | `cc-nvidia [model]` | NVIDIA NIM (free) | tier defaults, override with arg |
 | `cc-nemotron` | NVIDIA Nemotron 3 Super (OpenRouter, free) · **1M** | nemotron-3-super-120b (all three) |
 | `cc-qwen` | Qwen3.7 Max (Alibaba via OpenRouter) · **1M** | qwen3.7-max / qwen3-coder / qwen3-coder-next |
-| `cc-ollama-glm` | GLM-5.2 (Ollama Cloud) · **1M** | glm-5.2:cloud (all three) |
-| `cc-ollama-minimax` | MiniMax M3 (Ollama Cloud) · **1M** | minimax-m3:cloud (all three) |
+| `cc-ollama-glm` | GLM-5.2 (Ollama Cloud) · 976K | glm-5.2:cloud (all three) |
+| `cc-ollama-minimax` | MiniMax M3 (Ollama Cloud) · 512K | minimax-m3:cloud (all three) |
 | `cc-owl` | Owl Alpha (OpenRouter Stealth, free) · **1M** | owl-alpha (all three) |
 | `cc-codex` | OpenAI Codex (OAuth) | gpt-5.4 (run `cc-codex-login` first) |
 | `cc-opencode <model>` | OpenCode Go generic | model passed via arg |
