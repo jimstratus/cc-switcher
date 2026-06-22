@@ -10,7 +10,7 @@
    │   ╚██████╗╚██████╗       ███████║╚███╔███╔╝     ↳ any LLM    │
    │    ╚═════╝ ╚═════╝       ╚══════╝ ╚══╝╚══╝                   │
    │                                                              │
-   │    cc-switcher · v3.2.0  (PowerShell + Bash)                │
+   │    cc-switcher · v3.3.0  (PowerShell + Bash)                │
    │                                                              │
    └──────────────────────────────────────────────────────────────┘
 ```
@@ -44,7 +44,7 @@ flowchart LR
     sw -.->|"on session exit"| restore["restores prior env"]
 ```
 
-Each provider command sets all three Claude Code tiers (Opus / Sonnet / Haiku) at once. `/model` switches between them in-session. For 1M-class flagships (DeepSeek, MiMo v2.5-Pro, Qwen3.6-Plus, Xiaomi MiMo v2.5-Pro), `cc-switcher` auto-derives `CLAUDE_CODE_MAX_CONTEXT_TOKENS` so Claude Code's status bar shows the model's full context window instead of the 200K default.
+Each provider command sets all three Claude Code tiers (Opus / Sonnet / Haiku) at once. `/model` switches between them in-session. For 1M-class flagships (DeepSeek, MiMo v2.5-Pro, Qwen3.7 Max, Xiaomi MiMo v2.5-Pro), `cc-switcher` auto-derives `CLAUDE_CODE_MAX_CONTEXT_TOKENS` so Claude Code's status bar shows the model's full context window instead of the 200K default.
 
 ---
 
@@ -101,7 +101,7 @@ Each provider command sets all three Claude Code model tiers (Opus / Sonnet / Ha
 ```powershell
 cc-mimo                        # MiMo V2.5-Pro / V2.5 / V2-Flash via OpenRouter
 cc-deepseek                    # DeepSeek V4-Pro / V4-Pro / V4-Flash (direct, 1M context)
-cc-glm                         # GLM-5.1 via OpenRouter
+cc-glm                         # GLM-5.2 via OpenRouter
 cc-openrouter <model-id>       # any OpenRouter model
 cc-nvidia                      # NVIDIA NIM defaults (free tier)
 cc-yolo                        # native Anthropic + --dangerously-skip-permissions
@@ -113,7 +113,7 @@ cc-reset                       # clear overrides, restore native Anthropic
 ```bash
 cc-mimo                        # MiMo V2.5-Pro / V2.5 / V2-Flash via OpenRouter
 cc-deepseek                    # DeepSeek V4-Pro / V4-Pro / V4-Flash (direct, 1M context)
-cc-glm                         # GLM-5.1 via OpenRouter
+cc-glm                         # GLM-5.2 via OpenRouter
 cc-openrouter <model-id>       # any OpenRouter model
 cc-nvidia                      # NVIDIA NIM defaults (free tier)
 cc-yolo                        # native Anthropic + --dangerously-skip-permissions
