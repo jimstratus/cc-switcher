@@ -189,7 +189,7 @@ function Get-CC-Status {
     Write-Host ("-" * 70) -ForegroundColor Yellow
     foreach ($keyName in @('ANTHROPIC_API_KEY','OPENROUTER_API_KEY','DEEPSEEK_API_KEY',
                             'MINIMAX_API_KEY','NVIDIA_API_KEY','OPENCODE_GO_API_KEY',
-                            'ZAI_API_KEY','KIMI_API_KEY','XIAOMI_API_KEY')) {
+                            'ZAI_API_KEY','KIMI_API_KEY','XIAOMI_API_KEY','OLLAMA_API_KEY')) {
         $val = [Environment]::GetEnvironmentVariable($keyName)
         $status = if ([string]::IsNullOrEmpty($val)) { "(not set)" } else { "(set, len=$($val.Length))" }
         Write-Host ("{0,-22} {1}" -f $keyName, $status)

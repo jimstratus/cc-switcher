@@ -1,6 +1,40 @@
 # Changelog
 
-## Unreleased
+## 3.3.0 — 2026-06-21
+
+### Added — 2026-06 model refresh (1M-context wave)
+
+- **GLM-5.2** (1M): `cc-glm` bumped GLM-5.1→5.2 (fast tier GLM-4.7-Flash);
+  `cc-zai-glm51` (Z.AI direct) → `glm-5.2[1m]` / `glm-4.7`, now 1M.
+- **MiniMax M3** (1M): `cc-minimax` (direct) M2.7→M3; new `cc-minimax-or`
+  (OpenRouter, US-latency) and `cc-ollama-minimax` (Ollama Cloud);
+  `cc-opencode-minimax` → `minimax-m3`. The direct `/anthropic` endpoint
+  self-reports ~200K (upstream bug) so `context` is pinned to 1M to drive
+  the extended window.
+- **Qwen3.7 Max** (1M flagship): `cc-qwen` flagship `qwen3.6-plus`→`qwen3.7-max`.
+- **New providers:** `cc-gemini` (Gemini 3.1 Pro, 1M), `cc-grok` (Grok 4.20,
+  **2M** — largest window in the catalog), `cc-ollama-glm` / `cc-ollama-minimax`
+  (Ollama Cloud, Anthropic-compatible at `https://ollama.com`, `:cloud` suffix,
+  auth `OLLAMA_API_KEY`).
+- **Kimi K2.7 Code:** `cc-kimi` bumped K2.6→`kimi-k2.7-code` but **stays 256K**
+  — K2.7 ships only as "Code" and did not widen the window. Not 1M.
+- **Bash `cc-nemotron` / `cc-owl` functions** — these providers shipped in the
+  v3.2.0 PowerShell catalog and were synced into the bash catalog when the port
+  merged, but their bash command functions were missing (menu showed "No handler").
+- `OLLAMA_API_KEY` added to the `cc-status` / `cc-doctor` key list.
+- Note: GLM-5.2 is intentionally **not** offered via OpenCode Go — that surface
+  serves GLM over an OpenAI-only API, incompatible with this tool. Use
+  `cc-glm` (OpenRouter), `cc-zai-glm51`, or `cc-ollama-glm` instead.
+
+### Fixed — cross-platform + Codex (PR #1 review follow-up)
+
+- **macOS/BSD portability:** portable `_cc_mtime` / `_cc_fmt_ts` helpers replace
+  GNU-only `stat -c %Y` and `date -d`; `cc-doctor` latency now uses curl's
+  `%{time_total}` instead of `date +%s%3N`.
+- **Codex token expiry:** `cc-codex-login` now derives an absolute `expires_at`
+  from the OAuth `expires_in`, so a freshly minted token is no longer treated as
+  expired by `get_cc_codex_token`.
+- Catalog notes reference `core.ps1/core.sh` (was PowerShell-only `core.ps1`).
 
 ### Added
 

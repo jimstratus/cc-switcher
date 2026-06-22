@@ -113,6 +113,11 @@ function Invoke-CC-ZAI-GLM51   { param([string[]]$ClaudeArgs) Invoke-CCProvider 
 function Invoke-CC-OpenCode-MiniMax { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'opencode-minimax' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Owl-Alpha  { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'owl-alpha' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Nemotron   { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'nemotron' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-Gemini     { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'gemini' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-Grok       { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'grok' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-MiniMax-OR { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'minimax-or' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-Ollama-Glm { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'ollama-glm' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-Ollama-MiniMax { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'ollama-minimax' -ClaudeArgs $ClaudeArgs }
 
 # NVIDIA: tier mapping by default, optional model override
 function Invoke-CC-Nvidia {

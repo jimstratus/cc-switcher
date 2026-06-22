@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "_doc": {
     "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1/core.sh translates to Claude Code's env var contract.",
     "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",
@@ -28,56 +28,107 @@
       "notes": "Direct API via Anthropic-native /anthropic endpoint. Only V4 Pro and V4 Flash exist — Standard tier maps to Pro (no middle SKU). All tiers are 1M context. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 from the 1M context (see _doc._auto_context). Tradeoff: no auto-compaction — use /compact manually near the limit.",
       "docs": "https://api-docs.deepseek.com"
     },
-    "glm": {
-      "command": "cc-glm",
-      "displayName": "GLM-5.1 (Z.AI via OpenRouter)",
+    "gemini": {
+      "command": "cc-gemini",
+      "displayName": "Gemini 3.1 Pro (Google via OpenRouter)",
       "qualityTier": "flagship",
       "baseUrl": "https://openrouter.ai/api/v1",
       "authVar": "OPENROUTER_API_KEY",
       "tiers": {
-        "flagship": "z-ai/glm-5.1",
-        "standard": "z-ai/glm-5.1",
-        "fast": "z-ai/glm-4.5-air"
+        "flagship": "google/gemini-3.1-pro-preview",
+        "standard": "google/gemini-3.1-pro-preview",
+        "fast": "google/gemini-3.1-pro-preview"
       },
-      "context": 200000,
+      "context": 1000000,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "Google Gemini 3.1 Pro (preview) via OpenRouter, 1M context, strong software-engineering coder. Single SKU on all three slots. 1M crosses the 500K threshold so core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1.",
+      "docs": "https://openrouter.ai/google/gemini-3.1-pro-preview"
+    },
+    "glm": {
+      "command": "cc-glm",
+      "displayName": "GLM-5.2 (Z.AI via OpenRouter)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "z-ai/glm-5.2",
+        "standard": "z-ai/glm-5.2",
+        "fast": "z-ai/glm-4.7-flash"
+      },
+      "context": 1000000,
       "timeoutMs": 3000000,
       "disableNonEssential": false,
-      "notes": "GLM-5.1 SOTA open-weight, MIT licensed. Use cc-glm instead of cc-zai-glm51 (China endpoint is slow).",
-      "docs": "https://openrouter.ai/z-ai/glm-5.1"
+      "notes": "GLM-5.2 SOTA open-weight, MIT licensed, 1M context (released 2026-06-13). Fast tier is GLM-4.7-Flash — no 5.2-branded air SKU exists. 1M crosses the 500K threshold so core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 (use /compact manually near the limit). Use cc-glm instead of cc-zai-glm51 (China endpoint is slow).",
+      "docs": "https://openrouter.ai/z-ai/glm-5.2"
+    },
+    "grok": {
+      "command": "cc-grok",
+      "displayName": "Grok 4.20 (xAI via OpenRouter)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "x-ai/grok-4.20",
+        "standard": "x-ai/grok-4.20",
+        "fast": "x-ai/grok-4.20"
+      },
+      "context": 2000000,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "xAI Grok 4.20 via OpenRouter — 2M context (largest in the catalog), reasoning model. Single SKU on all three slots. core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=2000000 + DISABLE_COMPACT=1 from the 2M context.",
+      "docs": "https://openrouter.ai/x-ai/grok-4.20"
     },
     "kimi": {
       "command": "cc-kimi",
-      "displayName": "Kimi K2.6 (Moonshot via OpenRouter)",
+      "displayName": "Kimi K2.7 Code (Moonshot via OpenRouter)",
       "qualityTier": "flagship",
       "baseUrl": "https://openrouter.ai/api/v1",
       "authVar": "OPENROUTER_API_KEY",
       "tiers": {
-        "flagship": "moonshotai/kimi-k2.6",
-        "standard": "moonshotai/kimi-k2.6",
-        "fast": "moonshotai/kimi-k2.6"
+        "flagship": "moonshotai/kimi-k2.7-code",
+        "standard": "moonshotai/kimi-k2.7-code",
+        "fast": "moonshotai/kimi-k2.7-code"
       },
       "context": 256000,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "1T params / 32B active MoE, 256K context. Single-tier — same model on all three slots.",
-      "docs": "https://openrouter.ai/moonshotai/kimi-k2.6"
+      "notes": "1T params / 32B active MoE. Context is 256K, NOT 1M — Kimi K2.7 ships only as 'K2.7 Code' and did not bump the window from K2.6. Single-tier (same model on all three slots), so it stays below the 500K auto-context threshold by design.",
+      "docs": "https://openrouter.ai/moonshotai/kimi-k2.7-code"
     },
     "minimax": {
       "command": "cc-minimax",
-      "displayName": "MiniMax M2.7",
+      "displayName": "MiniMax M3",
       "qualityTier": "flagship",
       "baseUrl": "https://api.minimax.io/anthropic",
       "authVar": "MINIMAX_API_KEY",
       "tiers": {
-        "flagship": "MiniMax-M2.7",
-        "standard": "MiniMax-M2.7",
-        "fast": "MiniMax-M2.7-highspeed"
+        "flagship": "MiniMax-M3",
+        "standard": "MiniMax-M3",
+        "fast": "MiniMax-M3"
       },
-      "context": 204800,
+      "context": 1000000,
       "timeoutMs": 3000000,
       "disableNonEssential": true,
-      "notes": "Direct API. ~200K context (verified 2026-05-03 against api-reference/text-anthropic-api). M2.7 on flagship/standard for quality, Highspeed on fast tier. Earlier catalog claim of 1M was wrong.",
+      "notes": "Direct API. MiniMax M3 is 1M context (released 2026-05-31). IMPORTANT: the /anthropic endpoint self-reports only ~200K in its model metadata (a known upstream bug inheriting Claude Sonnet's value), which makes Claude Code auto-compact early (~167K) unless overridden — so context is set to 1000000 here on purpose to drive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 (see _doc._auto_context). No verified M3-highspeed fast SKU, so all three tiers map to MiniMax-M3.",
       "docs": "https://platform.minimax.io/docs/token-plan/claude-code"
+    },
+    "minimax-or": {
+      "command": "cc-minimax-or",
+      "displayName": "MiniMax M3 (OpenRouter, US-latency)",
+      "qualityTier": "standard",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "minimax/minimax-m3",
+        "standard": "minimax/minimax-m3",
+        "fast": "minimax/minimax-m3"
+      },
+      "context": 1000000,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "MiniMax M3 via OpenRouter — 1M context, US/EU-latency alternative to cc-minimax (direct api.minimax.io). Unlike the direct endpoint, OpenRouter reports the real 1M window, so no self-report workaround needed. Single SKU on all three slots.",
+      "docs": "https://openrouter.ai/minimax/minimax-m3"
     },
     "mimo": {
       "command": "cc-mimo",
@@ -131,14 +182,48 @@
       "notes": "Free tier with rate limits. Tier IDs are best-guess defaults — verify at https://build.nvidia.com/explore/discover and edit this JSON to taste. cc-nvidia <model-id> overrides all three tiers.",
       "docs": "https://build.nvidia.com"
     },
+    "ollama-glm": {
+      "command": "cc-ollama-glm",
+      "displayName": "GLM-5.2 (Ollama Cloud)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://ollama.com",
+      "authVar": "OLLAMA_API_KEY",
+      "tiers": {
+        "flagship": "glm-5.2:cloud",
+        "standard": "glm-5.2:cloud",
+        "fast": "glm-5.2:cloud"
+      },
+      "context": 1000000,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "GLM-5.2 on Ollama Cloud (hosted inference). Ollama speaks the Anthropic Messages API at https://ollama.com; auth via OLLAMA_API_KEY (key from ollama.com/settings/keys, sent as ANTHROPIC_AUTH_TOKEN). The :cloud suffix is mandatory — it routes to hosted inference instead of a local pull. Cloud models run at full context (~1M). Smoke-test once: Ollama's docs mostly show the localhost:11434 path, the direct cloud Anthropic base is community/issue-attested.",
+      "docs": "https://docs.ollama.com/integrations/claude-code"
+    },
+    "ollama-minimax": {
+      "command": "cc-ollama-minimax",
+      "displayName": "MiniMax M3 (Ollama Cloud)",
+      "qualityTier": "standard",
+      "baseUrl": "https://ollama.com",
+      "authVar": "OLLAMA_API_KEY",
+      "tiers": {
+        "flagship": "minimax-m3:cloud",
+        "standard": "minimax-m3:cloud",
+        "fast": "minimax-m3:cloud"
+      },
+      "context": 1000000,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "MiniMax M3 on Ollama Cloud (hosted inference). Anthropic Messages API at https://ollama.com; auth via OLLAMA_API_KEY (sent as ANTHROPIC_AUTH_TOKEN). The :cloud suffix is mandatory. M3 listing notes 512K guaranteed / up to 1M; context set to 1M to enable the extended window. Smoke-test the cloud Anthropic base once before relying on it.",
+      "docs": "https://docs.ollama.com/integrations/claude-code"
+    },
     "qwen": {
       "command": "cc-qwen",
-      "displayName": "Qwen3 (Alibaba via OpenRouter)",
+      "displayName": "Qwen3.7 Max (Alibaba via OpenRouter)",
       "qualityTier": "flagship",
       "baseUrl": "https://openrouter.ai/api/v1",
       "authVar": "OPENROUTER_API_KEY",
       "tiers": {
-        "flagship": "qwen/qwen3.6-plus",
+        "flagship": "qwen/qwen3.7-max",
         "standard": "qwen/qwen3-coder",
         "fast": "qwen/qwen3-coder-next"
       },
@@ -146,8 +231,8 @@
       "contextByTier": { "flagship": 1000000, "standard": 262144, "fast": 262144 },
       "timeoutMs": 3000000,
       "disableNonEssential": false,
-      "notes": "Tier contexts differ: only Qwen3.6-Plus (flagship) is 1M; Qwen3-Coder and Qwen3-Coder-Next are 256K each. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 from contextByTier.flagship (see _doc._auto_context). Caveat: /model sonnet|haiku (256K coders) will display 1M but the API will reject prompts beyond 256K — acceptable for opus-primary workflows.",
-      "docs": "https://openrouter.ai/qwen/qwen3.6-plus"
+      "notes": "Tier contexts differ: only Qwen3.7-Max (flagship) is 1M; Qwen3-Coder and Qwen3-Coder-Next are 256K each. The 'context' field shows the safe minimum across tiers. Qwen3.7-Max is the current flagship (released 2026-05-21, supersedes qwen3.6-plus). core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 from contextByTier.flagship (see _doc._auto_context). Caveat: /model sonnet|haiku (256K coders) will display 1M but the API will reject prompts beyond 256K — acceptable for opus-primary workflows.",
+      "docs": "https://openrouter.ai/qwen/qwen3.7-max"
     },
     "xiaomi": {
       "command": "cc-xiaomi",
@@ -187,19 +272,19 @@
     },
     "opencode-minimax": {
       "command": "cc-opencode-minimax",
-      "displayName": "MiniMax M2.7 via OpenCode Go (US endpoint)",
+      "displayName": "MiniMax M3 via OpenCode Go (US endpoint)",
       "qualityTier": "standard",
       "baseUrl": "https://opencode.ai/zen/go",
       "authVar": "OPENCODE_GO_API_KEY",
       "tiers": {
-        "flagship": "minimax-m2.7",
-        "standard": "minimax-m2.7",
-        "fast": "minimax-m2.7"
+        "flagship": "minimax-m3",
+        "standard": "minimax-m3",
+        "fast": "minimax-m3"
       },
       "context": 204800,
       "timeoutMs": 3000000,
       "disableNonEssential": true,
-      "notes": "US-hosted MiniMax via OpenCode Go subscription. Anthropic-format compatible.",
+      "notes": "US-hosted MiniMax M3 via OpenCode Go subscription. Anthropic-format compatible (MiniMax/Qwen route to the Anthropic surface on Go; GLM/Kimi do NOT — they're OpenAI-only there). M3 is natively 1M but OpenCode Go's effective cap is unverified, so context kept conservative at ~200K. For guaranteed 1M MiniMax M3 use cc-minimax (direct) or cc-minimax-or (OpenRouter).",
       "docs": "https://opencode.ai/docs/providers/#opencode-go"
     },
     "owl-alpha": {
@@ -221,19 +306,19 @@
     },
     "zai-glm51": {
       "command": "cc-zai-glm51",
-      "displayName": "Z.AI GLM-5.1 [SLOW — China endpoint]",
+      "displayName": "Z.AI GLM-5.2 [SLOW — China endpoint]",
       "qualityTier": "slow",
       "baseUrl": "https://api.z.ai/api/anthropic",
       "authVar": "ZAI_API_KEY",
       "tiers": {
-        "flagship": "glm-5.1",
-        "standard": "glm-5.1",
-        "fast": "glm-4.5-air"
+        "flagship": "glm-5.2[1m]",
+        "standard": "glm-5.2[1m]",
+        "fast": "glm-4.7"
       },
-      "context": 200000,
+      "context": 1000000,
       "timeoutMs": 3000000,
       "disableNonEssential": false,
-      "notes": "China-based endpoint. Use cc-glm (OpenRouter) instead for the same model with US/EU latency.",
+      "notes": "China-based endpoint. GLM-5.2 with the full 1M window — the [1m] suffix is required on this endpoint (bare glm-5.2 gives the default smaller window). Fast/haiku companion is glm-4.7 (replaces glm-4.5-air). Command is still cc-zai-glm51 for backward compatibility. Use cc-glm (OpenRouter) instead for the same model with US/EU latency.",
       "docs": "https://docs.z.ai/devpack/tool/claude"
     }
   }

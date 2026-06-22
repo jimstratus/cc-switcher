@@ -1,11 +1,11 @@
 # =============================================================================
-# cc-switcher.sh — Claude Code multi-provider launcher (bash port v3.2.0)
+# cc-switcher.sh — Claude Code multi-provider launcher (bash port v3.3.0)
 # This file is sourced into interactive shells: it must not alter shell options
 # (set -e/-u/pipefail would leak into the user's session).
 # =============================================================================
 
 export CCSWITCHER_ROOT="${CCSWITCHER_ROOT:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)}"
-export CCSWITCHER_VERSION="3.2.0"
+export CCSWITCHER_VERSION="3.3.0"
 
 # Load library files in dependency order
 # shellcheck source=lib/core.sh
@@ -40,10 +40,17 @@ cc-xiaomi()         { invoke_cc_provider "xiaomi" "" "$@"; }
 cc-openrouter()     { invoke_cc_openrouter "$@"; }
 cc-opencode()       { invoke_cc_opencode "$@"; }
 cc-opencode-minimax(){ invoke_cc_provider "opencode-minimax" "" "$@"; }
+cc-minimax-or()     { invoke_cc_provider "minimax-or" "" "$@"; }
 cc-codex()          { invoke_cc_codex "$@"; }
 cc-codex-login()    { invoke_cc_codex_login; }
 cc-codex-logout()   { invoke_cc_codex_logout; }
 cc-zai-glm51()      { invoke_cc_provider "zai-glm51" "" "$@"; }
+cc-gemini()         { invoke_cc_provider "gemini" "" "$@"; }
+cc-grok()           { invoke_cc_provider "grok" "" "$@"; }
+cc-nemotron()       { invoke_cc_provider "nemotron" "" "$@"; }
+cc-owl()            { invoke_cc_provider "owl-alpha" "" "$@"; }
+cc-ollama-glm()     { invoke_cc_provider "ollama-glm" "" "$@"; }
+cc-ollama-minimax() { invoke_cc_provider "ollama-minimax" "" "$@"; }
 
 # Utility commands
 cc-launch()         { invoke_cc_launch_menu; }
