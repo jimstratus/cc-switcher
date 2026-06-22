@@ -14,7 +14,8 @@ _cc_check_updated() {
   [[ ! -f "$entry" ]] && return
 
   local current
-  current=$(stat -c %Y "$entry" 2>/dev/null) || return
+  current=$(_cc_mtime "$entry") || return
+  [[ -n "$current" ]] || return
 
   if [[ ! -f "$CC_LAST_LOAD_FILE" ]]; then
     echo "$current" > "$CC_LAST_LOAD_FILE"

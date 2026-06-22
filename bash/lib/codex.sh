@@ -71,8 +71,14 @@ invoke_cc_codex_login() {
     if [[ -n "$access_token" ]] && [[ "$access_token" != "null" ]]; then
       local cache_dir
       cache_dir=$(dirname "$CC_CODEX_TOKEN_CACHE")
+      # OAuth returns expires_in (relative seconds); get_cc_codex_token requires an
+      # absolute expires_at epoch. Derive it, else the fresh token reads as expired.
+      local now expires_at
+      now=$(date +%s)
+      expires_at=$(echo "$token_resp" | jq -r --argjson now "$now" '(.expires_in // 3600) + $now')
       # Bearer token on disk: keep dir and file user-only
-      (umask 077; mkdir -p "$cache_dir"; echo "$token_resp" | jq '.' > "$CC_CODEX_TOKEN_CACHE")
+      (umask 077; mkdir -p "$cache_dir"; echo "$token_resp" \
+        | jq --argjson exp "$expires_at" '. + {expires_at: $exp}' > "$CC_CODEX_TOKEN_CACHE")
       chmod 600 "$CC_CODEX_TOKEN_CACHE" 2>/dev/null || true
       echo "[cc-codex] Login successful."
       return 0

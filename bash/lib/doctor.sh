@@ -66,15 +66,17 @@ test_cc_endpoint() {
   local url="$1"
   local timeout_sec="${2:-5}"
 
-  local start end latency
-  start=$(date +%s%3N)
-  local http_code
-  http_code=$(curl -s -o /dev/null -w "%{http_code}" \
+  # curl reports its own request time portably (%{time_total}, seconds with
+  # decimals) — avoids GNU-only `date +%s%3N`, which macOS/BSD date lacks.
+  local result http_code time_total latency
+  result=$(curl -s -o /dev/null -w "%{http_code} %{time_total}" \
     --max-time "$timeout_sec" \
     --connect-timeout "$timeout_sec" \
-    "$url" 2>/dev/null) || http_code="000"
-  end=$(date +%s%3N)
-  latency=$(( end - start ))
+    "$url" 2>/dev/null) || result="000 0"
+  http_code="${result%% *}"
+  time_total="${result##* }"
+  # seconds.decimals -> integer milliseconds (awk is portable; bc may be absent)
+  latency=$(awk "BEGIN { printf \"%d\", (${time_total:-0}) * 1000 }" 2>/dev/null) || latency=0
 
   if [[ "$http_code" == "000" ]]; then
     echo "unreachable:0:000"

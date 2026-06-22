@@ -2,11 +2,11 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "version": "3.2.0",
   "_doc": {
-    "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1 translates to Claude Code's env var contract.",
+    "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1/core.sh translates to Claude Code's env var contract.",
     "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",
     "qualityTier": "Sort/tag label: flagship | standard | budget | free | slow.",
     "envVars": "Extra ANTHROPIC_* or CLAUDE_CODE_* env vars to set during launch. Applied AFTER the auto-context block so a provider can override the auto-derived values.",
-    "_auto_context": "core.ps1 auto-sets CLAUDE_CODE_MAX_CONTEXT_TOKENS + DISABLE_COMPACT=1 whenever the flagship tier context is >=500K. Threshold cleanly separates 1M-class providers (deepseek, mimo, qwen, xiaomi v2.5-pro) from 256K models (kimi) and 200K models (minimax/glm) where losing auto-compact would be a bad trade. Source: contextByTier.flagship if present, else context. Tradeoff: when flagship/standard are large but fast is small (e.g. mimo flagship 1M / fast 256K), the env var stays at the flagship size for the whole session — /model haiku will display the larger value but the API will reject prompts beyond the fast model's real ceiling. Acceptable for opus-primary workflows. To opt a sub-500K provider in, set envVars explicitly in its block.",
+    "_auto_context": "core.ps1/core.sh auto-sets CLAUDE_CODE_MAX_CONTEXT_TOKENS + DISABLE_COMPACT=1 whenever the flagship tier context is >=500K. Threshold cleanly separates 1M-class providers (deepseek, mimo, qwen, xiaomi v2.5-pro) from 256K models (kimi) and 200K models (minimax/glm) where losing auto-compact would be a bad trade. Source: contextByTier.flagship if present, else context. Tradeoff: when flagship/standard are large but fast is small (e.g. mimo flagship 1M / fast 256K), the env var stays at the flagship size for the whole session — /model haiku will display the larger value but the API will reject prompts beyond the fast model's real ceiling. Acceptable for opus-primary workflows. To opt a sub-500K provider in, set envVars explicitly in its block.",
     "_note_nvidia": "NVIDIA NIM model IDs change frequently — verify at https://build.nvidia.com/explore/discover before relying on a tier mapping.",
     "_tier_mapping": "flagship → /model opus, standard → /model sonnet, fast → /model haiku"
   },
@@ -25,7 +25,7 @@
       "context": 1000000,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "Direct API via Anthropic-native /anthropic endpoint. Only V4 Pro and V4 Flash exist — Standard tier maps to Pro (no middle SKU). All tiers are 1M context. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 from the 1M context (see _doc._auto_context). Tradeoff: no auto-compaction — use /compact manually near the limit.",
+      "notes": "Direct API via Anthropic-native /anthropic endpoint. Only V4 Pro and V4 Flash exist — Standard tier maps to Pro (no middle SKU). All tiers are 1M context. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 from the 1M context (see _doc._auto_context). Tradeoff: no auto-compaction — use /compact manually near the limit.",
       "docs": "https://api-docs.deepseek.com"
     },
     "glm": {
@@ -94,7 +94,7 @@
       "contextByTier": { "flagship": 1048576, "standard": 1048576, "fast": 262144 },
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "Tier contexts differ: flagship/standard are 1M (1024K), V2-Flash (fast tier) is 256K. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship (see _doc._auto_context). Caveat: env var stays at 1M for the whole session, so /model haiku (v2-flash, 256K) will display 1M but the API will reject prompts beyond ~256K — acceptable for opus-primary workflows.",
+      "notes": "Tier contexts differ: flagship/standard are 1M (1024K), V2-Flash (fast tier) is 256K. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship (see _doc._auto_context). Caveat: env var stays at 1M for the whole session, so /model haiku (v2-flash, 256K) will display 1M but the API will reject prompts beyond ~256K — acceptable for opus-primary workflows.",
       "docs": "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
     },
     "nemotron": {
@@ -146,7 +146,7 @@
       "contextByTier": { "flagship": 1000000, "standard": 262144, "fast": 262144 },
       "timeoutMs": 3000000,
       "disableNonEssential": false,
-      "notes": "Tier contexts differ: only Qwen3.6-Plus (flagship) is 1M; Qwen3-Coder and Qwen3-Coder-Next are 256K each. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 from contextByTier.flagship (see _doc._auto_context). Caveat: /model sonnet|haiku (256K coders) will display 1M but the API will reject prompts beyond 256K — acceptable for opus-primary workflows.",
+      "notes": "Tier contexts differ: only Qwen3.6-Plus (flagship) is 1M; Qwen3-Coder and Qwen3-Coder-Next are 256K each. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 from contextByTier.flagship (see _doc._auto_context). Caveat: /model sonnet|haiku (256K coders) will display 1M but the API will reject prompts beyond 256K — acceptable for opus-primary workflows.",
       "docs": "https://openrouter.ai/qwen/qwen3.6-plus"
     },
     "xiaomi": {
@@ -164,7 +164,7 @@
       "contextByTier": { "flagship": 1048576, "standard": 262144, "fast": 262144 },
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "Direct Xiaomi MiMo token-plan endpoint (Singapore region). Anthropic-native, distinct from cc-mimo (OpenRouter). Tier IDs verified 2026-05-09 against /v1/models listing — gateway exposes only mimo-v2.5-pro, mimo-v2.5, and mimo-v2-pro for chat (plus omni/TTS variants not used here). No 'flash' SKU exists on this gateway, so the fast slot maps to the older-gen mimo-v2-pro. Auth uses x-api-key header in Anthropic format. Flagship (mimo-v2.5-pro) is 1M context — confirmed by Ryan 2026-05-09. Standard/fast contexts on this direct gateway are not yet verified, so kept conservative at the 256K floor. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship.",
+      "notes": "Direct Xiaomi MiMo token-plan endpoint (Singapore region). Anthropic-native, distinct from cc-mimo (OpenRouter). Tier IDs verified 2026-05-09 against /v1/models listing — gateway exposes only mimo-v2.5-pro, mimo-v2.5, and mimo-v2-pro for chat (plus omni/TTS variants not used here). No 'flash' SKU exists on this gateway, so the fast slot maps to the older-gen mimo-v2-pro. Auth uses x-api-key header in Anthropic format. Flagship (mimo-v2.5-pro) is 1M context — confirmed by Ryan 2026-05-09. Standard/fast contexts on this direct gateway are not yet verified, so kept conservative at the 256K floor. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship.",
       "docs": "https://xiaomimimo.com"
     },
     "codex": {
