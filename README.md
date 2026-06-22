@@ -15,6 +15,9 @@
    └──────────────────────────────────────────────────────────────┘
 ```
 
+[![CI](https://github.com/jimstratus/cc-switcher/actions/workflows/ci.yml/badge.svg)](https://github.com/jimstratus/cc-switcher/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 > Multi-shell module for launching Claude Code against any Anthropic-compatible LLM provider — DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, and more.
 
 `cc-switcher` flips the `ANTHROPIC_*` environment variables that Claude Code reads on startup, points them at an alternative provider's Anthropic-compatible endpoint, and launches `claude` for you. When the session exits it restores the previous environment, so your shell never gets stuck on a non-default provider.
@@ -37,7 +40,7 @@ flowchart LR
     sw -->|"& claude"| cc["Claude Code"]
     env -.-> cc
     cc -->|"Anthropic API contract"| ep["Provider endpoint<br/>OpenRouter / direct / OAuth"]
-    cc -.->|"+model opus|sonnet|haiku<br/>swaps tier mid-session"| cc
+    cc -.->|"/model opus|sonnet|haiku<br/>swaps tier mid-session"| cc
     sw -.->|"on session exit"| restore["restores prior env"]
 ```
 
@@ -139,7 +142,21 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 | `cc-openrouter <model>` | OpenRouter generic | model passed via arg |
 | `cc-zai-glm51` | Z.AI GLM-5.1 [SLOW — China endpoint] | glm-5.1 / glm-5.1 / glm-4.5-air |
 
-The provider catalog is JSON. Add or change providers by editing `data/providers.json` (PowerShell) or `bash/data/providers.json` (bash) — no script authoring required.
+### Flagship context windows
+
+For providers whose flagship tier is ≥ 500K tokens, `cc-switcher` automatically sets `CLAUDE_CODE_MAX_CONTEXT_TOKENS` (and `DISABLE_COMPACT=1`) so Claude Code exposes the full window:
+
+```mermaid
+xychart-beta
+    title "Flagship-tier context window by provider (K tokens)"
+    x-axis ["mimo", "xiaomi", "deepseek", "qwen", "kimi", "minimax", "opencode-mm", "glm", "codex", "zai-glm51", "nvidia"]
+    y-axis "K tokens" 0 --> 1100
+    bar [1049, 1049, 1000, 1000, 256, 205, 205, 200, 200, 200, 128]
+```
+
+The four 1M-class providers (left) get auto-context; everything at or below 256K keeps Claude Code's auto-compaction instead — see `docs/architecture.md` "Auto-context derivation" for the threshold rationale.
+
+The provider catalog is JSON. Add or change providers by editing `data/providers.json` **and** its synchronized copy `bash/data/providers.json` (CI enforces that the two match) — no script authoring required.
 
 ---
 
@@ -204,6 +221,9 @@ Run `cc-doctor` to verify keys are present and reachable.
 
 ```
 cc-switcher/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                     # CI: bash lint+smoke test, catalog sync, PS parse
 ├── cc-switcher.psd1                    # PowerShell module manifest
 ├── cc-switcher.psm1                    # PowerShell entry point
 ├── bash/
@@ -263,7 +283,8 @@ Runtime caches (`data/.pricing-cache.json`, `data/.usage-log.jsonl`, `bash/data/
 
 - bash 5.0+ or zsh 5.8+
 - [Claude Code](https://docs.anthropic.com/claude/docs/claude-code) installed and on `PATH` as `claude`
-- `curl` (for `cc-doctor` and `cc-pricing`)
+- `jq` (required — all catalog parsing and usage aggregation)
+- `curl` (for `cc-doctor`, `cc-pricing`, and `cc-codex-login`)
 - `sqlite3` (optional, for `cc-usage` enhanced history)
 
 ---
@@ -281,6 +302,8 @@ The version is synced across:
 - PowerShell entry point (`cc-switcher.psm1`)
 - bash entry point (`bash/cc-switcher.sh`)
 - catalog `version` field (`data/providers.json`, `bash/data/providers.json`)
+
+The two catalog copies are also kept content-identical — CI fails when they diverge.
 
 See [CHANGELOG.md](CHANGELOG.md) for the full release history and [GitHub releases](https://github.com/jimstratus/cc-switcher/releases) for downloadable tags.
 

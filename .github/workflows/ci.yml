@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main, bash-port]
+  pull_request:
+
+jobs:
+  bash:
+    name: bash port — lint + smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check
+        run: |
+          for f in bash/cc-switcher.sh bash/lib/*.sh; do
+            bash -n "$f"
+          done
+
+      - name: ShellCheck
+        working-directory: bash
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          # -x follows the sourced lib files; SC2148 (no shebang) is by design
+          # for a module sourced into interactive shells
+          shellcheck -x -S warning -e SC2148 cc-switcher.sh lib/*.sh
+
+      - name: Smoke test (sourced module, mock claude)
+        run: |
+          mkdir -p /tmp/mockbin
+          printf '#!/bin/bash\nexit 0\n' > /tmp/mockbin/claude
+          chmod +x /tmp/mockbin/claude
+          export PATH="/tmp/mockbin:$PATH"
+          bash -c '
+            set -e
+            opts_before="$-"
+            source ./bash/cc-switcher.sh >/dev/null
+            [[ "$-" == "$opts_before" ]] || { echo "FAIL: sourcing changed shell options"; exit 1; }
+            _get_provider_by_id deepseek >/dev/null || { echo "FAIL: provider lookup"; exit 1; }
+            ! _get_provider_by_id nonexistent >/dev/null 2>&1 || { echo "FAIL: unknown provider accepted"; exit 1; }
+            type cc-openrouter >/dev/null || { echo "FAIL: cc-openrouter missing"; exit 1; }
+            complete -p cc-openrouter >/dev/null || { echo "FAIL: completion not registered"; exit 1; }
+            [[ $(list_cc_providers | wc -l) -ge 10 ]] || { echo "FAIL: provider list short"; exit 1; }
+            cc-help | grep -q cc-deepseek || { echo "FAIL: cc-help"; exit 1; }
+            cc-doctor --no-network | grep -q "API keys" || { echo "FAIL: cc-doctor"; exit 1; }
+            unset DEEPSEEK_API_KEY
+            cc-deepseek 2>&1 | grep -q "Auth token is empty" || { echo "FAIL: no-key error path"; exit 1; }
+            export DEEPSEEK_API_KEY=sk-citestkey1234567890
+            export ANTHROPIC_MODEL=original
+            cc-deepseek >/dev/null
+            [[ "$ANTHROPIC_MODEL" == "original" ]] || { echo "FAIL: env not restored"; exit 1; }
+            [[ -z "${ANTHROPIC_BASE_URL:-}" ]] || { echo "FAIL: base url leaked"; exit 1; }
+            echo "smoke test OK"
+          '
+
+      - name: Install layout
+        run: |
+          make -C bash install PREFIX=/tmp/cc-install
+          test -f /tmp/cc-install/cc-switcher.sh
+          test -f /tmp/cc-install/lib/core.sh
+          test -f /tmp/cc-install/data/providers.json
+          bash -c 'source /tmp/cc-install/cc-switcher.sh >/dev/null && _get_provider_by_id deepseek >/dev/null'
+
+  catalog:
+    name: provider catalogs — valid + in sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON
+        run: |
+          jq empty data/providers.json
+          jq empty bash/data/providers.json
+
+      - name: Catalogs in sync
+        run: |
+          diff <(jq -S . data/providers.json) <(jq -S . bash/data/providers.json) \
+            || { echo "::error::data/providers.json and bash/data/providers.json have diverged"; exit 1; }
+
+      - name: Required provider fields present
+        run: |
+          jq -e '
+            .providers | to_entries | all(.value |
+              has("command") and has("displayName") and has("qualityTier") and
+              has("baseUrl") and has("authVar") and
+              (.tiers | has("flagship") and has("standard") and has("fast"))
+            )' data/providers.json >/dev/null
+
+  powershell:
+    name: PowerShell — syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse all .ps1/.psm1/.psd1
+        shell: pwsh
+        run: |
+          $errors = @()
+          Get-ChildItem -Recurse -Include *.ps1, *.psm1 | ForEach-Object {
+            $tokens = $null; $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null
+            if ($parseErrors) { $errors += $parseErrors }
+          }
+          if ($errors) { $errors | ForEach-Object { Write-Error $_.ToString() }; exit 1 }
+          Test-ModuleManifest ./cc-switcher.psd1 | Out-Null

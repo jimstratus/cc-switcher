@@ -79,6 +79,17 @@ get_cc_pricing() {
   printf "%-35s %10s %12s %12s\n" "Model" " \$/1M in" "\$/1M out" "Context"
   echo "----------------------------------------------------------------------"
 
+  # Index the models JSON once: id -> prompt price / completion price / context
+  local -A pp_map=() cp_map=() cl_map=()
+  local mid pp cp cl
+  while IFS=$'\t' read -r mid pp cp cl; do
+    [[ -z "$mid" ]] && continue
+    pp_map["$mid"]="$pp"
+    cp_map["$mid"]="$cp"
+    cl_map["$mid"]="$cl"
+  done < <(echo "$models" \
+    | jq -r '.[] | [.id, (.pricing.prompt // ""), (.pricing.completion // ""), (.context_length // "")] | @tsv' 2>/dev/null)
+
   # Collect slash-model IDs from catalog
   local provider_lines
   provider_lines=$(list_cc_providers 2>/dev/null) || provider_lines=""
@@ -86,7 +97,7 @@ get_cc_pricing() {
 
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    IFS='|' read -r id command display_name quality_tier base_url auth_var flagship standard fast context_flagship timeout_ms disable_noness <<< "$line"
+    IFS='|' read -r _ _ _ _ _ _ flagship standard fast _ _ _ <<< "$line"
 
     for mid in "$flagship" "$standard" "$fast"; do
       # Skip if already shown
@@ -99,28 +110,19 @@ get_cc_pricing() {
       fi
 
       seen_ids=" $seen_ids$mid "
-      local prompt_price comp_price ctx_len
-      prompt_price="-"
-      comp_price="-"
-      ctx_len="-"
+      local prompt_price="-" comp_price="-" ctx_len="-"
 
-      # Extract from models JSON
-      local entry
-      entry=$(echo "$models" | jq -c ".[] | select(.id == \"$mid\")" 2>/dev/null | head -1) || entry=""
-      if [[ -n "$entry" ]]; then
-        local pp cp cl
-        pp=$(echo "$entry" | jq -r '.pricing.prompt // empty')
-        cp=$(echo "$entry" | jq -r '.pricing.completion // empty')
-        cl=$(echo "$entry" | jq -r '.context_length // empty')
-        if [[ -n "$pp" ]] && [[ "$pp" != "null" ]]; then
-          prompt_price=$(printf "%.2f" "$(awk "BEGIN {print $pp * 1e6}")" 2>/dev/null) || prompt_price="$pp"
-        fi
-        if [[ -n "$cp" ]] && [[ "$cp" != "null" ]]; then
-          comp_price=$(printf "%.2f" "$(awk "BEGIN {print $cp * 1e6}")" 2>/dev/null) || comp_price="$cp"
-        fi
-        if [[ -n "$cl" ]] && [[ "$cl" != "null" ]]; then
-          ctx_len=$(printf "%d" "$cl" 2>/dev/null) || ctx_len="$cl"
-        fi
+      pp="${pp_map[$mid]:-}"
+      cp="${cp_map[$mid]:-}"
+      cl="${cl_map[$mid]:-}"
+      if [[ -n "$pp" ]] && [[ "$pp" != "null" ]]; then
+        prompt_price=$(awk -v p="$pp" 'BEGIN {printf "%.2f", p * 1e6}' 2>/dev/null) || prompt_price="$pp"
+      fi
+      if [[ -n "$cp" ]] && [[ "$cp" != "null" ]]; then
+        comp_price=$(awk -v p="$cp" 'BEGIN {printf "%.2f", p * 1e6}' 2>/dev/null) || comp_price="$cp"
+      fi
+      if [[ -n "$cl" ]] && [[ "$cl" != "null" ]]; then
+        ctx_len="$cl"
       fi
 
       printf "%-35s %10s %12s %12s\n" "$mid" "$prompt_price" "$comp_price" "$ctx_len"

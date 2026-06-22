@@ -3,8 +3,6 @@
 # Validates API keys exist, format-checks them, optionally pings endpoints.
 # =============================================================================
 
-set -euo pipefail
-
 #------------------------------------------------------------------------------
 # test-cc-api-key — check a single API key
 # Returns: "ok|malformed|missing|len=<n>|prefix=..."
@@ -102,19 +100,7 @@ invoke_cc_doctor() {
   echo " API keys "
   echo "----------------------------------------------------------------------"
 
-  local keys=(
-    "OPENROUTER_API_KEY"
-    "DEEPSEEK_API_KEY"
-    "MINIMAX_API_KEY"
-    "NVIDIA_API_KEY"
-    "OPENCODE_GO_API_KEY"
-    "ZAI_API_KEY"
-    "KIMI_API_KEY"
-    "XIAOMI_API_KEY"
-    "ANTHROPIC_API_KEY"
-  )
-
-  for k in "${keys[@]}"; do
+  for k in "${_CC_API_KEY_VARS[@]}"; do
     local result detail
     result=$(test_cc_api_key "$k")
     IFS=':' read -r status len prefix <<< "$result"
@@ -150,15 +136,17 @@ invoke_cc_doctor() {
 
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    IFS='|' read -r id command display_name quality_tier base_url auth_var flagship standard fast context_flagship timeout_ms disable_noness <<< "$line"
+    IFS='|' read -r _ command _ _ base_url auth_var _ _ _ _ _ _ <<< "$line"
 
     # Check if we have auth for this provider
     local has_key=false
     if [[ "$auth_var" == "_codex_oauth_token" ]]; then
-      # Special case: codex uses OAuth
-      has_key=$(get_cc_codex_token >/dev/null 2>&1 && echo true || echo false)
+      # Special case: codex uses OAuth — valid only if a non-expired token exists
+      local tok
+      tok=$(get_cc_codex_token 2>/dev/null)
+      [[ -n "$tok" ]] && has_key=true
     elif [[ -n "$auth_var" ]]; then
-      local val="${!auth_var}"
+      local val="${!auth_var:-}"
       [[ -n "$val" ]] && has_key=true
     fi
 

@@ -14,7 +14,7 @@ The Cohere example below is catalog-only.
 
 ## Step 1 — add a catalog entry
 
-Edit `data/providers.json`. Add a new key under `"providers"`:
+Edit `data/providers.json` **and make the identical edit in `bash/data/providers.json`** — CI fails the build when the two copies diverge. Add a new key under `"providers"`:
 
 ```json
 "cohere": {
@@ -45,7 +45,15 @@ Field reference: `docs/catalog-schema.md`. Quick checklist:
 
 ## Step 2 — register the alias and wrapper
 
-Two lines, one in each file.
+PowerShell needs two lines (one per file); bash needs one.
+
+**`bash/cc-switcher.sh`** — add one line to the alphabetical alias block (around line 32). The function name must equal the catalog's `command` field, because the `cc-launch` menu dispatches by invoking it:
+
+```bash
+cc-cohere()         { invoke_cc_provider "cohere" "" "$@"; }
+```
+
+That's the entire bash side — completion, menu, doctor, and help all read the catalog at runtime.
 
 **`lib/providers.ps1`** — add a one-line wrapper alongside the others (the existing block runs alphabetically by id around line 105):
 
@@ -115,13 +123,31 @@ $env:COHERE_API_KEY = '<your-real-key>'
 cc-cohere --version    # Claude Code prints version then exits
 ```
 
+**Bash verification** (same idea, stubbed `claude` on `PATH`):
+
+```bash
+mkdir -p /tmp/mockbin
+printf '#!/bin/bash\necho "URL=$ANTHROPIC_BASE_URL OPUS=$ANTHROPIC_DEFAULT_OPUS_MODEL"\n' > /tmp/mockbin/claude
+chmod +x /tmp/mockbin/claude
+
+PATH="/tmp/mockbin:$PATH" bash -c '
+  source ./bash/cc-switcher.sh >/dev/null
+  export COHERE_API_KEY=sk-test-fake-key-1234567890
+  cc-cohere      # expect: URL=https://api.cohere.com/anthropic OPUS=command-r-plus
+  cc-status      # expect: ANTHROPIC_BASE_URL = (unset — Anthropic default)
+'
+```
+
+CI runs the equivalent smoke test plus `shellcheck` and the catalog-sync check on every PR, so a `make -C bash install`-level mistake is caught before merge.
+
 ## Step 5 — update CHANGELOG and docs
 
 Bump version per semver (a new provider is MINOR per `README.md` "Versioning"):
 
 - `cc-switcher.psd1` → `ModuleVersion = '3.2.0'`
 - `cc-switcher.psm1` → `$script:CCSwitcherVersion = '3.2.0'`
-- `data/providers.json` → top-level `"version": "3.2.0"`
+- `bash/cc-switcher.sh` → `CCSWITCHER_VERSION="3.2.0"`
+- `data/providers.json` and `bash/data/providers.json` → top-level `"version": "3.2.0"`
 
 Add an entry to `CHANGELOG.md` under the latest unreleased section (or create a `## 3.2.0 — YYYY-MM-DD` heading):
 

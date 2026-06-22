@@ -4,7 +4,7 @@ Thanks for your interest in `cc-switcher`. This module is small enough that the 
 
 ## Adding or updating a provider
 
-**TL;DR:** the provider catalog lives in `data/providers.json`. Append a new key under `"providers"` with the same shape as the existing entries (see `_doc` at the top of the file for field semantics). No PowerShell changes needed for the common case — the dispatcher in `lib/providers.ps1` reads the catalog at runtime. If you need a new public command (alias), add a thin wrapper in `lib/providers.ps1`, a `Set-Alias` line in `cc-switcher.psm1`, and entries in `cc-switcher.psd1`'s `FunctionsToExport` / `AliasesToExport`.
+**TL;DR:** the provider catalog lives in `data/providers.json`, with a synchronized copy at `bash/data/providers.json` (CI fails if they diverge — edit both). Append a new key under `"providers"` with the same shape as the existing entries (see `_doc` at the top of the file for field semantics). No script changes needed for the common case — both dispatchers read the catalog at runtime. For a new public command: PowerShell needs a thin wrapper in `lib/providers.ps1`, a `Set-Alias` line in `cc-switcher.psm1`, and entries in `cc-switcher.psd1`'s `FunctionsToExport` / `AliasesToExport`; bash needs one line in `bash/cc-switcher.sh`'s alias block.
 
 For the deep walkthrough — including a worked `cohere` example, the verification recipe, and common pitfalls — see [`docs/adding-a-provider.md`](docs/adding-a-provider.md). Field-by-field catalog reference is in [`docs/catalog-schema.md`](docs/catalog-schema.md).
 
@@ -17,6 +17,10 @@ Before opening a PR:
    Remove-Module cc-switcher -ErrorAction SilentlyContinue
    Import-Module .\cc-switcher.psd1
    ```
+   ```bash
+   # bash port
+   source ./bash/cc-switcher.sh
+   ```
 2. Run the health check:
    ```powershell
    cc-doctor
@@ -26,6 +30,12 @@ Before opening a PR:
    ```powershell
    cc-<your-provider> --version    # Claude Code prints version then exits
    ```
+4. For bash changes, lint locally — CI gates on it:
+   ```bash
+   (cd bash && shellcheck -x -S warning -e SC2148 cc-switcher.sh lib/*.sh)
+   ```
+
+CI (`.github/workflows/ci.yml`) runs on every PR: bash syntax + shellcheck + a sourced-module smoke test with a stubbed `claude`, `make install` layout verification, catalog validation and cross-copy sync, and a PowerShell parse/manifest check.
 
 ## Issues and PRs
 

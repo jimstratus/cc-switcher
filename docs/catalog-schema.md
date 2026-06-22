@@ -1,12 +1,12 @@
 # Catalog schema
 
-Reference for `data/providers.json`. Edit this file to add, remove, or reconfigure providers — no PowerShell changes needed for the common case.
+Reference for `data/providers.json`. Edit this file to add, remove, or reconfigure providers — no script changes needed for the common case. Both implementations consume the same schema: `Invoke-CCProvider` (`lib/providers.ps1`) and `invoke_cc_provider` (`bash/lib/providers.sh`).
 
 ## File location and version
 
-- **Path:** `data/providers.json`
-- **Top-level `version`** (string): tracks schema + content revisions. Bumped whenever the file changes meaningfully. Currently `"3.1.0"`. Must move in lockstep with `cc-switcher.psd1`'s `ModuleVersion` and `cc-switcher.psm1`'s `$script:CCSwitcherVersion`.
-- **Schema reference**: `"$schema": "https://json-schema.org/draft-07/schema#"` (advisory; no formal JSON Schema is published).
+- **Path:** `data/providers.json` (PowerShell) and `bash/data/providers.json` (bash). The two copies must stay in sync — CI's "catalogs in sync" job diffs them and fails the build on divergence. Edit both in the same commit.
+- **Top-level `version`** (string): tracks schema + content revisions. Bumped whenever the file changes meaningfully. Currently `"3.1.0"`. Must move in lockstep with `cc-switcher.psd1`'s `ModuleVersion`, `cc-switcher.psm1`'s `$script:CCSwitcherVersion`, and `bash/cc-switcher.sh`'s `CCSWITCHER_VERSION`.
+- **Schema reference**: `"$schema": "https://json-schema.org/draft-07/schema#"` (advisory; no formal JSON Schema is published, but CI validates JSON well-formedness and the mandatory provider fields).
 
 ## Top-level structure
 
@@ -32,7 +32,7 @@ Every field below appears under one provider key in `providers`. Mandatory field
 
 ### `command` *(mandatory)*
 
-The alias name registered in `cc-switcher.psm1` for this provider. By convention `cc-<id>`, but free-form. Example: `"cc-deepseek"`. Matches the alias declared in `Set-Alias -Name cc-deepseek` in the psm1.
+The user-facing command name for this provider. By convention `cc-<id>`, but free-form. Example: `"cc-deepseek"`. In PowerShell it matches the alias declared via `Set-Alias` in the psm1; in bash it is the literal function name defined in `bash/cc-switcher.sh` — the `cc-launch` menu dispatches by invoking this name directly, so the function must exist for menu selection to work.
 
 ### `displayName`
 

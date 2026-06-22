@@ -3,8 +3,6 @@
 # Token cached at ~/.config/codex-oauth/token.json
 # =============================================================================
 
-set -euo pipefail
-
 CC_CODEX_TOKEN_CACHE="${HOME}/.config/codex-oauth/token.json"
 
 #------------------------------------------------------------------------------
@@ -19,7 +17,8 @@ get_cc_codex_token() {
   access_token=$(jq -r '.access_token // empty' "$CC_CODEX_TOKEN_CACHE" 2>/dev/null) || return 0
   expires_at=$(jq -r '.expires_at // empty' "$CC_CODEX_TOKEN_CACHE" 2>/dev/null) || return 0
   now=$(date +%s)
-  if [[ -z "$access_token" ]] || [[ -n "$expires_at" ]] && (( expires_at <= now )); then
+  # Token is valid only with a numeric, future expires_at (matches Get-CC-CodexToken)
+  if [[ -z "$access_token" ]] || ! [[ "$expires_at" =~ ^[0-9]+$ ]] || (( expires_at <= now )); then
     echo ""
     return 0
   fi
@@ -72,8 +71,9 @@ invoke_cc_codex_login() {
     if [[ -n "$access_token" ]] && [[ "$access_token" != "null" ]]; then
       local cache_dir
       cache_dir=$(dirname "$CC_CODEX_TOKEN_CACHE")
-      mkdir -p "$cache_dir"
-      echo "$token_resp" | jq '.' > "$CC_CODEX_TOKEN_CACHE"
+      # Bearer token on disk: keep dir and file user-only
+      (umask 077; mkdir -p "$cache_dir"; echo "$token_resp" | jq '.' > "$CC_CODEX_TOKEN_CACHE")
+      chmod 600 "$CC_CODEX_TOKEN_CACHE" 2>/dev/null || true
       echo "[cc-codex] Login successful."
       return 0
     fi

@@ -14,16 +14,18 @@ SRC_DIR := $(shell pwd)
 INSTALL_DIR := $(DESTDIR)$(PREFIX)
 SYSTEM_INSTALL_DIR := $(DESTDIR)$(SYSTEM_PREFIX)/etc/cc-switcher
 
-INSTALL_FILES := $(SRC_DIR)/cc-switcher.sh \
-	$(SRC_DIR)/lib/core.sh \
+LIB_FILES := $(SRC_DIR)/lib/core.sh \
 	$(SRC_DIR)/lib/providers.sh \
 	$(SRC_DIR)/lib/codex.sh \
 	$(SRC_DIR)/lib/pricing.sh \
 	$(SRC_DIR)/lib/doctor.sh \
 	$(SRC_DIR)/lib/completers.sh \
 	$(SRC_DIR)/lib/usage.sh \
-	$(SRC_DIR)/lib/update-check.sh \
-	$(SRC_DIR)/data/providers.json
+	$(SRC_DIR)/lib/update-check.sh
+
+DATA_FILES := $(SRC_DIR)/data/providers.json
+
+INSTALL_FILES := $(SRC_DIR)/cc-switcher.sh $(LIB_FILES) $(DATA_FILES)
 
 # =============================================================================
 # Help
@@ -46,7 +48,9 @@ install: $(INSTALL_FILES)
 	@mkdir -p "$(INSTALL_DIR)"
 	@mkdir -p "$(INSTALL_DIR)/lib"
 	@mkdir -p "$(INSTALL_DIR)/data"
-	@cp $(INSTALL_FILES) "$(INSTALL_DIR)/"
+	@cp $(SRC_DIR)/cc-switcher.sh "$(INSTALL_DIR)/"
+	@cp $(LIB_FILES) "$(INSTALL_DIR)/lib/"
+	@cp $(DATA_FILES) "$(INSTALL_DIR)/data/"
 	@echo "Installed. Add to ~/.bashrc:"
 	@echo ""
 	@echo "  # Source cc-switcher"
@@ -65,7 +69,9 @@ install-system: $(INSTALL_FILES)
 	@echo "Installing cc-switcher to $(SYSTEM_INSTALL_DIR) ..."
 	@mkdir -p "$(SYSTEM_INSTALL_DIR)/lib"
 	@mkdir -p "$(SYSTEM_INSTALL_DIR)/data"
-	@cp $(INSTALL_FILES) "$(SYSTEM_INSTALL_DIR)/"
+	@cp $(SRC_DIR)/cc-switcher.sh "$(SYSTEM_INSTALL_DIR)/"
+	@cp $(LIB_FILES) "$(SYSTEM_INSTALL_DIR)/lib/"
+	@cp $(DATA_FILES) "$(SYSTEM_INSTALL_DIR)/data/"
 	@echo "Installed system-wide. Ensure /etc/profile.d/cc-switcher.sh exists:"
 	@echo ""
 	@echo "  # /etc/profile.d/cc-switcher.sh"
