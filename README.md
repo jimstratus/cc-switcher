@@ -10,7 +10,7 @@
    │   ╚██████╗╚██████╗       ███████║╚███╔███╔╝     ↳ any LLM    │
    │    ╚═════╝ ╚═════╝       ╚══════╝ ╚══╝╚══╝                   │
    │                                                              │
-   │    cc-switcher · v3.1.0  (PowerShell + Bash)                │
+   │    cc-switcher · v3.2.0  (PowerShell + Bash)                │
    │                                                              │
    └──────────────────────────────────────────────────────────────┘
 ```
@@ -26,7 +26,7 @@ Available for both **PowerShell** (Windows/macOS) and **bash/zsh** (Linux/macOS)
 
 It also tracks token usage per session, caches OpenRouter pricing, ships a doctor command for health checks, and provides tab completion for OpenRouter / OpenCode Go / NVIDIA NIM model IDs.
 
-> First public release. Versions before 3.1.0 are summarized in `CHANGELOG.md`; this is the first cut with full git history.
+> Current release. Versions before 3.1.0 are summarized in `CHANGELOG.md`; public history starts at 3.1.0.
 
 ---
 

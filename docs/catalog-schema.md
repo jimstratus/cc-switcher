@@ -5,7 +5,7 @@ Reference for `data/providers.json`. Edit this file to add, remove, or reconfigu
 ## File location and version
 
 - **Path:** `data/providers.json` (PowerShell) and `bash/data/providers.json` (bash). The two copies must stay in sync — CI's "catalogs in sync" job diffs them and fails the build on divergence. Edit both in the same commit.
-- **Top-level `version`** (string): tracks schema + content revisions. Bumped whenever the file changes meaningfully. Currently `"3.1.0"`. Must move in lockstep with `cc-switcher.psd1`'s `ModuleVersion`, `cc-switcher.psm1`'s `$script:CCSwitcherVersion`, and `bash/cc-switcher.sh`'s `CCSWITCHER_VERSION`.
+- **Top-level `version`** (string): tracks schema + content revisions. Bumped whenever the file changes meaningfully. Currently `"3.2.0"`. Must move in lockstep with `cc-switcher.psd1`'s `ModuleVersion`, `cc-switcher.psm1`'s `$script:CCSwitcherVersion`, and `bash/cc-switcher.sh`'s `CCSWITCHER_VERSION`.
 - **Schema reference**: `"$schema": "https://json-schema.org/draft-07/schema#"` (advisory; no formal JSON Schema is published, but CI validates JSON well-formedness and the mandatory provider fields).
 
 ## Top-level structure
@@ -13,7 +13,7 @@ Reference for `data/providers.json`. Edit this file to add, remove, or reconfigu
 ```json
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "_doc": { ... },
   "providers": {
     "<id>": { <provider definition> },

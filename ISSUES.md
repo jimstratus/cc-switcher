@@ -46,13 +46,15 @@ recognize, and the fix requires two env vars set together: `CLAUDE_CODE_MAX_CONT
 plus `DISABLE_COMPACT=1` (`MAX_CONTEXT_TOKENS` only takes effect when
 `DISABLE_COMPACT` is also set, per Claude Code's docs).
 
-**As of v3.1.0, `cc-switcher` auto-derives both env vars** when a provider's
+**As of v3.2.0, `cc-switcher` auto-derives both env vars** when a provider's
 flagship-tier context is `>= 500000`. No catalog edit required for these:
 
 | Provider | Auto-applied? | Flagship context |
 |---|:---:|---|
 | `cc-deepseek` (V4 Pro) | yes | 1M (uniform across tiers) |
 | `cc-mimo` (MiMo V2.5-Pro on OpenRouter) | yes | 1M (flagship/standard) |
+| `cc-nemotron` (Nemotron 3 Super) | yes | 1M (uniform across tiers) |
+| `cc-owl` (Owl Alpha) | yes | 1M (uniform across tiers) |
 | `cc-qwen` (Qwen3.6-Plus on OpenRouter) | yes | 1M (flagship only) |
 | `cc-xiaomi` (MiMo V2.5-Pro direct SGP) | yes | 1M (flagship only) |
 | `cc-minimax` (M2.7) | no | ~200K (auto-derive does not trigger) |
@@ -127,3 +129,25 @@ port restores after `claude` returns on the normal path; a `Ctrl+C` that kills
 the launching *function* itself (rare — `claude` normally receives the signal)
 can skip restore. If `cc-status` shows a provider URL after a session ended,
 run `cc-reset`.
+
+---
+
+## Owl Alpha — intermittent at peak times
+
+Owl Alpha (`cc-owl`, `openrouter/owl-alpha`) is a FREE cloaked model on
+OpenRouter's Stealth provider. Direct API testing (2026-05-26) confirms:
+
+- Anthropic Messages API: working (200 OK, proper format)
+- Tool calling: working (correct `tool_use` blocks)
+- Full agent loop (tool_use → tool_result → answer): working
+- 8-tool complex schema: working
+
+However, the model can fail intermittently due to free-tier rate limits and
+provider load. Usage log shows both successful (24-turn May 17, 739-turn
+May 26) and failed (0-turn May 3) sessions.
+
+**Workaround:** Retry if first launch errors. If it consistently fails,
+switch to a paid provider like `cc-mimo` or `cc-deepseek` for the session.
+
+**Privacy note:** Prompts and completions may be logged by the Stealth
+provider for model improvement.
