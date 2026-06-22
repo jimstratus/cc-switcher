@@ -43,6 +43,16 @@ function Invoke-CC-Launch-Menu {
         $i++
     }
     Write-Host ""
+    Write-Host " Recommended OpenRouter models (for [O] custom) " -ForegroundColor DarkYellow
+    Write-Host ("-" * 78) -ForegroundColor DarkYellow
+    Write-Host "  FREE 1M:  openrouter/owl-alpha" -ForegroundColor DarkGray
+    Write-Host "  FREE 1M:  nvidia/nemotron-3-super-120b-a12b:free" -ForegroundColor DarkGray
+    Write-Host "  FREE 1M:  google/lyria-3-pro-preview" -ForegroundColor DarkGray
+    Write-Host "  FREE 1M:  deepseek/deepseek-v4-flash:free" -ForegroundColor DarkGray
+    Write-Host "  10M ctx:  meta-llama/llama-4-scout (free)" -ForegroundColor DarkGray
+    Write-Host "  1M fast:  qwen/qwen3.6-flash (\$0.19/\$1.12)" -ForegroundColor DarkGray
+    Write-Host "  1M pro:   anthropic/claude-sonnet-4.6 (\$3/\$15)  x-ai/grok-4.20 (\$1.25/\$2.5)" -ForegroundColor DarkGray
+    Write-Host ""
     Write-Host "  [P]  Pricing table     [D]  Doctor     [U]  Usage" -ForegroundColor Cyan
     Write-Host "  [O]  Custom OpenRouter model     [N]  Custom NVIDIA model" -ForegroundColor Cyan
     Write-Host "  [R]  Reset (back to native Anthropic)         [Q]  Quit" -ForegroundColor DarkGray

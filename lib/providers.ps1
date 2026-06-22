@@ -111,6 +111,8 @@ function Invoke-CC-Qwen        { param([string[]]$ClaudeArgs) Invoke-CCProvider 
 function Invoke-CC-Xiaomi      { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'xiaomi' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-ZAI-GLM51   { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'zai-glm51' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-OpenCode-MiniMax { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'opencode-minimax' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-Owl-Alpha  { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'owl-alpha' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-Nemotron   { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'nemotron' -ClaudeArgs $ClaudeArgs }
 
 # NVIDIA: tier mapping by default, optional model override
 function Invoke-CC-Nvidia {

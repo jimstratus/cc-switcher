@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "louvain",
+  "totalFiles": 21,
+  "totalBatches": 4,
+  "exportsByPath": {},
+  "batches": [
+    {
+      "batchIndex": 1,
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "language": "markdown",
+          "sizeLines": 161,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "CHANGELOG.md",
+          "language": "markdown",
+          "sizeLines": 247,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "CONTRIBUTING.md",
+          "language": "markdown",
+          "sizeLines": 38,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "ISSUES.md",
+          "language": "markdown",
+          "sizeLines": 115,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "README.md",
+          "language": "markdown",
+          "sizeLines": 227,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "cc-switcher.psd1",
+          "language": "powershell",
+          "sizeLines": 32,
+          "fileCategory": "script"
+        },
+        {
+          "path": "cc-switcher.psm1",
+          "language": "powershell",
+          "sizeLines": 135,
+          "fileCategory": "script"
+        }
+      ],
+      "batchImportData": {
+        "AGENTS.md": [],
+        "CHANGELOG.md": [],
+        "CONTRIBUTING.md": [],
+        "ISSUES.md": [],
+        "README.md": [],
+        "cc-switcher.psd1": [],
+        "cc-switcher.psm1": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 2,
+      "files": [
+        {
+          "path": "docs/adding-a-provider.md",
+          "language": "markdown",
+          "sizeLines": 150,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "docs/architecture.md",
+          "language": "markdown",
+          "sizeLines": 173,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "docs/catalog-schema.md",
+          "language": "markdown",
+          "sizeLines": 234,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "docs/adding-a-provider.md": [],
+        "docs/architecture.md": [],
+        "docs/catalog-schema.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 3,
+      "files": [
+        {
+          "path": "lib/codex.ps1",
+          "language": "powershell",
+          "sizeLines": 73,
+          "fileCategory": "script"
+        },
+        {
+          "path": "lib/completers.ps1",
+          "language": "powershell",
+          "sizeLines": 55,
+          "fileCategory": "script"
+        },
+        {
+          "path": "lib/core.ps1",
+          "language": "powershell",
+          "sizeLines": 198,
+          "fileCategory": "script"
+        },
+        {
+          "path": "lib/doctor.ps1",
+          "language": "powershell",
+          "sizeLines": 101,
+          "fileCategory": "script"
+        },
+        {
+          "path": "lib/picker.ps1",
+          "language": "powershell",
+          "sizeLines": 101,
+          "fileCategory": "script"
+        },
+        {
+          "path": "lib/pricing.ps1",
+          "language": "powershell",
+          "sizeLines": 86,
+          "fileCategory": "script"
+        },
+        {
+          "path": "lib/providers.ps1",
+          "language": "powershell",
+          "sizeLines": 150,
+          "fileCategory": "script"
+        },
+        {
+          "path": "lib/update-check.ps1",
+          "language": "powershell",
+          "sizeLines": 24,
+          "fileCategory": "script"
+        },
+        {
+          "path": "lib/usage.ps1",
+          "language": "powershell",
+          "sizeLines": 116,
+          "fileCategory": "script"
+        }
+      ],
+      "batchImportData": {
+        "lib/codex.ps1": [],
+        "lib/completers.ps1": [],
+        "lib/core.ps1": [],
+        "lib/doctor.ps1": [],
+        "lib/picker.ps1": [],
+        "lib/pricing.ps1": [],
+        "lib/providers.ps1": [],
+        "lib/update-check.ps1": [],
+        "lib/usage.ps1": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 4,
+      "files": [
+        {
+          "path": ".understand-anything/config.json",
+          "language": "json",
+          "sizeLines": 1,
+          "fileCategory": "config"
+        },
+        {
+          "path": "data/providers.json",
+          "language": "json",
+          "sizeLines": 206,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        ".understand-anything/config.json": [],
+        "data/providers.json": []
+      },
+      "neighborMap": {}
+    }
+  ]
+}

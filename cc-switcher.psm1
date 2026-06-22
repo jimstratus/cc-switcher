@@ -1,11 +1,11 @@
 # =============================================================================
 # cc-switcher.psm1 — Claude Code multi-provider launcher
-# Version 3.1.0 — single source of truth: $script:CCSwitcherVersion below.
+# Version 3.2.0 — single source of truth: $script:CCSwitcherVersion below.
 # Repo: https://github.com/jimstratus/cc-switcher
 # =============================================================================
 
 $script:CCSwitcherRoot = $PSScriptRoot
-$script:CCSwitcherVersion = '3.1.0'
+$script:CCSwitcherVersion = '3.2.0'
 
 # Load lib files in dependency order. Tiny files — total parse <50ms.
 . (Join-Path $PSScriptRoot 'lib\core.ps1')
@@ -27,6 +27,7 @@ Set-Alias -Name cc-glm               -Value Invoke-CC-Glm
 Set-Alias -Name cc-kimi              -Value Invoke-CC-Kimi
 Set-Alias -Name cc-minimax           -Value Invoke-CC-MiniMax
 Set-Alias -Name cc-mimo              -Value Invoke-CC-MiMo
+Set-Alias -Name cc-nemotron          -Value Invoke-CC-Nemotron
 Set-Alias -Name cc-nvidia            -Value Invoke-CC-Nvidia
 Set-Alias -Name cc-qwen              -Value Invoke-CC-Qwen
 Set-Alias -Name cc-xiaomi            -Value Invoke-CC-Xiaomi
@@ -36,6 +37,7 @@ Set-Alias -Name cc-codex-logout      -Value Invoke-CC-Codex-Logout
 Set-Alias -Name cc-opencode          -Value Invoke-CC-OpenCode
 Set-Alias -Name cc-opencode-minimax  -Value Invoke-CC-OpenCode-MiniMax
 Set-Alias -Name cc-openrouter        -Value Invoke-CC-OpenRouter
+Set-Alias -Name cc-owl               -Value Invoke-CC-Owl-Alpha
 Set-Alias -Name cc-zai-glm51         -Value Invoke-CC-ZAI-GLM51
 
 # Utility commands

@@ -1,0 +1,147 @@
+{
+  "scriptCompleted": true,
+  "files": [
+    {
+      "path": ".understand-anything/config.json",
+      "language": "json",
+      "sizeLines": 1,
+      "fileCategory": "config"
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 161,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "cc-switcher.psd1",
+      "language": "powershell",
+      "sizeLines": 32,
+      "fileCategory": "script"
+    },
+    {
+      "path": "cc-switcher.psm1",
+      "language": "powershell",
+      "sizeLines": 135,
+      "fileCategory": "script"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "language": "markdown",
+      "sizeLines": 247,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "language": "markdown",
+      "sizeLines": 38,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "data/providers.json",
+      "language": "json",
+      "sizeLines": 206,
+      "fileCategory": "config"
+    },
+    {
+      "path": "docs/adding-a-provider.md",
+      "language": "markdown",
+      "sizeLines": 150,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/architecture.md",
+      "language": "markdown",
+      "sizeLines": 173,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/catalog-schema.md",
+      "language": "markdown",
+      "sizeLines": 234,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "ISSUES.md",
+      "language": "markdown",
+      "sizeLines": 115,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "lib/codex.ps1",
+      "language": "powershell",
+      "sizeLines": 73,
+      "fileCategory": "script"
+    },
+    {
+      "path": "lib/completers.ps1",
+      "language": "powershell",
+      "sizeLines": 55,
+      "fileCategory": "script"
+    },
+    {
+      "path": "lib/core.ps1",
+      "language": "powershell",
+      "sizeLines": 198,
+      "fileCategory": "script"
+    },
+    {
+      "path": "lib/doctor.ps1",
+      "language": "powershell",
+      "sizeLines": 101,
+      "fileCategory": "script"
+    },
+    {
+      "path": "lib/picker.ps1",
+      "language": "powershell",
+      "sizeLines": 101,
+      "fileCategory": "script"
+    },
+    {
+      "path": "lib/pricing.ps1",
+      "language": "powershell",
+      "sizeLines": 86,
+      "fileCategory": "script"
+    },
+    {
+      "path": "lib/providers.ps1",
+      "language": "powershell",
+      "sizeLines": 150,
+      "fileCategory": "script"
+    },
+    {
+      "path": "lib/update-check.ps1",
+      "language": "powershell",
+      "sizeLines": 24,
+      "fileCategory": "script"
+    },
+    {
+      "path": "lib/usage.ps1",
+      "language": "powershell",
+      "sizeLines": 116,
+      "fileCategory": "script"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 227,
+      "fileCategory": "docs"
+    }
+  ],
+  "totalFiles": 21,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "small",
+  "stats": {
+    "filesScanned": 21,
+    "byCategory": {
+      "config": 2,
+      "docs": 8,
+      "script": 11
+    },
+    "byLanguage": {
+      "json": 2,
+      "markdown": 8,
+      "powershell": 11
+    }
+  }
+}

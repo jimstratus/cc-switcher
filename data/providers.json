@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "_doc": {
     "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1 translates to Claude Code's env var contract.",
     "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",
@@ -97,6 +97,23 @@
       "notes": "Tier contexts differ: flagship/standard are 1M (1024K), V2-Flash (fast tier) is 256K. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1 auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship (see _doc._auto_context). Caveat: env var stays at 1M for the whole session, so /model haiku (v2-flash, 256K) will display 1M but the API will reject prompts beyond ~256K — acceptable for opus-primary workflows.",
       "docs": "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
     },
+    "nemotron": {
+      "command": "cc-nemotron",
+      "displayName": "NVIDIA Nemotron 3 Super FREE (OpenRouter)",
+      "qualityTier": "free",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "nvidia/nemotron-3-super-120b-a12b:free",
+        "standard": "nvidia/nemotron-3-super-120b-a12b:free",
+        "fast": "nvidia/nemotron-3-super-120b-a12b:free"
+      },
+      "context": 1048576,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "FREE via OpenRouter. 120B hybrid MoE (Mamba+Transformer), 12B active. 50%+ faster than transformer-only models. Multi-agent applications, cross-document reasoning. cc-nvidia (direct API) is separate — this is the OpenRouter-hosted free tier.",
+      "docs": "https://openrouter.ai/nvidia/nemotron-3-super-120b-a12b:free"
+    },
     "nvidia": {
       "command": "cc-nvidia",
       "displayName": "NVIDIA NIM (free)",
@@ -184,6 +201,23 @@
       "disableNonEssential": true,
       "notes": "US-hosted MiniMax via OpenCode Go subscription. Anthropic-format compatible.",
       "docs": "https://opencode.ai/docs/providers/#opencode-go"
+    },
+    "owl-alpha": {
+      "command": "cc-owl",
+      "displayName": "Owl Alpha FREE (OpenRouter Stealth)",
+      "qualityTier": "free",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "openrouter/owl-alpha",
+        "standard": "openrouter/owl-alpha",
+        "fast": "openrouter/owl-alpha"
+      },
+      "context": 1048576,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "FREE cloaked alpha model, 1M context, agentic-optimized. Tool calling verified working via Anthropic Messages API (2026-05-26). Stealth provider — prompts/completions may be logged. Intermittent at peak times; retry if first launch errors. Best for exploratory sessions.",
+      "docs": "https://openrouter.ai/openrouter/owl-alpha"
     },
     "zai-glm51": {
       "command": "cc-zai-glm51",
