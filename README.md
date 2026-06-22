@@ -129,18 +129,25 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 | Command | Provider | Tiers (flagship / standard / fast) |
 |---|---|---|
 | `cc-deepseek` | DeepSeek V4 (direct) | v4-pro / v4-pro / v4-flash |
-| `cc-glm` | GLM-5.1 (OpenRouter) | glm-5.1 / glm-5.1 / glm-4.5-air |
-| `cc-kimi` | Kimi K2.6 (OpenRouter) | kimi-k2.6 (all three) |
-| `cc-minimax` | MiniMax M2.7 (direct) | M2.7 / M2.7 / M2.7-highspeed |
+| `cc-glm` | GLM-5.2 (OpenRouter) · **1M** | glm-5.2 / glm-5.2 / glm-4.7-flash |
+| `cc-gemini` | Gemini 3.1 Pro (Google via OpenRouter) · **1M** | gemini-3.1-pro-preview (all three) |
+| `cc-grok` | Grok 4.20 (xAI via OpenRouter) · **2M** | grok-4.20 (all three) |
+| `cc-kimi` | Kimi K2.7 Code (OpenRouter) · 256K | kimi-k2.7-code (all three) |
+| `cc-minimax` | MiniMax M3 (direct) · **1M** | M3 (all three) |
+| `cc-minimax-or` | MiniMax M3 (OpenRouter, US-latency) · **1M** | minimax-m3 (all three) |
 | `cc-mimo` | MiMo V2.5 (Xiaomi via OpenRouter) | v2.5-pro / v2.5 / v2-flash |
 | `cc-xiaomi` | Xiaomi MiMo (token-plan SGP, direct) | v2.5-pro / v2.5 / v2-pro |
 | `cc-nvidia [model]` | NVIDIA NIM (free) | tier defaults, override with arg |
-| `cc-qwen` | Qwen3 (Alibaba via OpenRouter) | qwen3.6-plus / qwen3-coder / qwen3-coder-next |
+| `cc-nemotron` | NVIDIA Nemotron 3 Super (OpenRouter, free) · **1M** | nemotron-3-super-120b (all three) |
+| `cc-qwen` | Qwen3.7 Max (Alibaba via OpenRouter) · **1M** | qwen3.7-max / qwen3-coder / qwen3-coder-next |
+| `cc-ollama-glm` | GLM-5.2 (Ollama Cloud) · 976K | glm-5.2:cloud (all three) |
+| `cc-ollama-minimax` | MiniMax M3 (Ollama Cloud) · 512K | minimax-m3:cloud (all three) |
+| `cc-owl` | Owl Alpha (OpenRouter Stealth, free) · **1M** | owl-alpha (all three) |
 | `cc-codex` | OpenAI Codex (OAuth) | gpt-5.4 (run `cc-codex-login` first) |
 | `cc-opencode <model>` | OpenCode Go generic | model passed via arg |
-| `cc-opencode-minimax` | OpenCode Go MiniMax M2.7 (US) | minimax-m2.7 |
+| `cc-opencode-minimax` | OpenCode Go MiniMax M3 (US) | minimax-m3 |
 | `cc-openrouter <model>` | OpenRouter generic | model passed via arg |
-| `cc-zai-glm51` | Z.AI GLM-5.1 [SLOW — China endpoint] | glm-5.1 / glm-5.1 / glm-4.5-air |
+| `cc-zai-glm51` | Z.AI GLM-5.2 [SLOW — China endpoint] · **1M** | glm-5.2[1m] / glm-5.2[1m] / glm-4.7 |
 
 ### Flagship context windows
 
@@ -149,12 +156,12 @@ For providers whose flagship tier is ≥ 500K tokens, `cc-switcher` automaticall
 ```mermaid
 xychart-beta
     title "Flagship-tier context window by provider (K tokens)"
-    x-axis ["mimo", "xiaomi", "deepseek", "qwen", "kimi", "minimax", "opencode-mm", "glm", "codex", "zai-glm51", "nvidia"]
-    y-axis "K tokens" 0 --> 1100
-    bar [1049, 1049, 1000, 1000, 256, 205, 205, 200, 200, 200, 128]
+    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "opencode-mm", "codex", "nvidia"]
+    y-axis "K tokens" 0 --> 2100
+    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 205, 200, 128]
 ```
 
-The four 1M-class providers (left) get auto-context; everything at or below 256K keeps Claude Code's auto-compaction instead — see `docs/architecture.md` "Auto-context derivation" for the threshold rationale.
+Every provider whose flagship tier is ≥ 500K (everything left of `kimi`) gets auto-context; `kimi` (256K) and below keep Claude Code's auto-compaction instead — see `docs/architecture.md` "Auto-context derivation" for the threshold rationale. Note `cc-opencode-minimax` runs MiniMax M3 but is pinned at ~205K because OpenCode Go's effective cap is unverified; use `cc-minimax` or `cc-minimax-or` for the guaranteed 1M window.
 
 The provider catalog is JSON. Add or change providers by editing `data/providers.json` **and** its synchronized copy `bash/data/providers.json` (CI enforces that the two match) — no script authoring required.
 
@@ -184,11 +191,12 @@ The provider catalog is JSON. Add or change providers by editing `data/providers
 ### PowerShell
 
 ```powershell
-$env:OPENROUTER_API_KEY   = "sk-or-..."   # OpenRouter (covers cc-glm, cc-kimi, cc-mimo, cc-qwen, cc-openrouter)
+$env:OPENROUTER_API_KEY   = "sk-or-..."   # OpenRouter (cc-glm, cc-gemini, cc-grok, cc-kimi, cc-mimo, cc-minimax-or, cc-nemotron, cc-owl, cc-qwen, cc-openrouter)
 $env:DEEPSEEK_API_KEY     = "sk-..."      # DeepSeek direct
-$env:MINIMAX_API_KEY      = "..."         # MiniMax direct
+$env:MINIMAX_API_KEY      = "..."         # MiniMax direct (cc-minimax)
 $env:NVIDIA_API_KEY       = "nvapi-..."   # NVIDIA NIM
 $env:OPENCODE_GO_API_KEY  = "..."         # OpenCode Go (cc-opencode, cc-opencode-minimax)
+$env:OLLAMA_API_KEY       = "..."         # Ollama Cloud (cc-ollama-glm, cc-ollama-minimax) — key from ollama.com/settings/keys
 $env:XIAOMI_API_KEY       = "..."         # Xiaomi MiMo direct (token-plan SGP)
 $env:ZAI_API_KEY          = "..."         # Z.AI direct (cc-zai-glm51)
 $env:KIMI_API_KEY         = "..."         # Moonshot direct (optional)
@@ -197,11 +205,12 @@ $env:KIMI_API_KEY         = "..."         # Moonshot direct (optional)
 ### bash / zsh
 
 ```bash
-export OPENROUTER_API_KEY="sk-or-..."     # OpenRouter (covers cc-glm, cc-kimi, cc-mimo, cc-qwen, cc-openrouter)
+export OPENROUTER_API_KEY="sk-or-..."     # OpenRouter (cc-glm, cc-gemini, cc-grok, cc-kimi, cc-mimo, cc-minimax-or, cc-nemotron, cc-owl, cc-qwen, cc-openrouter)
 export DEEPSEEK_API_KEY="sk-..."          # DeepSeek direct
-export MINIMAX_API_KEY="..."               # MiniMax direct
+export MINIMAX_API_KEY="..."               # MiniMax direct (cc-minimax)
 export NVIDIA_API_KEY="nvapi-..."         # NVIDIA NIM
 export OPENCODE_GO_API_KEY="..."           # OpenCode Go (cc-opencode, cc-opencode-minimax)
+export OLLAMA_API_KEY="..."                # Ollama Cloud (cc-ollama-glm, cc-ollama-minimax) — key from ollama.com/settings/keys
 export XIAOMI_API_KEY="..."                # Xiaomi MiMo direct (token-plan SGP)
 export ZAI_API_KEY="..."                  # Z.AI direct (cc-zai-glm51)
 export KIMI_API_KEY="..."                 # Moonshot direct (optional)

@@ -1,11 +1,11 @@
 # =============================================================================
 # cc-switcher.psm1 — Claude Code multi-provider launcher
-# Version 3.2.0 — single source of truth: $script:CCSwitcherVersion below.
+# Version 3.3.0 — single source of truth: $script:CCSwitcherVersion below.
 # Repo: https://github.com/jimstratus/cc-switcher
 # =============================================================================
 
 $script:CCSwitcherRoot = $PSScriptRoot
-$script:CCSwitcherVersion = '3.2.0'
+$script:CCSwitcherVersion = '3.3.0'
 
 # Load lib files in dependency order. Tiny files — total parse <50ms.
 . (Join-Path $PSScriptRoot 'lib\core.ps1')
@@ -39,6 +39,11 @@ Set-Alias -Name cc-opencode-minimax  -Value Invoke-CC-OpenCode-MiniMax
 Set-Alias -Name cc-openrouter        -Value Invoke-CC-OpenRouter
 Set-Alias -Name cc-owl               -Value Invoke-CC-Owl-Alpha
 Set-Alias -Name cc-zai-glm51         -Value Invoke-CC-ZAI-GLM51
+Set-Alias -Name cc-gemini            -Value Invoke-CC-Gemini
+Set-Alias -Name cc-grok              -Value Invoke-CC-Grok
+Set-Alias -Name cc-minimax-or        -Value Invoke-CC-MiniMax-OR
+Set-Alias -Name cc-ollama-glm        -Value Invoke-CC-Ollama-Glm
+Set-Alias -Name cc-ollama-minimax    -Value Invoke-CC-Ollama-MiniMax
 
 # Utility commands
 Set-Alias -Name cc-launch    -Value Invoke-CC-Launch-Menu

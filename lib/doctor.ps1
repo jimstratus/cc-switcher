@@ -57,7 +57,7 @@ function Invoke-CC-Doctor {
     Write-Host " API keys " -ForegroundColor Yellow
     Write-Host ("-" * 78) -ForegroundColor DarkYellow
     $keys = @('OPENROUTER_API_KEY','DEEPSEEK_API_KEY','MINIMAX_API_KEY','NVIDIA_API_KEY',
-              'OPENCODE_GO_API_KEY','ZAI_API_KEY','KIMI_API_KEY','XIAOMI_API_KEY','ANTHROPIC_API_KEY')
+              'OPENCODE_GO_API_KEY','OLLAMA_API_KEY','ZAI_API_KEY','KIMI_API_KEY','XIAOMI_API_KEY','ANTHROPIC_API_KEY')
     foreach ($k in $keys) {
         $r = Test-CCApiKey -KeyName $k
         $color = switch ($r.Status) {

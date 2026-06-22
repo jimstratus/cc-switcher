@@ -1,6 +1,6 @@
 @{
     RootModule        = 'cc-switcher.psm1'
-    ModuleVersion     = '3.2.0'
+    ModuleVersion     = '3.3.0'
     GUID              = 'a1f2c0e1-cc01-4cc0-9cc0-0001cc000001'
     Author            = 'Ryan Mander'
     Description       = 'Claude Code multi-provider launcher (DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, etc.) with tier mapping per provider, live pricing, health checks, token usage tracking, and tab completion.'
@@ -13,6 +13,8 @@
         'Invoke-CC-OpenRouter','Invoke-CC-OpenCode','Invoke-CC-OpenCode-MiniMax',
         'Invoke-CC-ZAI-GLM51','Invoke-CC-Yolo',
         'Invoke-CC-Owl-Alpha','Invoke-CC-Nemotron',
+        'Invoke-CC-Gemini','Invoke-CC-Grok','Invoke-CC-MiniMax-OR',
+        'Invoke-CC-Ollama-Glm','Invoke-CC-Ollama-MiniMax',
         'Invoke-CC-Launch-Menu','Invoke-CC-Pick',
         'Invoke-CC-Doctor','Get-CCPricing','Get-CCUsage','Show-CCHelp',
         'Get-CCProviders','Get-CCCatalog','Get-CCLivePricing'
@@ -22,6 +24,7 @@
         'cc-codex','cc-codex-login','cc-codex-logout',
         'cc-opencode','cc-opencode-minimax','cc-openrouter','cc-zai-glm51',
         'cc-owl','cc-nemotron',
+        'cc-gemini','cc-grok','cc-minimax-or','cc-ollama-glm','cc-ollama-minimax',
         'cc-launch','cc-pick','cc-doctor','cc-pricing','cc-status','cc-usage',
         'cc-reset','cc-yolo','cc-help'
     )
