@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## 3.3.0 — 2026-06-21
 
 ### Added — 2026-06 model refresh (1M-context wave)

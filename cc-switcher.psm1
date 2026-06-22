@@ -1,6 +1,6 @@
 # =============================================================================
 # cc-switcher.psm1 — Claude Code multi-provider launcher
-# Version 3.2.0 — single source of truth: $script:CCSwitcherVersion below.
+# Version 3.3.0 — single source of truth: $script:CCSwitcherVersion below.
 # Repo: https://github.com/jimstratus/cc-switcher
 # =============================================================================
 
