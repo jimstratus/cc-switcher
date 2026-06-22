@@ -36,6 +36,24 @@ _CC_API_KEY_VARS=(
 )
 
 #------------------------------------------------------------------------------
+# Portable helpers (GNU coreutils on Linux vs BSD utils on macOS)
+#------------------------------------------------------------------------------
+
+# Epoch mtime of a file. GNU: stat -c %Y; BSD/macOS: stat -f %m.
+_cc_mtime() {
+  stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null
+}
+
+# Format an ISO-8601 UTC timestamp (e.g. 2026-06-21T04:46:02Z) for display.
+# GNU: date -d; BSD/macOS: date -j -f. Echoes the raw input if neither parses.
+_cc_fmt_ts() {
+  local ts="$1"
+  date -d "$ts" +"%Y-%m-%d %H:%M" 2>/dev/null \
+    || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$ts" +"%Y-%m-%d %H:%M" 2>/dev/null \
+    || printf '%s' "$ts"
+}
+
+#------------------------------------------------------------------------------
 # Internal: snapshot all env vars we touch
 #------------------------------------------------------------------------------
 _cc_snapshot_save() {

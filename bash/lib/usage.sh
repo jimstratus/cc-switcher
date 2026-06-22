@@ -69,7 +69,8 @@ write_cc_session_end() {
     # Find jsonl files modified since session start (with a buffer)
     local f mtime
     while IFS= read -r -d '' f; do
-      mtime=$(stat -c %Y "$f" 2>/dev/null) || continue
+      mtime=$(_cc_mtime "$f") || continue
+      [[ -n "$mtime" ]] || continue
       if (( mtime >= started_at - 5 )); then
         jsonl_files+=("$f")
       fi
@@ -140,7 +141,7 @@ get_cc_usage() {
           | @tsv' 2>/dev/null \
       | while IFS=$'\t' read -r ts provider durationSec turns tokensIn tokensOut; do
       local when
-      when=$(date -d "$ts" +"%Y-%m-%d %H:%M" 2>/dev/null) || when="$ts"
+      when=$(_cc_fmt_ts "$ts")
       printf "%-19s %-32s %7ss %7s %9s %9s\n" \
         "$when" "$provider" "$durationSec" "$turns" "$tokensIn" "$tokensOut"
     done
