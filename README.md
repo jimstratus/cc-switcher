@@ -156,9 +156,9 @@ For providers whose flagship tier is ≥ 500K tokens, `cc-switcher` automaticall
 ```mermaid
 xychart-beta
     title "Flagship-tier context window by provider (K tokens)"
-    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "ollama-glm", "ollama-mm", "zai", "kimi", "opencode-mm", "codex", "nvidia"]
+    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "opencode-mm", "codex", "nvidia"]
     y-axis "K tokens" 0 --> 2100
-    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 256, 205, 200, 128]
+    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 205, 200, 128]
 ```
 
 Every provider whose flagship tier is ≥ 500K (everything left of `kimi`) gets auto-context; `kimi` (256K) and below keep Claude Code's auto-compaction instead — see `docs/architecture.md` "Auto-context derivation" for the threshold rationale. Note `cc-opencode-minimax` runs MiniMax M3 but is pinned at ~205K because OpenCode Go's effective cap is unverified; use `cc-minimax` or `cc-minimax-or` for the guaranteed 1M window.

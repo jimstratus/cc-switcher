@@ -193,10 +193,10 @@
         "standard": "glm-5.2:cloud",
         "fast": "glm-5.2:cloud"
       },
-      "context": 1000000,
+      "context": 976000,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "GLM-5.2 on Ollama Cloud (hosted inference). Ollama speaks the Anthropic Messages API at https://ollama.com; auth via OLLAMA_API_KEY (key from ollama.com/settings/keys, sent as ANTHROPIC_AUTH_TOKEN). The :cloud suffix is mandatory — it routes to hosted inference instead of a local pull. Cloud models run at full context (~1M). Smoke-test once: Ollama's docs mostly show the localhost:11434 path, the direct cloud Anthropic base is community/issue-attested.",
+      "notes": "GLM-5.2 on Ollama Cloud (hosted inference). Ollama speaks the Anthropic Messages API at https://ollama.com; auth via OLLAMA_API_KEY (key from ollama.com/settings/keys, sent as ANTHROPIC_AUTH_TOKEN). The model tag is exactly glm-5.2:cloud — the :cloud suffix is mandatory (it routes to hosted inference instead of a local pull). Context set to the 976K window Ollama lists for this tag (not the full 1M) so CLAUDE_CODE_MAX_CONTEXT_TOKENS doesn't over-promise. Smoke-test once: Ollama's docs mostly show the localhost:11434 path, the direct cloud Anthropic base is community/issue-attested.",
       "docs": "https://docs.ollama.com/integrations/claude-code"
     },
     "ollama-minimax": {
@@ -210,10 +210,10 @@
         "standard": "minimax-m3:cloud",
         "fast": "minimax-m3:cloud"
       },
-      "context": 1000000,
+      "context": 512000,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "MiniMax M3 on Ollama Cloud (hosted inference). Anthropic Messages API at https://ollama.com; auth via OLLAMA_API_KEY (sent as ANTHROPIC_AUTH_TOKEN). The :cloud suffix is mandatory. M3 listing notes 512K guaranteed / up to 1M; context set to 1M to enable the extended window. Smoke-test the cloud Anthropic base once before relying on it.",
+      "notes": "MiniMax M3 on Ollama Cloud (hosted inference). Anthropic Messages API at https://ollama.com; auth via OLLAMA_API_KEY (sent as ANTHROPIC_AUTH_TOKEN). The model tag is exactly minimax-m3:cloud — the :cloud suffix is mandatory. Ollama serves this tag at a 512K window (the model's guaranteed minimum), so context is set to 512K here, NOT the full 1M — for the guaranteed 1M MiniMax M3 use cc-minimax (direct) or cc-minimax-or (OpenRouter). Smoke-test the cloud Anthropic base once before relying on it.",
       "docs": "https://docs.ollama.com/integrations/claude-code"
     },
     "qwen": {
