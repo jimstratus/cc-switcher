@@ -26,6 +26,10 @@ Available for both **PowerShell** (Windows/macOS) and **bash/zsh** (Linux/macOS)
 
 It also tracks token usage per session, caches OpenRouter pricing, ships a doctor command for health checks, and provides tab completion for OpenRouter / OpenCode Go / NVIDIA NIM model IDs.
 
+> 👋 **New to Claude Code and AI providers?** Start with the **[Getting Started guide](docs/onboarding.md)** —
+> sign-up links, API-key steps, plan vs. pay-per-token pricing, cost/benchmark/context comparisons, and
+> recommended starting recipes. There's a visual [HTML version](docs/onboarding.html) too (open it in a browser).
+
 > Current release. Versions before 3.1.0 are summarized in `CHANGELOG.md`; public history starts at 3.1.0.
 
 ---
