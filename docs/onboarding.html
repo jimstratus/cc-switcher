@@ -75,6 +75,8 @@
   .mermaid{display:flex;justify-content:center}
 
   /* tables */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin:18px 0}
+  .tw .tbl{margin:0;min-width:520px}
   .tbl{width:100%;border-collapse:collapse;margin:18px 0;font-size:.9rem;
        background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
   .tbl th{background:var(--panel2);text-align:left;padding:11px 14px;font-size:.78rem;
@@ -156,7 +158,12 @@
 
   .cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   @media(max-width:760px){.cols2{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}
-       .row{grid-template-columns:110px 1fr 60px}.hero h1{font-size:1.9rem}}
+       .row{grid-template-columns:104px 1fr 58px}.hero h1{font-size:1.9rem}
+       .wrap{padding:0 16px}.grid{grid-template-columns:1fr}
+       .tbl{font-size:.82rem}.tbl th,.tbl td{padding:8px 10px}
+       section{padding:40px 0}.term-body{font-size:.74rem;height:300px}}
+  @media(max-width:420px){.stats{grid-template-columns:1fr 1fr;gap:10px}.stat .n{font-size:1.4rem}
+       .hero h1{font-size:1.6rem}.hero pre{font-size:.5rem}}
 
   footer{padding:40px 0;border-top:1px solid var(--line);color:var(--dim);font-size:.85rem;text-align:center}
   .anchor{position:relative;top:-60px;visibility:hidden}
@@ -227,12 +234,12 @@ flowchart LR
 
   <h3>The mental model — only 3 things matter</h3>
   <p>cc-switcher already knows two of them for every provider. <b>Your only real job is getting an API key.</b></p>
-  <table class="tbl">
+  <div class="tw"><table class="tbl">
     <tr><th>Thing</th><th>Example</th><th>cc-switcher handles?</th></tr>
     <tr><td>Endpoint (web address)</td><td class="mono">api.deepseek.com/anthropic</td><td>✅ knows it</td></tr>
     <tr><td>Model name</td><td class="mono">deepseek-v4-pro</td><td>✅ knows it</td></tr>
     <tr><td><b>API key</b> (your secret)</td><td class="mono">sk-or-v1-abc123…</td><td>❗ <b>you get this</b></td></tr>
-  </table>
+  </table></div>
   <div class="diagram"><div class="mermaid">
 flowchart LR
     A["1· Sign up on<br/>provider site"] --> B["2· Generate<br/>API key"]
@@ -326,13 +333,13 @@ flowchart TD
     q2 -->|"Yes (recommended)"| or["⭐ OpenRouter<br/>$10 → cc-glm, cc-gemini, cc-grok,<br/>cc-kimi, cc-mimo, cc-qwen, cc-minimax-or<br/>+ free models"]
     q2 -->|"No, rock-bottom price"| ds["💸 DeepSeek direct<br/>cc-deepseek — cheapest<br/>serious coding"]
   </div></div>
-  <table class="tbl">
+  <div class="tw"><table class="tbl">
     <tr><th>If you…</th><th>Do this</th></tr>
     <tr><td>Just want to explore for $0</td><td><code>cc-nemotron</code> / <code>cc-owl</code> (free via OpenRouter), or <code>cc-nvidia</code></td></tr>
     <tr><td>Want the best first purchase</td><td>⭐ <b>OpenRouter</b>, $10 credits — one key, 9 commands</td></tr>
     <tr><td>Want the absolute cheapest quality coding</td><td>💸 <b>DeepSeek</b> direct (<code>cc-deepseek</code>)</td></tr>
     <tr><td>Code daily, hate surprise bills</td><td>📅 <b>Z.AI GLM Coding Plan</b> ($18/mo)</td></tr>
-  </table>
+  </table></div>
 </div></section>
 
 <!-- OPENROUTER -->
@@ -460,7 +467,7 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
   <p class="kicker">Cheat-sheet</p>
   <h2>Pricing — all providers</h2>
   <p class="lead">USD per 1M tokens (input / output). <b>Output dominates coding cost.</b> Cheapest first.</p>
-  <table class="tbl">
+  <div class="tw"><table class="tbl">
     <tr><th>Command</th><th>Model</th><th class="num">In $/1M</th><th class="num">Out $/1M</th><th>Verdict</th></tr>
     <tr><td class="mono">cc-mimo / cc-xiaomi</td><td>MiMo v2.5</td><td class="num">0.14</td><td class="num">0.28</td><td><span class="badge b-cheap">cheapest</span></td></tr>
     <tr><td class="mono">cc-deepseek</td><td>DeepSeek V4-Flash</td><td class="num">0.14</td><td class="num">0.28</td><td><span class="badge b-cheap">frontier floor</span></td></tr>
@@ -475,11 +482,11 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
     <tr class="base"><td class="mono">—</td><td>Anthropic Sonnet 4.6</td><td class="num">3.00</td><td class="num">15.00</td><td>baseline</td></tr>
     <tr class="base"><td class="mono">—</td><td>Anthropic Opus 4.8</td><td class="num">5.00</td><td class="num">25.00</td><td>baseline</td></tr>
     <tr><td class="mono">cc-nemotron / cc-owl / cc-nvidia</td><td>Nemotron · Owl · NIM</td><td class="num">FREE</td><td class="num">FREE</td><td><span class="badge b-free">🆓 free</span></td></tr>
-  </table>
+  </table></div>
   <p class="meta">* DeepSeek V4-Pro promo; list $1.74/$3.48. Cache hits cost ~1/10 of input.</p>
 
   <h3>Subscriptions (flat monthly)</h3>
-  <table class="tbl">
+  <div class="tw"><table class="tbl">
     <tr><th>Provider</th><th>Cheapest</th><th>Mid</th><th>Top</th><th>Command</th></tr>
     <tr><td><b>Xiaomi MiMo</b> Token Plan</td><td><span class="badge b-cheap">$6 Lite</span></td><td>$16 / $50</td><td>$100</td><td class="mono">cc-xiaomi</td></tr>
     <tr><td><b>Z.AI GLM</b> ⭐</td><td>~$18 Lite</td><td>~$72 Pro</td><td>~$160</td><td class="mono">cc-glm</td></tr>
@@ -489,7 +496,7 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
     <tr><td><b>OpenCode Go</b></td><td><span class="badge b-cheap">$10 flat</span></td><td>—</td><td>—</td><td class="mono">cc-opencode-*</td></tr>
     <tr><td><b>ChatGPT/Codex</b></td><td>$20</td><td>$100</td><td>$200</td><td class="mono">cc-codex</td></tr>
     <tr class="base"><td>Anthropic (baseline)</td><td>$20 Pro</td><td>$100</td><td>$200</td><td class="mono">cc-reset</td></tr>
-  </table>
+  </table></div>
 
   <div class="chart">
     <h4>💵 Approx cost of ~2M output tokens of coding (one busy day)</h4>
@@ -610,7 +617,7 @@ flowchart LR
   </div></div>
 
   <h3>Provider commands</h3>
-  <table class="tbl">
+  <div class="tw"><table class="tbl">
     <tr><th>Command</th><th>Provider</th><th>Context</th></tr>
     <tr><td class="mono">cc-deepseek</td><td>DeepSeek V4 (direct)</td><td>1M</td></tr>
     <tr><td class="mono">cc-glm</td><td>GLM-5.2 (OpenRouter)</td><td><b>1M</b></td></tr>
@@ -632,10 +639,10 @@ flowchart LR
     <tr><td class="mono">cc-opencode-minimax</td><td>MiniMax M3 via OpenCode Go</td><td>205K</td></tr>
     <tr><td class="mono">cc-openrouter &lt;model&gt;</td><td>any OpenRouter model</td><td>—</td></tr>
     <tr><td class="mono">cc-zai-glm51</td><td>Z.AI GLM-5.2 [slow, China]</td><td>1M</td></tr>
-  </table>
+  </table></div>
 
   <h3>Utility commands</h3>
-  <table class="tbl">
+  <div class="tw"><table class="tbl">
     <tr><th>Command</th><th>What it does</th></tr>
     <tr><td class="mono">cc-help</td><td>Full command catalog</td></tr>
     <tr><td class="mono">cc-launch</td><td>Numbered interactive picker (forgot a command name? use this)</td></tr>
@@ -646,7 +653,7 @@ flowchart LR
     <tr><td class="mono">cc-reset</td><td>Clear overrides → native Anthropic</td></tr>
     <tr><td class="mono">cc-yolo</td><td>Native Anthropic + --dangerously-skip-permissions</td></tr>
     <tr><td class="mono">cc-codex-login / cc-codex-logout</td><td>Codex OAuth device flow</td></tr>
-  </table>
+  </table></div>
   <p class="meta">Inside a session, <code>/model opus|sonnet|haiku</code> swaps the provider's three tiers.
   Append <code>--yolo</code> to any command to skip permission prompts.</p>
 
