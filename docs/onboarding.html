@@ -760,12 +760,16 @@ flowchart LR
       (function tick(){ if(i<text.length){ d.appendChild(document.createTextNode(text[i++])); setTimeout(tick,speed); } else done(); })();
     }
     if(reduce){
-      // static frame: render everything once, no looping/typing
-      reset(); body.removeChild(cur);
+      // static frame: render the whole transcript once, no looping/typing.
+      // Build lines directly (no cursor) and let the box grow so nothing clips.
+      body.innerHTML=''; body.style.height='auto';
       steps.forEach(function(s){
-        if(s[0]==='cmd'){ var d=line(); d.innerHTML='<span class="p">$ </span>'; d.appendChild(document.createTextNode(s[1])); }
-        else if(s[0]==='ask'){ var a=line(); a.innerHTML='<span class="info">&gt; </span>'; a.appendChild(document.createTextNode(s[1])); }
-        else if(s[0]==='out'){ var o=line(s[2]||''); o.textContent=s[1]; }
+        if(s[0]!=='cmd' && s[0]!=='ask' && s[0]!=='out') return;
+        var d=document.createElement('span'); d.className='ln '+(s[0]==='out'?(s[2]||''):'');
+        if(s[0]==='cmd'){ d.innerHTML='<span class="p">$ </span>'; d.appendChild(document.createTextNode(s[1])); }
+        else if(s[0]==='ask'){ d.innerHTML='<span class="info">&gt; </span>'; d.appendChild(document.createTextNode(s[1])); }
+        else { d.textContent=s[1]; }
+        body.appendChild(d);
       });
       return;
     }
