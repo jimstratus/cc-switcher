@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "_doc": {
     "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1/core.sh translates to Claude Code's env var contract.",
     "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",

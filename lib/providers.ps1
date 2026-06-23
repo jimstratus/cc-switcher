@@ -132,7 +132,7 @@ function Invoke-CC-Nvidia {
 # OpenRouter: model param required (passes through to all three tiers)
 function Invoke-CC-OpenRouter {
     param([string]$Model, [string[]]$ClaudeArgs)
-    if (-not $Model) { $Model = "moonshotai/kimi-k2.6" }
+    if (-not $Model) { $Model = "moonshotai/kimi-k2.7-code" }
     $auth = $env:OPENROUTER_API_KEY
     Write-Host "[cc] OpenRouter model: $Model" -ForegroundColor Yellow
     Invoke-CCLaunch `
@@ -145,7 +145,7 @@ function Invoke-CC-OpenRouter {
 # OpenCode Go generic: pass any model
 function Invoke-CC-OpenCode {
     param([string]$Model, [string[]]$ClaudeArgs)
-    if (-not $Model) { $Model = "minimax-m2.7" }
+    if (-not $Model) { $Model = "minimax-m3" }
     $auth = $env:OPENCODE_GO_API_KEY
     Write-Host "[cc] OpenCode Go model: $Model" -ForegroundColor Yellow
     Invoke-CCLaunch `

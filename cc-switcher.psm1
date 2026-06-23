@@ -1,11 +1,11 @@
 # =============================================================================
 # cc-switcher.psm1 — Claude Code multi-provider launcher
-# Version 3.3.0 — single source of truth: $script:CCSwitcherVersion below.
+# Version 3.3.1 — single source of truth: $script:CCSwitcherVersion below.
 # Repo: https://github.com/jimstratus/cc-switcher
 # =============================================================================
 
 $script:CCSwitcherRoot = $PSScriptRoot
-$script:CCSwitcherVersion = '3.3.0'
+$script:CCSwitcherVersion = '3.3.1'
 
 # Load lib files in dependency order. Tiny files — total parse <50ms.
 . (Join-Path $PSScriptRoot 'lib\core.ps1')

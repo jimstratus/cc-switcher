@@ -112,7 +112,7 @@ invoke_cc_provider() {
 # cc-openrouter — generic OpenRouter launcher (model param required)
 #------------------------------------------------------------------------------
 invoke_cc_openrouter() {
-  local model="${1:-moonshotai/kimi-k2.6}"
+  local model="${1:-moonshotai/kimi-k2.7-code}"
   shift || true
   local -a claude_args=("$@")
 
@@ -138,7 +138,7 @@ invoke_cc_openrouter() {
 # cc-opencode — generic OpenCode Go launcher (model param required)
 #------------------------------------------------------------------------------
 invoke_cc_opencode() {
-  local model="${1:-minimax-m2.7}"
+  local model="${1:-minimax-m3}"
   shift || true
   local -a claude_args=("$@")
 

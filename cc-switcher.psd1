@@ -1,6 +1,6 @@
 @{
     RootModule        = 'cc-switcher.psm1'
-    ModuleVersion     = '3.3.0'
+    ModuleVersion     = '3.3.1'
     GUID              = 'a1f2c0e1-cc01-4cc0-9cc0-0001cc000001'
     Author            = 'Ryan Mander'
     Description       = 'Claude Code multi-provider launcher (DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, etc.) with tier mapping per provider, live pricing, health checks, token usage tracking, and tab completion.'

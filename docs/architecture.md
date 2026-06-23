@@ -27,7 +27,7 @@ A `cc-*` invocation is a four-stage pipeline: wrapper → dispatcher → catalog
 
 `Import-Module cc-switcher.psd1` loads `cc-switcher.psm1`, which:
 
-1. Sets `$script:CCSwitcherRoot = $PSScriptRoot` and `$script:CCSwitcherVersion = '3.3.0'` (cc-switcher.psm1:7-8).
+1. Sets `$script:CCSwitcherRoot = $PSScriptRoot` and `$script:CCSwitcherVersion = '3.3.1'` (cc-switcher.psm1:7-8).
 2. Dot-sources every file in `lib/` in dependency order: `core` → `providers` → `codex` → `pricing` → `doctor` → `completers` → `usage` → `picker` → `update-check` (cc-switcher.psm1:11-19). Total parse time is well under 50ms.
 3. Calls `Register-CCCompleters` (cc-switcher.psm1:22, defined in `lib/completers.ps1`) to wire up tab completion for `cc-openrouter`, `cc-opencode`, and `cc-nvidia`.
 4. Registers public aliases via `Set-Alias` (cc-switcher.psm1:25-50).

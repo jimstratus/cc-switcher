@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+## 3.3.1 — 2026-06-22
+
+### Fixed
+
+- **Generic launcher fallback defaults pointed at retired models.** When
+  `cc-openrouter` and `cc-opencode` are invoked with no model argument, they
+  fall back to a built-in default. Those defaults still named the pre-3.3.0
+  models — `moonshotai/kimi-k2.6` (`cc-openrouter`) and `minimax-m2.7`
+  (`cc-opencode`) — even though the 3.3.0 catalog moved to
+  `moonshotai/kimi-k2.7-code` and `minimax-m3`. Updated both defaults in the
+  PowerShell (`lib/providers.ps1`) and bash (`bash/lib/providers.sh`)
+  dispatchers so a bare `cc-openrouter` / `cc-opencode` launches a current
+  model. Catalog-driven commands (`cc-kimi`, `cc-opencode-minimax`, etc.)
+  were unaffected.
+
+### Docs
+
+- Synced `ISSUES.md`, `AGENTS.md`, `docs/architecture.md`, and
+  `docs/catalog-schema.md` to the 3.3.0 catalog: rebuilt the ISSUES.md
+  auto-context table (MiniMax and GLM are now 1M / auto-derived; all 18
+  providers enumerated), corrected stale model names in the threshold
+  rationale, and refreshed version examples. README banner bumped to match.
+
 ## 3.3.0 — 2026-06-21
 
 ### Added — 2026-06 model refresh (1M-context wave)
