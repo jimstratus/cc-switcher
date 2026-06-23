@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cc-switcher · Getting Started</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"
+        integrity="sha384-rbtjAdnIQE/aQJGEgXrVUlMibdfTSa4PQju4HDhN3sR2PmaKFzhEafuePsl9H/9I"
+        crossorigin="anonymous"></script>
+<style>
+  :root{
+    --bg:#0b0f14; --bg2:#11171f; --panel:#141b24; --panel2:#1a232e;
+    --ink:#e6edf3; --mut:#9fb0c0; --dim:#6e8294;
+    --line:#22303c; --line2:#2d3f4e;
+    --grn:#3ad07a; --grn2:#1f8a4c; --cyan:#37c2d6; --amber:#f5b942; --red:#ff6b6b;
+    --mono:'SF Mono',ui-monospace,'Cascadia Code','JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#11202b 0%,var(--bg) 60%);
+       color:var(--ink);font-family:var(--sans);line-height:1.65;font-size:16px}
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,.mono{font-family:var(--mono)}
+  code:not(pre code){background:var(--panel2);border:1px solid var(--line);padding:.08em .4em;
+       border-radius:5px;font-size:.86em;color:#bfe9ff}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  h2{font-size:1.7rem;margin:0 0 .2em;letter-spacing:-.01em}
+  h3{font-size:1.18rem;margin:1.4em 0 .4em;color:#fff}
+  section{padding:54px 0;border-top:1px solid var(--line)}
+  section>.wrap>p:first-of-type{color:var(--mut)}
+  .kicker{font-family:var(--mono);font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;
+          color:var(--grn);margin:0 0 6px}
+  .lead{font-size:1.05rem;color:var(--mut);max-width:760px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
+      background:rgba(11,15,20,.82);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:18px;height:54px;overflow-x:auto}
+  nav .brand{font-family:var(--mono);font-weight:700;color:#fff;white-space:nowrap}
+  nav .brand b{color:var(--grn)}
+  nav a{color:var(--mut);font-size:.85rem;white-space:nowrap}
+  nav a:hover{color:#fff;text-decoration:none}
+
+  /* hero */
+  .hero{padding:64px 0 46px;text-align:center}
+  .hero pre{display:inline-block;text-align:left;font-family:var(--mono);font-size:.62rem;
+       line-height:1.25;color:var(--grn);background:#0a0e13;border:1px solid var(--line);
+       border-radius:12px;padding:16px 20px;margin:0 0 26px;overflow-x:auto;
+       box-shadow:0 0 50px rgba(58,208,122,.08)}
+  .hero h1{font-size:2.6rem;margin:.1em 0;letter-spacing:-.02em}
+  .hero h1 .g{background:linear-gradient(90deg,var(--grn),var(--cyan));
+       -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero .sub{font-size:1.12rem;color:var(--mut);max-width:680px;margin:10px auto 26px}
+  .pills{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .pill{background:var(--panel);border:1px solid var(--line2);border-radius:999px;
+       padding:7px 15px;font-size:.84rem;color:var(--ink)}
+  .pill b{color:var(--grn)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 14px}
+  .stat .n{font-family:var(--mono);font-size:1.7rem;font-weight:700;color:var(--cyan)}
+  .stat .l{font-size:.8rem;color:var(--dim)}
+
+  .note{background:linear-gradient(0deg,var(--panel),var(--panel2));border:1px solid var(--line2);
+       border-left:3px solid var(--amber);border-radius:10px;padding:14px 18px;margin:22px 0;
+       font-size:.92rem;color:var(--mut)}
+  .note.grn{border-left-color:var(--grn)}
+  .note.cyan{border-left-color:var(--cyan)}
+
+  /* mermaid */
+  .diagram{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+       padding:20px;margin:22px 0;overflow-x:auto;text-align:center}
+  .mermaid{display:flex;justify-content:center}
+
+  /* tables */
+  .tbl{width:100%;border-collapse:collapse;margin:18px 0;font-size:.9rem;
+       background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .tbl th{background:var(--panel2);text-align:left;padding:11px 14px;font-size:.78rem;
+       letter-spacing:.04em;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--line2)}
+  .tbl td{padding:10px 14px;border-bottom:1px solid var(--line)}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl tr:hover td{background:rgba(55,194,214,.04)}
+  .tbl td.num{font-family:var(--mono);text-align:right}
+  .base td{color:var(--dim);font-style:italic}
+  .badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;
+       font-family:var(--mono)}
+  .b-cheap{background:rgba(58,208,122,.16);color:var(--grn)}
+  .b-mid{background:rgba(245,185,66,.16);color:var(--amber)}
+  .b-prem{background:rgba(255,107,107,.16);color:var(--red)}
+  .b-free{background:rgba(55,194,214,.16);color:var(--cyan)}
+
+  /* charts (CSS bars) */
+  .chart{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 20px;margin:20px 0}
+  .chart h4{margin:0 0 16px;font-size:.95rem;color:var(--mut);font-weight:600}
+  .row{display:grid;grid-template-columns:150px 1fr 70px;align-items:center;gap:12px;margin:7px 0}
+  .row .lbl{font-family:var(--mono);font-size:.8rem;color:var(--ink);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .track{background:#0a0e13;border-radius:6px;height:22px;overflow:hidden;border:1px solid var(--line)}
+  .row .fill{height:100%;border-radius:5px 0 0 5px;background:linear-gradient(90deg,var(--grn2),var(--grn))}
+  .row .fill.cyan{background:linear-gradient(90deg,#1c7e8c,var(--cyan))}
+  .row .fill.amber{background:linear-gradient(90deg,#a87a16,var(--amber))}
+  .row .fill.red{background:linear-gradient(90deg,#a83b3b,var(--red))}
+  .row .val{font-family:var(--mono);font-size:.8rem;color:var(--mut);text-align:left}
+  .legend{font-size:.78rem;color:var(--dim);margin-top:12px}
+
+  /* provider cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin:22px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;
+       transition:border-color .15s,transform .15s}
+  .card:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .card h4{margin:0 0 4px;font-size:1.05rem;color:#fff}
+  .card .cmd{font-family:var(--mono);font-size:.8rem;color:var(--grn);margin-bottom:10px}
+  .card .meta{font-size:.85rem;color:var(--mut);margin:6px 0}
+  .card .meta b{color:var(--ink);font-weight:600}
+  .card .links{margin-top:12px;font-size:.83rem}
+  .feature{border:1px solid var(--grn2);box-shadow:0 0 40px rgba(58,208,122,.1)}
+  .feature .tag{display:inline-block;background:var(--grn);color:#06210f;font-size:.68rem;
+       font-weight:800;padding:2px 9px;border-radius:6px;margin-bottom:8px;font-family:var(--mono)}
+
+  pre.code{background:#0a0e13;border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+       overflow-x:auto;font-size:.84rem;line-height:1.55;color:#cfe3f0}
+  pre.code .c{color:var(--dim)}
+  pre.code .k{color:var(--grn)}
+
+  /* animated terminal demo */
+  .term{background:#070a0e;border:1px solid var(--line2);border-radius:12px;overflow:hidden;
+       margin:22px 0;box-shadow:0 16px 50px rgba(0,0,0,.45)}
+  .term-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0e141b;
+       border-bottom:1px solid var(--line)}
+  .term-bar .dot{width:11px;height:11px;border-radius:50%}
+  .term-bar .dot.r{background:#ff5f56}.term-bar .dot.y{background:#ffbd2e}.term-bar .dot.g{background:#27c93f}
+  .term-bar .ttl{margin-left:8px;font-family:var(--mono);font-size:.76rem;color:var(--dim)}
+  .term-bar .live{margin-left:auto;font-family:var(--mono);font-size:.68rem;color:var(--grn);
+       border:1px solid var(--grn2);border-radius:999px;padding:1px 8px}
+  .term-body{font-family:var(--mono);font-size:.82rem;line-height:1.55;padding:16px 18px;
+       height:340px;overflow:hidden;white-space:pre-wrap;word-break:break-word}
+  .term-body .ln{display:block}
+  .term-body .p{color:var(--grn)}            /* prompt $ */
+  .term-body .ok{color:var(--grn)}           /* checkmarks */
+  .term-body .info{color:var(--cyan)}
+  .term-body .dim{color:var(--dim)}
+  .term-body .ai{color:#cfe3f0}
+  .term-body .aihdr{color:var(--amber)}
+  .cursor{display:inline-block;width:8px;height:1em;background:var(--grn);
+       vertical-align:-2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .term-cap{font-size:.8rem;color:var(--dim);text-align:center;margin-top:-8px}
+
+  .steps{counter-reset:s;list-style:none;padding:0;margin:18px 0}
+  .steps li{position:relative;padding:10px 0 10px 46px;border-bottom:1px solid var(--line)}
+  .steps li:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:9px;
+       width:30px;height:30px;border-radius:50%;background:var(--panel2);border:1px solid var(--grn2);
+       color:var(--grn);font-family:var(--mono);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+  .steps li:last-child{border-bottom:none}
+
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.cols2{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}
+       .row{grid-template-columns:110px 1fr 60px}.hero h1{font-size:1.9rem}}
+
+  footer{padding:40px 0;border-top:1px solid var(--line);color:var(--dim);font-size:.85rem;text-align:center}
+  .anchor{position:relative;top:-60px;visibility:hidden}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <span class="brand">cc&#8209;<b>switcher</b></span>
+  <a href="#start">Start</a>
+  <a href="#demo">Demo</a>
+  <a href="#billing">Billing</a>
+  <a href="#path">Pick a path</a>
+  <a href="#openrouter">OpenRouter</a>
+  <a href="#providers">Providers</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#context">Context</a>
+  <a href="#bench">Benchmarks</a>
+  <a href="#recipes">Recipes</a>
+  <a href="#reference">Reference</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+<pre>   ┌──────────────────────────────────────────────┐
+   │   ██████╗ ██████╗   ███████╗██╗    ██╗        │
+   │  ██╔════╝██╔════╝   ██╔════╝██║    ██║        │
+   │  ██║     ██║   █████╗███████╗██║ █╗ ██║       │
+   │  ██║     ██║   ╚════╝╚════██║██║███╗██║       │
+   │  ╚██████╗╚██████╗   ███████║╚███╔███╔╝        │
+   │   ╚═════╝ ╚═════╝   ╚══════╝ ╚══╝╚══╝         │
+   │   cc-switcher · v3.3.1   ↳ Claude Code,       │
+   │                            any LLM            │
+   └──────────────────────────────────────────────┘</pre>
+  <p class="kicker">Getting Started · for total beginners</p>
+  <h1>Run Claude Code on <span class="g">any AI</span>,<br>for a fraction of the price</h1>
+  <p class="sub">New to Claude Code and AI? This is your zero-to-coding guide. Sign up, get a key,
+  and point Claude Code at models that are <b>5×–100× cheaper</b> — or completely free.</p>
+  <div class="pills">
+    <span class="pill"><b>18</b> providers</span>
+    <span class="pill"><b>1</b> OpenRouter key → 9 commands</span>
+    <span class="pill"><b>$0</b> free options</span>
+    <span class="pill"><b>2M</b> max context</span>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="n">$0.14</div><div class="l">cheapest /1M output</div></div>
+    <div class="stat"><div class="n">$6</div><div class="l">cheapest monthly plan</div></div>
+    <div class="stat"><div class="n">2M</div><div class="l">biggest context (Grok)</div></div>
+    <div class="stat"><div class="n">80%+</div><div class="l">open models on SWE-bench</div></div>
+  </div>
+  <div class="note">💱 Prices gathered <b>2026-06-22</b> and <b>will drift</b>. Treat them as ballpark;
+  confirm on each provider's page and run <code>cc-pricing</code> for live OpenRouter rates.</div>
+</div></header>
+
+<!-- WHAT / HOW -->
+<section id="start"><div class="wrap">
+  <p class="kicker">What this is</p>
+  <h2>Same Claude Code, different brain</h2>
+  <p class="lead"><b>Claude Code</b> is Anthropic's terminal AI coder. By default it talks to Anthropic's
+  models. <b>cc-switcher</b> flips a few environment variables so Claude Code talks to <i>another</i>
+  provider instead — then restores everything when you quit. Same interface, cheaper (or free) brain.</p>
+  <div class="diagram"><div class="mermaid">
+flowchart LR
+    you["You type: cc-deepseek"] --> sw["cc-switcher"]
+    sw -->|"sets temp env vars"| cc["Claude Code launches"]
+    cc -->|"Anthropic API format"| prov["DeepSeek / GLM / MiniMax / ..."]
+    sw -.->|"on quit: restores normal Claude"| done["back to normal"]
+  </div></div>
+
+  <h3>The mental model — only 3 things matter</h3>
+  <p>cc-switcher already knows two of them for every provider. <b>Your only real job is getting an API key.</b></p>
+  <table class="tbl">
+    <tr><th>Thing</th><th>Example</th><th>cc-switcher handles?</th></tr>
+    <tr><td>Endpoint (web address)</td><td class="mono">api.deepseek.com/anthropic</td><td>✅ knows it</td></tr>
+    <tr><td>Model name</td><td class="mono">deepseek-v4-pro</td><td>✅ knows it</td></tr>
+    <tr><td><b>API key</b> (your secret)</td><td class="mono">sk-or-v1-abc123…</td><td>❗ <b>you get this</b></td></tr>
+  </table>
+  <div class="diagram"><div class="mermaid">
+flowchart LR
+    A["1· Sign up on<br/>provider site"] --> B["2· Generate<br/>API key"]
+    B --> C["3· export KEY=…<br/>in shell profile"]
+    C --> D["4· cc-doctor<br/>(verify)"]
+    D --> E["5· cc-glm / cc-deepseek<br/>→ start coding"]
+  </div></div>
+</div></section>
+
+<!-- INSTALL -->
+<section id="install"><div class="wrap">
+  <p class="kicker">Step 0</p>
+  <h2>Install Claude Code + cc-switcher</h2>
+  <div class="cols2">
+    <div>
+      <h3>Install Claude Code</h3>
+      <pre class="code"><span class="c"># macOS / Linux / WSL</span>
+curl -fsSL https://claude.ai/install.sh | bash
+
+<span class="c"># or via npm (Node 18+)</span>
+npm install -g @anthropic-ai/claude-code</pre>
+      <p class="meta">You don't need a paid Anthropic plan to use other providers — Claude Code just needs to be installed.</p>
+    </div>
+    <div>
+      <h3>Install cc-switcher</h3>
+      <pre class="code">git clone https://github.com/jimstratus/cc-switcher.git
+
+<span class="c"># bash / zsh</span>
+source ./cc-switcher/bash/cc-switcher.sh
+
+<span class="c"># PowerShell</span>
+Import-Module ./cc-switcher/cc-switcher.psd1</pre>
+      <p class="meta">Add that line to <code>~/.bashrc</code> / <code>$PROFILE</code> to load every shell. Then run
+      <code>cc-help</code> and <code>cc-doctor</code>.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- DEMO -->
+<section id="demo"><div class="wrap">
+  <p class="kicker">See it in action</p>
+  <h2>A first session, start to finish</h2>
+  <p class="lead">This is what your very first run looks like: check your key, launch a <b>free</b> model,
+  ask it something, and quit back to normal. No setup beyond an API key.</p>
+  <div class="term">
+    <div class="term-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="ttl">bash — cc-switcher</span><span class="live">● replay</span>
+    </div>
+    <div class="term-body" id="termBody"></div>
+  </div>
+  <p class="term-cap">↑ Illustrative replay (loops). Want a real recording of your own session?
+  See <a href="record-demo.sh">record-demo.sh</a>.</p>
+</div></section>
+
+<!-- BILLING -->
+<section id="billing"><div class="wrap">
+  <p class="kicker">The #1 thing to understand</p>
+  <h2>Two ways you pay</h2>
+  <p class="lead">Every provider uses one (or both) of these. As a beginner, <b>start pay-per-token</b> to
+  learn what things actually cost, then switch to a subscription once you know your daily usage.</p>
+  <div class="cols2">
+    <div class="card"><h4>💧 Pay-per-token (metered)</h4>
+      <p class="meta">Prepay credits (e.g. $10). Each message costs a few cents. Pay only for what you use.</p>
+      <p class="meta"><b>Best for:</b> experimenting, light or spiky use.</p>
+      <p class="meta"><b>Watch out:</b> a huge job can cost more than expected — set a credit cap.</p>
+      <p class="meta"><b>Examples:</b> OpenRouter, DeepSeek, MiniMax/Kimi/Xiaomi PAYG.</p>
+    </div>
+    <div class="card"><h4>📅 Subscription ("coding plan")</h4>
+      <p class="meta">Fixed price/month (e.g. $18). Use as much as the quota allows. No math.</p>
+      <p class="meta"><b>Best for:</b> coding daily, wanting a predictable bill.</p>
+      <p class="meta"><b>Watch out:</b> hit the quota → wait for the rolling reset (often every 5 hrs).</p>
+      <p class="meta"><b>Examples:</b> Z.AI GLM, MiniMax Token Plan, Kimi Code, Ollama, OpenCode Go, ChatGPT.</p>
+    </div>
+  </div>
+  <div class="note cyan">🧠 <b>Prices are per 1 million tokens</b> (a token ≈ ¾ of a word). <b>Output</b> tokens
+  (what the AI writes) cost 2–5× more than input — and coding agents write a lot, so the
+  <b>output price is the number that matters most.</b></div>
+</div></section>
+
+<!-- PICK A PATH -->
+<section id="path"><div class="wrap">
+  <p class="kicker">Decision helper</p>
+  <h2>Pick your path</h2>
+  <div class="diagram"><div class="mermaid">
+flowchart TD
+    start(["I'm new — where do I start?"]) --> q1{"Willing to spend<br/>anything?"}
+    q1 -->|"No, $0 only"| free["🆓 FREE<br/>cc-nemotron, cc-owl<br/>cc-nvidia · Ollama free"]
+    q1 -->|"A little, pay-as-I-go"| q2{"Want ONE key for<br/>many models?"}
+    q1 -->|"Flat monthly"| sub["📅 SUBSCRIPTION<br/>Z.AI GLM $18 (best all-round)<br/>Xiaomi $6 (cheapest)<br/>MiniMax $20 · Kimi $19"]
+    q2 -->|"Yes (recommended)"| or["⭐ OpenRouter<br/>$10 → cc-glm, cc-gemini, cc-grok,<br/>cc-kimi, cc-mimo, cc-qwen, cc-minimax-or<br/>+ free models"]
+    q2 -->|"No, rock-bottom price"| ds["💸 DeepSeek direct<br/>cc-deepseek — cheapest<br/>serious coding"]
+  </div></div>
+  <table class="tbl">
+    <tr><th>If you…</th><th>Do this</th></tr>
+    <tr><td>Just want to explore for $0</td><td><code>cc-nemotron</code> / <code>cc-owl</code> (free via OpenRouter), or <code>cc-nvidia</code></td></tr>
+    <tr><td>Want the best first purchase</td><td>⭐ <b>OpenRouter</b>, $10 credits — one key, 9 commands</td></tr>
+    <tr><td>Want the absolute cheapest quality coding</td><td>💸 <b>DeepSeek</b> direct (<code>cc-deepseek</code>)</td></tr>
+    <tr><td>Code daily, hate surprise bills</td><td>📅 <b>Z.AI GLM Coding Plan</b> ($18/mo)</td></tr>
+  </table>
+</div></section>
+
+<!-- OPENROUTER -->
+<section id="openrouter"><div class="wrap">
+  <p class="kicker">⭐ The fastest start</p>
+  <h2>OpenRouter — one key, nine providers</h2>
+  <p class="lead">OpenRouter is a universal adapter: one account and one key unlock hundreds of models.
+  In cc-switcher, a single <code>OPENROUTER_API_KEY</code> powers <b>nine</b> commands — so you sign up
+  <i>once</i> and try almost the whole catalog.</p>
+  <div class="pills" style="justify-content:flex-start;margin:14px 0">
+    <span class="pill">cc-glm</span><span class="pill">cc-gemini</span><span class="pill">cc-grok</span>
+    <span class="pill">cc-kimi</span><span class="pill">cc-mimo</span><span class="pill">cc-qwen</span>
+    <span class="pill">cc-minimax-or</span><span class="pill">cc-nemotron <b>free</b></span>
+    <span class="pill">cc-owl <b>free</b></span><span class="pill">cc-openrouter &lt;model&gt;</span>
+  </div>
+  <h3>Sign up &amp; get your key (5 min)</h3>
+  <ol class="steps">
+    <li>Register at <a href="https://openrouter.ai/sign-up">openrouter.ai/sign-up</a> (Google / GitHub / email).</li>
+    <li>Add credits at <a href="https://openrouter.ai/settings/credits">settings/credits</a>.
+        💡 <b>Buy at least $10</b> — it lifts the free-model limit from 50 → <b>1,000 req/day</b> and never expires. (Card adds ~5.5% fee.)</li>
+    <li>Create a key at <a href="https://openrouter.ai/settings/keys">settings/keys</a> → it looks like <code>sk-or-v1-…</code>. <b>Copy it now — shown once.</b></li>
+    <li>Add to your shell profile and reload:</li>
+  </ol>
+  <pre class="code"><span class="c"># bash / zsh</span>
+export OPENROUTER_API_KEY=<span class="k">"sk-or-v1-..."</span>
+<span class="c"># PowerShell</span>
+$env:OPENROUTER_API_KEY = <span class="k">"sk-or-v1-..."</span>
+
+cc-doctor        <span class="c"># verify</span>
+cc-glm           <span class="c"># GLM-5.2 — great all-round coder, 1M context</span>
+cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
+  <div class="note">OpenRouter is <b>pay-per-token only — no monthly plan.</b> The <code>:free</code> models
+  (<code>cc-nemotron</code>, <code>cc-owl</code>) cost nothing but are rate-limited.</div>
+</div></section>
+
+<!-- PROVIDERS -->
+<section id="providers"><div class="wrap">
+  <p class="kicker">Sign-up walkthroughs</p>
+  <h2>Every provider, at a glance</h2>
+  <p class="lead">Set up only the ones you want. Each card shows the command, the env var, where to sign up,
+  and how to get the key.</p>
+  <div class="grid">
+
+    <div class="card feature"><span class="tag">⭐ RECOMMENDED FIRST</span>
+      <h4>OpenRouter</h4><div class="cmd">cc-glm · cc-qwen · cc-kimi · +6 more</div>
+      <p class="meta"><b>Env:</b> <code>OPENROUTER_API_KEY</code> → <code>sk-or-v1-…</code></p>
+      <p class="meta"><b>Billing:</b> 💧 pay-per-token. One key, 9 commands + free models.</p>
+      <p class="links"><a href="https://openrouter.ai/sign-up">Sign up ↗</a> · <a href="https://openrouter.ai/settings/keys">Get key ↗</a></p>
+    </div>
+
+    <div class="card"><h4>💸 DeepSeek <span class="badge b-cheap">cheapest quality</span></h4>
+      <div class="cmd">cc-deepseek</div>
+      <p class="meta"><b>Env:</b> <code>DEEPSEEK_API_KEY</code> → <code>sk-…</code></p>
+      <p class="meta"><b>Billing:</b> 💧 PAYG. V4-Flash ~$0.14/$0.28; auto off-peak discounts + near-free cache hits. 1M context.</p>
+      <p class="links"><a href="https://platform.deepseek.com/sign_up">Sign up ↗</a> · <a href="https://api-docs.deepseek.com">Docs ↗</a></p>
+    </div>
+
+    <div class="card"><h4>📅 Z.AI / GLM <span class="badge b-cheap">best all-round</span></h4>
+      <div class="cmd">cc-glm (OpenRouter) · cc-zai-glm51 (direct)</div>
+      <p class="meta"><b>Env:</b> <code>ZAI_API_KEY</code> (or use OpenRouter)</p>
+      <p class="meta"><b>Billing:</b> 📅 GLM Coding Plan — Lite ~$18, Pro ~$72, Max ~$160. Opus-comparable, 1M context.</p>
+      <p class="links"><a href="https://z.ai/subscribe">Subscribe ↗</a> · <a href="https://docs.z.ai/devpack/tool/claude">Docs ↗</a></p>
+    </div>
+
+    <div class="card"><h4>MiniMax M3</h4>
+      <div class="cmd">cc-minimax (direct) · cc-minimax-or</div>
+      <p class="meta"><b>Env:</b> <code>MINIMAX_API_KEY</code> → <code>sk-…</code> / <code>sk-cp…</code></p>
+      <p class="meta"><b>Billing:</b> 💧 PAYG ~$0.30/$1.20 · 📅 Token Plan $20/$50/$120. 1M context.</p>
+      <p class="links"><a href="https://platform.minimax.io">Sign up ↗</a> · <a href="https://platform.minimax.io/docs/token-plan/claude-code">Docs ↗</a></p>
+    </div>
+
+    <div class="card"><h4>Moonshot / Kimi</h4>
+      <div class="cmd">cc-kimi</div>
+      <p class="meta"><b>Env:</b> <code>OPENROUTER_API_KEY</code> (or <code>KIMI_API_KEY</code>)</p>
+      <p class="meta"><b>Billing:</b> 💧 ~$0.95/$4.00 · 📅 Kimi Code $19→$199. Strong agentic coder, 256K context.</p>
+      <p class="links"><a href="https://platform.moonshot.ai">Sign up ↗</a></p>
+    </div>
+
+    <div class="card"><h4>💸 Xiaomi MiMo <span class="badge b-cheap">cheapest plan</span></h4>
+      <div class="cmd">cc-mimo (OpenRouter) · cc-xiaomi (direct)</div>
+      <p class="meta"><b>Env:</b> <code>XIAOMI_API_KEY</code> (or use OpenRouter)</p>
+      <p class="meta"><b>Billing:</b> 💧 ~$0.14/$0.28 · 📅 Token Plan from <b>$6/mo</b>. 1M flagship. <i>Xiaomi-account signup is China-leaning — use cc-mimo via OpenRouter to skip it.</i></p>
+      <p class="links"><a href="https://platform.xiaomimimo.com">Sign up ↗</a></p>
+    </div>
+
+    <div class="card"><h4>🆓 NVIDIA NIM</h4>
+      <div class="cmd">cc-nvidia</div>
+      <p class="meta"><b>Env:</b> <code>NVIDIA_API_KEY</code> → <code>nvapi-…</code></p>
+      <p class="meta"><b>Billing:</b> 🆓 free, rate-limited (~40 req/min). Top open coding models for dev/eval.</p>
+      <p class="links"><a href="https://build.nvidia.com">Sign up ↗</a> · <a href="https://build.nvidia.com/settings/api-keys">Get key ↗</a></p>
+    </div>
+
+    <div class="card"><h4>🆓 Ollama Cloud</h4>
+      <div class="cmd">cc-ollama-glm · cc-ollama-minimax</div>
+      <p class="meta"><b>Env:</b> <code>OLLAMA_API_KEY</code></p>
+      <p class="meta"><b>Billing:</b> 🆓 free tier · 📅 Pro $20 / Max $100. Hosted GLM-5.2 (976K) &amp; MiniMax M3 (512K).</p>
+      <p class="links"><a href="https://ollama.com">Sign up ↗</a> · <a href="https://ollama.com/settings/keys">Get key ↗</a></p>
+    </div>
+
+    <div class="card"><h4>📅 OpenCode Go</h4>
+      <div class="cmd">cc-opencode · cc-opencode-minimax</div>
+      <p class="meta"><b>Env:</b> <code>OPENCODE_GO_API_KEY</code></p>
+      <p class="meta"><b>Billing:</b> 📅 $5 first month then <b>$10/mo flat</b>. Open-weight models (GLM, MiniMax, Kimi, Qwen).</p>
+      <p class="links"><a href="https://opencode.ai/auth">Sign up ↗</a></p>
+    </div>
+
+    <div class="card"><h4>📅 OpenAI Codex</h4>
+      <div class="cmd">cc-codex (run cc-codex-login first)</div>
+      <p class="meta"><b>Auth:</b> OAuth via your ChatGPT account (no key)</p>
+      <p class="meta"><b>Billing:</b> 📅 ChatGPT Plus $20 / Pro $100–$200 include Codex (GPT-5.4).</p>
+      <p class="links"><a href="https://chatgpt.com/pricing">Plans ↗</a> · <a href="https://codex.openai.com">Docs ↗</a></p>
+    </div>
+
+    <div class="card"><h4>⚪ Anthropic (baseline)</h4>
+      <div class="cmd">cc-reset · cc-yolo</div>
+      <p class="meta">The quality you're saving against. Pro $20 / Max $100–$200. API: Opus $5/$25, Sonnet $3/$15, Haiku $1/$5.</p>
+      <p class="links"><a href="https://claude.com/pricing">Pricing ↗</a> · <a href="https://console.anthropic.com">Console ↗</a></p>
+    </div>
+
+  </div>
+</div></section>
+
+<!-- PRICING -->
+<section id="pricing"><div class="wrap">
+  <p class="kicker">Cheat-sheet</p>
+  <h2>Pricing — all providers</h2>
+  <p class="lead">USD per 1M tokens (input / output). <b>Output dominates coding cost.</b> Cheapest first.</p>
+  <table class="tbl">
+    <tr><th>Command</th><th>Model</th><th class="num">In $/1M</th><th class="num">Out $/1M</th><th>Verdict</th></tr>
+    <tr><td class="mono">cc-mimo / cc-xiaomi</td><td>MiMo v2.5</td><td class="num">0.14</td><td class="num">0.28</td><td><span class="badge b-cheap">cheapest</span></td></tr>
+    <tr><td class="mono">cc-deepseek</td><td>DeepSeek V4-Flash</td><td class="num">0.14</td><td class="num">0.28</td><td><span class="badge b-cheap">frontier floor</span></td></tr>
+    <tr><td class="mono">cc-qwen</td><td>Qwen3-Coder</td><td class="num">0.22</td><td class="num">1.80</td><td><span class="badge b-cheap">cheap</span></td></tr>
+    <tr><td class="mono">cc-minimax</td><td>MiniMax M3</td><td class="num">0.30</td><td class="num">1.20</td><td><span class="badge b-cheap">great value</span></td></tr>
+    <tr><td class="mono">cc-deepseek</td><td>DeepSeek V4-Pro*</td><td class="num">0.44</td><td class="num">0.87</td><td><span class="badge b-cheap">top coding*</span></td></tr>
+    <tr><td class="mono">cc-kimi</td><td>Kimi K2.7-Code</td><td class="num">~0.95</td><td class="num">~4.00</td><td><span class="badge b-mid">strong</span></td></tr>
+    <tr><td class="mono">cc-glm</td><td>GLM-5.2</td><td class="num">1.40</td><td class="num">4.40</td><td><span class="badge b-mid">opus-class</span></td></tr>
+    <tr><td class="mono">cc-qwen</td><td>Qwen3.7 Max</td><td class="num">0.78</td><td class="num">3.90</td><td><span class="badge b-mid">flagship</span></td></tr>
+    <tr><td class="mono">cc-gemini</td><td>Gemini 3.1 Pro</td><td class="num">2.00</td><td class="num">12.00</td><td><span class="badge b-prem">premium</span></td></tr>
+    <tr><td class="mono">cc-grok</td><td>Grok 4.x</td><td class="num">3.00</td><td class="num">15.00</td><td><span class="badge b-prem">premium</span></td></tr>
+    <tr class="base"><td class="mono">—</td><td>Anthropic Sonnet 4.6</td><td class="num">3.00</td><td class="num">15.00</td><td>baseline</td></tr>
+    <tr class="base"><td class="mono">—</td><td>Anthropic Opus 4.8</td><td class="num">5.00</td><td class="num">25.00</td><td>baseline</td></tr>
+    <tr><td class="mono">cc-nemotron / cc-owl / cc-nvidia</td><td>Nemotron · Owl · NIM</td><td class="num">FREE</td><td class="num">FREE</td><td><span class="badge b-free">🆓 free</span></td></tr>
+  </table>
+  <p class="meta">* DeepSeek V4-Pro promo; list $1.74/$3.48. Cache hits cost ~1/10 of input.</p>
+
+  <h3>Subscriptions (flat monthly)</h3>
+  <table class="tbl">
+    <tr><th>Provider</th><th>Cheapest</th><th>Mid</th><th>Top</th><th>Command</th></tr>
+    <tr><td><b>Xiaomi MiMo</b> Token Plan</td><td><span class="badge b-cheap">$6 Lite</span></td><td>$16 / $50</td><td>$100</td><td class="mono">cc-xiaomi</td></tr>
+    <tr><td><b>Z.AI GLM</b> ⭐</td><td>~$18 Lite</td><td>~$72 Pro</td><td>~$160</td><td class="mono">cc-glm</td></tr>
+    <tr><td><b>Kimi Code</b></td><td>$19</td><td>$39 / $99</td><td>$199</td><td class="mono">cc-kimi</td></tr>
+    <tr><td><b>MiniMax</b> Token Plan</td><td>$20</td><td>$50</td><td>$120</td><td class="mono">cc-minimax</td></tr>
+    <tr><td><b>Ollama Cloud</b></td><td>Free / $20</td><td>—</td><td>$100</td><td class="mono">cc-ollama-*</td></tr>
+    <tr><td><b>OpenCode Go</b></td><td><span class="badge b-cheap">$10 flat</span></td><td>—</td><td>—</td><td class="mono">cc-opencode-*</td></tr>
+    <tr><td><b>ChatGPT/Codex</b></td><td>$20</td><td>$100</td><td>$200</td><td class="mono">cc-codex</td></tr>
+    <tr class="base"><td>Anthropic (baseline)</td><td>$20 Pro</td><td>$100</td><td>$200</td><td class="mono">cc-reset</td></tr>
+  </table>
+
+  <div class="chart">
+    <h4>💵 Approx cost of ~2M output tokens of coding (one busy day)</h4>
+    <div class="row"><span class="lbl">MiMo / DS-Flash</span><div class="track"><div class="fill" style="width:1.2%"></div></div><span class="val">$0.60</span></div>
+    <div class="row"><span class="lbl">MiniMax M3</span><div class="track"><div class="fill" style="width:4.8%"></div></div><span class="val">$2.40</span></div>
+    <div class="row"><span class="lbl">Qwen Coder</span><div class="track"><div class="fill" style="width:7.2%"></div></div><span class="val">$3.60</span></div>
+    <div class="row"><span class="lbl">Kimi</span><div class="track"><div class="fill cyan" style="width:16%"></div></div><span class="val">$8.00</span></div>
+    <div class="row"><span class="lbl">GLM-5.2</span><div class="track"><div class="fill cyan" style="width:17.6%"></div></div><span class="val">$8.80</span></div>
+    <div class="row"><span class="lbl">Gemini 3.1</span><div class="track"><div class="fill amber" style="width:48%"></div></div><span class="val">$24</span></div>
+    <div class="row"><span class="lbl">Anthropic Opus</span><div class="track"><div class="fill red" style="width:100%"></div></div><span class="val">$50</span></div>
+    <p class="legend">The cheapest options cost pennies to a couple dollars for work that runs $24–$50 on premium models.</p>
+  </div>
+</div></section>
+
+<!-- CONTEXT -->
+<section id="context"><div class="wrap">
+  <p class="kicker">Memory</p>
+  <h2>Context windows — the 1M+ club</h2>
+  <p class="lead">"Context" is how much the model holds in its head at once. Anthropic's default is 200K;
+  many providers here offer <b>1 million+</b>, so you can throw whole codebases at them.
+  cc-switcher <b>auto-unlocks</b> the full window for any flagship ≥ 500K.</p>
+  <div class="chart">
+    <h4>🪟 Flagship context window by command (K tokens) — bigger = remembers more</h4>
+    <div class="row"><span class="lbl">cc-grok 🥇</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">2000K</span></div>
+    <div class="row"><span class="lbl">cc-mimo</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
+    <div class="row"><span class="lbl">cc-xiaomi</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
+    <div class="row"><span class="lbl">cc-nemotron</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
+    <div class="row"><span class="lbl">cc-owl</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
+    <div class="row"><span class="lbl">cc-deepseek</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="val">1000K</span></div>
+    <div class="row"><span class="lbl">cc-glm</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="val">1000K</span></div>
+    <div class="row"><span class="lbl">cc-gemini</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="val">1000K</span></div>
+    <div class="row"><span class="lbl">cc-minimax</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="val">1000K</span></div>
+    <div class="row"><span class="lbl">cc-qwen</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="val">1000K</span></div>
+    <div class="row"><span class="lbl">cc-ollama-glm</span><div class="track"><div class="fill cyan" style="width:48.8%"></div></div><span class="val">976K</span></div>
+    <div class="row"><span class="lbl">cc-ollama-minimax</span><div class="track"><div class="fill cyan" style="width:25.6%"></div></div><span class="val">512K</span></div>
+    <div class="row"><span class="lbl">cc-kimi</span><div class="track"><div class="fill amber" style="width:12.8%"></div></div><span class="val">256K</span></div>
+    <div class="row"><span class="lbl">cc-codex</span><div class="track"><div class="fill amber" style="width:10%"></div></div><span class="val">200K</span></div>
+    <div class="row"><span class="lbl">cc-nvidia</span><div class="track"><div class="fill amber" style="width:6.4%"></div></div><span class="val">128K</span></div>
+    <p class="legend">Most of the 1M+ club is also <b>cheap</b> — big memory no longer means premium price.
+    (Anthropic's default is 200K for reference.)</p>
+  </div>
+  <div class="note">⚠️ For mixed-tier providers (<code>cc-mimo</code>, <code>cc-qwen</code>) only the flagship is full 1M;
+  the cheaper <code>/model haiku</code> brain may be 256K. cc-switcher shows the big number but the API enforces the real limit.</div>
+</div></section>
+
+<!-- BENCHMARKS -->
+<section id="bench"><div class="wrap">
+  <p class="kicker">How good are they?</p>
+  <h2>Benchmarks — the cheap models caught up</h2>
+  <p class="lead">On <b>SWE-bench Verified</b> (fixing real GitHub issues — the test most like Claude Code work),
+  a cluster of cheap providers sits <b>level with Google's flagship</b> and only ~8 points behind the best.</p>
+  <div class="chart">
+    <h4>🏁 SWE-bench Verified (% of real coding tasks solved) — higher = better</h4>
+    <div class="row"><span class="lbl">Opus 4.8 ⚪</span><div class="track"><div class="fill red" style="width:88.6%"></div></div><span class="val">88.6%</span></div>
+    <div class="row"><span class="lbl">Gemini 3.1</span><div class="track"><div class="fill amber" style="width:80.6%"></div></div><span class="val">80.6%</span></div>
+    <div class="row"><span class="lbl">DeepSeek V4 🟢</span><div class="track"><div class="fill" style="width:80.6%"></div></div><span class="val">80.6%</span></div>
+    <div class="row"><span class="lbl">MiniMax M3 🟢</span><div class="track"><div class="fill" style="width:80.5%"></div></div><span class="val">80.5%</span></div>
+    <div class="row"><span class="lbl">Qwen3.7 Max 🟢</span><div class="track"><div class="fill" style="width:80.4%"></div></div><span class="val">80.4%</span></div>
+    <div class="row"><span class="lbl">Kimi K2.6 🟢</span><div class="track"><div class="fill" style="width:80.2%"></div></div><span class="val">80.2%</span></div>
+    <div class="row"><span class="lbl">MiMo v2.5</span><div class="track"><div class="fill" style="width:78.9%"></div></div><span class="val">78.9%</span></div>
+    <div class="row"><span class="lbl">Nemotron 🆓</span><div class="track"><div class="fill cyan" style="width:71.9%"></div></div><span class="val">71.9%</span></div>
+    <p class="legend">GLM-5.2 skipped Verified but <b>tops the open field on the newer SWE-bench Pro (62.1)</b>, beating GPT-5.5 there.</p>
+  </div>
+  <div class="note">📐 Read with a grain of salt: vendor-reported numbers use their own test harness; OpenAI &amp; xAI
+  stopped publishing Verified, so GPT-5.x / Grok aren't directly comparable. Sources:
+  <a href="https://artificialanalysis.ai/leaderboards/models">Artificial Analysis</a>,
+  <a href="https://swebench.com">SWE-bench</a>, and vendor model cards.</div>
+  <p><b>The takeaway:</b> the gap between an 80% and an 88% model is small for most real tasks — but the price
+  gap is <b>6×–100×</b>. <b>Let cost, not capability, drive your choice when starting out.</b></p>
+</div></section>
+
+<!-- RECIPES -->
+<section id="recipes"><div class="wrap">
+  <p class="kicker">Copy-paste starts</p>
+  <h2>Recommended recipes</h2>
+  <div class="grid">
+    <div class="card"><h4>🆓 A · Spend $0</h4>
+      <pre class="code"><span class="c"># sign up for OpenRouter (no card)</span>
+export OPENROUTER_API_KEY=<span class="k">"sk-or-v1-..."</span>
+cc-nemotron   <span class="c"># free, 1M ctx</span>
+cc-owl        <span class="c"># free, agentic</span></pre>
+      <p class="meta">Add <code>cc-nvidia</code> + Ollama free tier for more. Rate-limited, great for learning.</p>
+    </div>
+    <div class="card feature"><span class="tag">RECOMMENDED</span><h4>💧 B · Cheapest real coding</h4>
+      <pre class="code"><span class="c"># OpenRouter + $10 credits</span>
+export OPENROUTER_API_KEY=<span class="k">"sk-or-v1-..."</span>
+cc-glm        <span class="c"># quality daily driver</span>
+cc-qwen       <span class="c"># or cheapest</span>
+<span class="c"># want rock-bottom? add DeepSeek:</span>
+cc-deepseek</pre>
+      <p class="meta">9 providers + free models from one ~$10 signup.</p>
+    </div>
+    <div class="card"><h4>📅 C · Flat monthly bill</h4>
+      <pre class="code"><span class="c"># subscribe at z.ai/subscribe (~$18)</span>
+export ZAI_API_KEY=<span class="k">"..."</span>
+cc-zai-glm51  <span class="c"># or cc-glm via OpenRouter</span>
+<span class="c"># budget: Xiaomi $6 or OpenCode Go $10</span></pre>
+      <p class="meta">Predictable cost, no per-token math.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- REFERENCE (README content as HTML) -->
+<section id="reference"><div class="wrap">
+  <p class="kicker">Reference</p>
+  <h2>Commands &amp; how it works</h2>
+
+  <h3>How cc-switcher works under the hood</h3>
+  <div class="diagram"><div class="mermaid">
+flowchart LR
+    shell["your shell"] -->|"cc-mimo / cc-deepseek / etc"| sw["cc-switcher"]
+    sw -->|"reads catalog"| cat["data/providers.json"]
+    sw -->|"sets per-session env"| env["ANTHROPIC_BASE_URL<br/>ANTHROPIC_AUTH_TOKEN<br/>ANTHROPIC_DEFAULT_OPUS/SONNET/HAIKU_MODEL<br/>(auto) CLAUDE_CODE_MAX_CONTEXT_TOKENS"]
+    sw -->|"&amp; claude"| cc["Claude Code"]
+    env -.-> cc
+    cc -->|"Anthropic API contract"| ep["Provider endpoint"]
+    sw -.->|"on exit"| restore["restores prior env"]
+  </div></div>
+
+  <h3>Provider commands</h3>
+  <table class="tbl">
+    <tr><th>Command</th><th>Provider</th><th>Context</th></tr>
+    <tr><td class="mono">cc-deepseek</td><td>DeepSeek V4 (direct)</td><td>1M</td></tr>
+    <tr><td class="mono">cc-glm</td><td>GLM-5.2 (OpenRouter)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-gemini</td><td>Gemini 3.1 Pro (OpenRouter)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-grok</td><td>Grok 4.20 (OpenRouter)</td><td><b>2M</b></td></tr>
+    <tr><td class="mono">cc-kimi</td><td>Kimi K2.7 Code (OpenRouter)</td><td>256K</td></tr>
+    <tr><td class="mono">cc-minimax</td><td>MiniMax M3 (direct)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-minimax-or</td><td>MiniMax M3 (OpenRouter, US)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-mimo</td><td>MiMo V2.5 (Xiaomi via OpenRouter)</td><td>1M</td></tr>
+    <tr><td class="mono">cc-xiaomi</td><td>Xiaomi MiMo (token-plan, direct)</td><td>1M</td></tr>
+    <tr><td class="mono">cc-nvidia</td><td>NVIDIA NIM (free)</td><td>128K</td></tr>
+    <tr><td class="mono">cc-nemotron</td><td>Nemotron 3 Super (OpenRouter, free)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-qwen</td><td>Qwen3.7 Max (OpenRouter)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-ollama-glm</td><td>GLM-5.2 (Ollama Cloud)</td><td>976K</td></tr>
+    <tr><td class="mono">cc-ollama-minimax</td><td>MiniMax M3 (Ollama Cloud)</td><td>512K</td></tr>
+    <tr><td class="mono">cc-owl</td><td>Owl Alpha (OpenRouter, free)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-codex</td><td>OpenAI Codex (OAuth)</td><td>200K</td></tr>
+    <tr><td class="mono">cc-opencode &lt;model&gt;</td><td>OpenCode Go generic</td><td>—</td></tr>
+    <tr><td class="mono">cc-opencode-minimax</td><td>MiniMax M3 via OpenCode Go</td><td>205K</td></tr>
+    <tr><td class="mono">cc-openrouter &lt;model&gt;</td><td>any OpenRouter model</td><td>—</td></tr>
+    <tr><td class="mono">cc-zai-glm51</td><td>Z.AI GLM-5.2 [slow, China]</td><td>1M</td></tr>
+  </table>
+
+  <h3>Utility commands</h3>
+  <table class="tbl">
+    <tr><th>Command</th><th>What it does</th></tr>
+    <tr><td class="mono">cc-help</td><td>Full command catalog</td></tr>
+    <tr><td class="mono">cc-launch</td><td>Numbered interactive picker (forgot a command name? use this)</td></tr>
+    <tr><td class="mono">cc-doctor</td><td>Validate API keys + ping endpoints</td></tr>
+    <tr><td class="mono">cc-pricing</td><td>Live OpenRouter pricing (5-min cache)</td></tr>
+    <tr><td class="mono">cc-status</td><td>Show current provider env vars</td></tr>
+    <tr><td class="mono">cc-usage</td><td>Token usage history (last 20 sessions)</td></tr>
+    <tr><td class="mono">cc-reset</td><td>Clear overrides → native Anthropic</td></tr>
+    <tr><td class="mono">cc-yolo</td><td>Native Anthropic + --dangerously-skip-permissions</td></tr>
+    <tr><td class="mono">cc-codex-login / cc-codex-logout</td><td>Codex OAuth device flow</td></tr>
+  </table>
+  <p class="meta">Inside a session, <code>/model opus|sonnet|haiku</code> swaps the provider's three tiers.
+  Append <code>--yolo</code> to any command to skip permission prompts.</p>
+
+  <h3>Tips for someone brand-new to AI</h3>
+  <ol class="steps">
+    <li><b>Keep API keys secret.</b> They cost money. Put them in your shell profile, never in code or git.</li>
+    <li><b>Set a spending cap</b> on OpenRouter (per-key credit limit). Prepaid credits are your safety net.</li>
+    <li><b>Start cheap, taste-test.</b> Run the same prompt through <code>cc-deepseek</code>, <code>cc-glm</code>, <code>cc-qwen</code> — they're cheap enough to compare freely.</li>
+    <li><b>Use <code>cc-launch</code></b> if you forget command names — it's a menu.</li>
+    <li><b>Make beginner mistakes on free models</b> (<code>cc-nemotron</code>) where they cost nothing.</li>
+    <li><b>Run <code>cc-doctor</code></b> when something fails — it tells you if a key's missing or the endpoint's down.</li>
+    <li><b>You can always <code>cc-reset</code></b> back to normal Claude. Your shell is never left in a weird state.</li>
+    <li><b>Check <code>cc-usage</code></b> after a few sessions to see real spend — it demystifies cost fast.</li>
+  </ol>
+</div></section>
+
+<footer><div class="wrap">
+  <p>Built for <b>cc-switcher v3.3.1</b> · prices &amp; model versions verified 2026-06-22 and will drift —
+  always check provider pages and run <code>cc-pricing</code>.</p>
+  <p><a href="https://github.com/jimstratus/cc-switcher">GitHub</a> ·
+     <a href="onboarding.md">Markdown version</a> ·
+     <a href="api-key-safety.md">🔒 Key safety</a> ·
+     <a href="../.env.example">.env.example</a> ·
+     <a href="../README.md">README</a> ·
+     <a href="architecture.md">Architecture</a></p>
+</div></footer>
+
+<script>
+  // ── animated first-session terminal (self-contained, no deps) ──
+  (function(){
+    var body=document.getElementById('termBody'); if(!body) return;
+    var steps=[
+      ['cmd','cc-doctor'],
+      ['out','✔ OPENROUTER_API_KEY   found','ok'],
+      ['out','✔ openrouter.ai         reachable (148 ms)','ok'],
+      ['out','✔ claude                on PATH','ok'],
+      ['pause',700],
+      ['cmd','cc-nemotron'],
+      ['out','▸ provider: NVIDIA Nemotron 3 Super  (FREE · 1M context)','info'],
+      ['out','▸ launching Claude Code…','dim'],
+      ['pause',450],
+      ['ask','reverse a singly linked list in Python'],
+      ['out','Nemotron','aihdr'],
+      ['out','def reverse(head):','ai'],
+      ['out','    prev = None','ai'],
+      ['out','    while head:','ai'],
+      ['out','        head.next, prev, head = prev, head, head.next','ai'],
+      ['out','    return prev','ai'],
+      ['pause',1200],
+      ['cmd','exit'],
+      ['out','✔ restored native Anthropic environment','dim'],
+      ['pause',1700],
+      ['clear']
+    ];
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var cur=document.createElement('span'); cur.className='cursor';
+    function reset(){ body.innerHTML=''; body.appendChild(cur); }
+    function line(cls){ var d=document.createElement('span'); d.className='ln '+(cls||''); body.insertBefore(d,cur); return d; }
+    function typeInto(d, prefix, text, speed, done){
+      d.innerHTML=prefix; var i=0;
+      (function tick(){ if(i<text.length){ d.appendChild(document.createTextNode(text[i++])); setTimeout(tick,speed); } else done(); })();
+    }
+    if(reduce){
+      // static frame: render everything once, no looping/typing
+      reset(); body.removeChild(cur);
+      steps.forEach(function(s){
+        if(s[0]==='cmd'){ var d=line(); d.innerHTML='<span class="p">$ </span>'; d.appendChild(document.createTextNode(s[1])); }
+        else if(s[0]==='ask'){ var a=line(); a.innerHTML='<span class="info">&gt; </span>'; a.appendChild(document.createTextNode(s[1])); }
+        else if(s[0]==='out'){ var o=line(s[2]||''); o.textContent=s[1]; }
+      });
+      return;
+    }
+    function run(i){
+      if(i>=steps.length){ setTimeout(function(){ reset(); run(0); }, 300); return; }
+      var s=steps[i], next=function(){ run(i+1); };
+      if(s[0]==='clear'){ reset(); setTimeout(next,200); }
+      else if(s[0]==='pause'){ setTimeout(next,s[1]); }
+      else if(s[0]==='cmd'){ typeInto(line(), '<span class="p">$ </span>', s[1], 34, function(){ setTimeout(next,300); }); }
+      else if(s[0]==='ask'){ typeInto(line(), '<span class="info">&gt; </span>', s[1], 30, function(){ setTimeout(next,430); }); }
+      else { var d=line(s[2]||''); d.textContent=s[1]; setTimeout(next, s[2]==='ai'?90:150); }
+    }
+    reset(); run(0);
+  })();
+
+  mermaid.initialize({
+    startOnLoad:true,
+    theme:'base',
+    themeVariables:{
+      darkMode:true, background:'#141b24',
+      primaryColor:'#1a232e', primaryTextColor:'#e6edf3', primaryBorderColor:'#2d3f4e',
+      lineColor:'#37c2d6', secondaryColor:'#11171f', tertiaryColor:'#0a0e13',
+      fontFamily:"ui-monospace, 'SF Mono', monospace", fontSize:'14px',
+      nodeBorder:'#3ad07a', clusterBkg:'#11171f', clusterBorder:'#22303c'
+    }
+  });
+</script>
+</body>
+</html>
