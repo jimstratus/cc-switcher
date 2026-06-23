@@ -3,12 +3,12 @@
 Unless marked otherwise, entries apply to both the PowerShell module and the
 bash port — the two implementations share the catalog and feature set.
 
-## Z.AI GLM-5.1 (`cc-zai-glm51`) — Slow
+## Z.AI GLM-5.2 (`cc-zai-glm51`) — Slow
 
 The Z.AI Anthropic-compatible endpoint (`https://api.z.ai/api/anthropic`) is
 China-based; round-trip latency from US is prohibitive for interactive coding.
 
-**Workaround:** Use `cc-glm` (OpenRouter route to `z-ai/glm-5.1`). Same model,
+**Workaround:** Use `cc-glm` (OpenRouter route to `z-ai/glm-5.2`). Same model,
 US/EU latency.
 
 This command is kept and tagged `[SLOW]` so it sorts last in `cc-launch` and
@@ -46,20 +46,27 @@ recognize, and the fix requires two env vars set together: `CLAUDE_CODE_MAX_CONT
 plus `DISABLE_COMPACT=1` (`MAX_CONTEXT_TOKENS` only takes effect when
 `DISABLE_COMPACT` is also set, per Claude Code's docs).
 
-**As of v3.2.0, `cc-switcher` auto-derives both env vars** when a provider's
-flagship-tier context is `>= 500000`. No catalog edit required for these:
+**`cc-switcher` auto-derives both env vars** when a provider's flagship-tier
+context is `>= 500000`. No catalog edit required for these:
 
 | Provider | Auto-applied? | Flagship context |
 |---|:---:|---|
-| `cc-deepseek` (V4 Pro) | yes | 1M (uniform across tiers) |
-| `cc-mimo` (MiMo V2.5-Pro on OpenRouter) | yes | 1M (flagship/standard) |
-| `cc-nemotron` (Nemotron 3 Super) | yes | 1M (uniform across tiers) |
-| `cc-owl` (Owl Alpha) | yes | 1M (uniform across tiers) |
-| `cc-qwen` (Qwen3.6-Plus on OpenRouter) | yes | 1M (flagship only) |
+| `cc-grok` (Grok 4.20) | yes | 2M |
+| `cc-mimo` (MiMo V2.5-Pro on OpenRouter) | yes | 1M (flagship/standard; fast tier 256K) |
 | `cc-xiaomi` (MiMo V2.5-Pro direct SGP) | yes | 1M (flagship only) |
-| `cc-minimax` (M2.7) | no | ~200K (auto-derive does not trigger) |
-| `cc-glm`, `cc-zai-glm51` | no | 200K |
-| `cc-kimi` | no | 256K (below the 500K threshold) |
+| `cc-nemotron` (Nemotron 3 Super, free) | yes | 1M (uniform across tiers) |
+| `cc-owl` (Owl Alpha, free) | yes | 1M (uniform across tiers) |
+| `cc-deepseek` (V4 Pro) | yes | 1M (uniform across tiers) |
+| `cc-glm`, `cc-zai-glm51` (GLM-5.2) | yes | 1M |
+| `cc-gemini` (Gemini 3.1 Pro) | yes | 1M |
+| `cc-minimax`, `cc-minimax-or` (MiniMax M3) | yes | 1M |
+| `cc-qwen` (Qwen3.7 Max on OpenRouter) | yes | 1M (flagship only) |
+| `cc-ollama-glm` (GLM-5.2, Ollama Cloud) | yes | 976K |
+| `cc-ollama-minimax` (MiniMax M3, Ollama Cloud) | yes | 512K |
+| `cc-kimi` (K2.7 Code) | no | 256K (below the 500K threshold) |
+| `cc-opencode-minimax` | no | ~205K (OpenCode Go cap unverified) |
+| `cc-codex` | no | 200K |
+| `cc-nvidia` | no | 128K |
 
 See [`docs/architecture.md`](docs/architecture.md#auto-context-derivation) for
 the threshold rationale. To opt in a sub-500K provider explicitly, add an
@@ -87,7 +94,7 @@ Acceptable for opus-primary workflows.
 ## OpenCode Go GLM removed
 
 `cc-opencode-glm51` and `cc-opencode-glm5t` were removed in 3.0.0 because
-`cc-glm` (OpenRouter) covers GLM-5.1 with US/EU latency and no local proxy.
+`cc-glm` (OpenRouter) covers GLM-5.2 with US/EU latency and no local proxy.
 
 The local Python proxy at `<your-tools-path>\claude-code-proxy` is now
 orphaned.

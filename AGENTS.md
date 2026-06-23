@@ -84,7 +84,7 @@ These are load-bearing. If you change one without updating the other(s), things 
 
 2. **The `flagship → opus, standard → sonnet, fast → haiku` tier mapping is the public contract.** Translation happens in `Invoke-CCProvider` (`lib/providers.ps1`) / `invoke_cc_provider` (`bash/lib/providers.sh`). Renaming would break every user's `/model opus|sonnet|haiku` muscle memory. Catalog uses the semantic names; Claude Code's wire protocol uses the Anthropic names.
 
-3. **Auto-context threshold (`>= 500000`) is deliberately tuned.** See `docs/architecture.md` for the rationale. It cleanly separates 1M-class flagships (DeepSeek, MiMo v2.5-Pro, Qwen3.6-Plus, Xiaomi v2.5-Pro) from 256K and 200K models where losing auto-compact would be a bad trade. Don't lower the threshold without reading the rationale.
+3. **Auto-context threshold (`>= 500000`) is deliberately tuned.** See `docs/architecture.md` for the rationale. It cleanly separates 1M-class flagships (DeepSeek, MiMo v2.5-Pro, Qwen3.7 Max, Xiaomi v2.5-Pro) from 256K and 200K models where losing auto-compact would be a bad trade. Don't lower the threshold without reading the rationale.
 
 4. **The catalog (`data/providers.json`) is the source of truth for which providers exist.** Never hardcode a provider name, model id, base URL, or auth-var name inside `lib/` or `bash/lib/`. The dispatchers read it all from JSON. Wrapper functions are one-liners that pass an id to the dispatcher.
 
