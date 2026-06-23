@@ -7,27 +7,59 @@
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"
         integrity="sha384-rbtjAdnIQE/aQJGEgXrVUlMibdfTSa4PQju4HDhN3sR2PmaKFzhEafuePsl9H/9I"
         crossorigin="anonymous"></script>
+<script>
+  // Apply a saved theme override BEFORE first paint (no flash). System default
+  // (no override) is handled purely by CSS @media (prefers-color-scheme).
+  try{ var _t=localStorage.getItem('cc-theme');
+       if(_t==='light'||_t==='dark') document.documentElement.setAttribute('data-theme',_t); }catch(e){}
+</script>
 <style>
   :root{
+    /* ── DARK palette (default) ── */
     --bg:#0b0f14; --bg2:#11171f; --panel:#141b24; --panel2:#1a232e;
-    --ink:#e6edf3; --mut:#9fb0c0; --dim:#6e8294;
+    --ink:#e6edf3; --head:#ffffff; --mut:#9fb0c0; --dim:#6e8294;
     --line:#22303c; --line2:#2d3f4e;
     --grn:#3ad07a; --grn2:#1f8a4c; --cyan:#37c2d6; --amber:#f5b942; --red:#ff6b6b;
+    --glow:#11202b; --navbg:rgba(11,15,20,.82); --codeink:#bfe9ff;
+    --track:#0a0e13; --shadow:rgba(0,0,0,.45);
+    color-scheme:dark;
     --mono:'SF Mono',ui-monospace,'Cascadia Code','JetBrains Mono',Menlo,Consolas,monospace;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   }
+  /* ── LIGHT palette ── shared by system-default (no override) and explicit toggle ── */
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme]){
+      --bg:#f6f8fb; --bg2:#eef2f7; --panel:#ffffff; --panel2:#f1f5f9;
+      --ink:#1f2a36; --head:#0b1722; --mut:#516172; --dim:#69788a;
+      --line:#dde5ee; --line2:#c8d4e0;
+      --grn:#1f9d57; --grn2:#34c47b; --cyan:#0e8fa6; --amber:#b8740b; --red:#d64545;
+      --glow:#dcecf7; --navbg:rgba(246,248,251,.85); --codeink:#0b6b86;
+      --track:#0a0e13; --shadow:rgba(15,30,50,.12);
+      color-scheme:light;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f8fb; --bg2:#eef2f7; --panel:#ffffff; --panel2:#f1f5f9;
+    --ink:#1f2a36; --head:#0b1722; --mut:#516172; --dim:#69788a;
+    --line:#dde5ee; --line2:#c8d4e0;
+    --grn:#1f9d57; --grn2:#34c47b; --cyan:#0e8fa6; --amber:#b8740b; --red:#d64545;
+    --glow:#dcecf7; --navbg:rgba(246,248,251,.85); --codeink:#0b6b86;
+    --track:#0a0e13; --shadow:rgba(15,30,50,.12);
+    color-scheme:light;
+  }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#11202b 0%,var(--bg) 60%);
-       color:var(--ink);font-family:var(--sans);line-height:1.65;font-size:16px}
+  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,var(--glow) 0%,var(--bg) 60%);
+       color:var(--ink);font-family:var(--sans);line-height:1.65;font-size:16px;
+       transition:background-color .25s ease,color .25s ease}
   a{color:var(--cyan);text-decoration:none}
   a:hover{text-decoration:underline}
   code,.mono{font-family:var(--mono)}
   code:not(pre code){background:var(--panel2);border:1px solid var(--line);padding:.08em .4em;
-       border-radius:5px;font-size:.86em;color:#bfe9ff}
+       border-radius:5px;font-size:.86em;color:var(--codeink)}
   .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
   h2{font-size:1.7rem;margin:0 0 .2em;letter-spacing:-.01em}
-  h3{font-size:1.18rem;margin:1.4em 0 .4em;color:#fff}
+  h3{font-size:1.18rem;margin:1.4em 0 .4em;color:var(--head)}
   section{padding:54px 0;border-top:1px solid var(--line)}
   section>.wrap>p:first-of-type{color:var(--mut)}
   .kicker{font-family:var(--mono);font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;
@@ -36,12 +68,17 @@
 
   /* nav */
   nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
-      background:rgba(11,15,20,.82);border-bottom:1px solid var(--line)}
+      background:var(--navbg);border-bottom:1px solid var(--line);transition:background-color .25s ease}
   nav .wrap{display:flex;align-items:center;gap:18px;height:54px;overflow-x:auto}
-  nav .brand{font-family:var(--mono);font-weight:700;color:#fff;white-space:nowrap}
+  nav .brand{font-family:var(--mono);font-weight:700;color:var(--head);white-space:nowrap}
+  .theme-btn{margin-left:auto;flex:none;background:var(--panel2);border:1px solid var(--line2);
+       color:var(--ink);border-radius:8px;padding:4px 9px;font-size:.95rem;line-height:1;
+       cursor:pointer;transition:border-color .15s,color .15s}
+  .theme-btn:hover{border-color:var(--grn);color:var(--grn)}
+  .theme-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
   nav .brand b{color:var(--grn)}
   nav a{color:var(--mut);font-size:.85rem;white-space:nowrap}
-  nav a:hover{color:#fff;text-decoration:none}
+  nav a:hover{color:var(--head);text-decoration:none}
 
   /* hero */
   .hero{padding:64px 0 46px;text-align:center}
@@ -98,7 +135,7 @@
   .chart h4{margin:0 0 16px;font-size:.95rem;color:var(--mut);font-weight:600}
   .row{display:grid;grid-template-columns:150px 1fr 70px;align-items:center;gap:12px;margin:7px 0}
   .row .lbl{font-family:var(--mono);font-size:.8rem;color:var(--ink);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .row .track{background:#0a0e13;border-radius:6px;height:22px;overflow:hidden;border:1px solid var(--line)}
+  .row .track{background:var(--track);border-radius:6px;height:22px;overflow:hidden;border:1px solid var(--line)}
   .row .fill{height:100%;border-radius:5px 0 0 5px;background:linear-gradient(90deg,var(--grn2),var(--grn))}
   .row .fill.cyan{background:linear-gradient(90deg,#1c7e8c,var(--cyan))}
   .row .fill.amber{background:linear-gradient(90deg,#a87a16,var(--amber))}
@@ -111,7 +148,7 @@
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;
        transition:border-color .15s,transform .15s}
   .card:hover{border-color:var(--line2);transform:translateY(-2px)}
-  .card h4{margin:0 0 4px;font-size:1.05rem;color:#fff}
+  .card h4{margin:0 0 4px;font-size:1.05rem;color:var(--head)}
   .card .cmd{font-family:var(--mono);font-size:.8rem;color:var(--grn);margin-bottom:10px}
   .card .meta{font-size:.85rem;color:var(--mut);margin:6px 0}
   .card .meta b{color:var(--ink);font-weight:600}
@@ -167,6 +204,9 @@
 
   footer{padding:40px 0;border-top:1px solid var(--line);color:var(--dim);font-size:.85rem;text-align:center}
   .anchor{position:relative;top:-60px;visibility:hidden}
+  /* smooth theme transitions on the big surfaces */
+  .card,.chart,.note,.stat,.pill,.diagram,.tbl,.tbl td,.tbl th,.term-bar,footer,.theme-btn{
+       transition:background-color .25s ease,border-color .25s ease,color .25s ease}
 </style>
 </head>
 <body>
@@ -184,6 +224,7 @@
   <a href="#bench">Benchmarks</a>
   <a href="#recipes">Recipes</a>
   <a href="#reference">Reference</a>
+  <button id="themeToggle" class="theme-btn" type="button" aria-label="Toggle light or dark theme" title="Toggle theme">🌗</button>
 </div></nav>
 
 <header class="hero"><div class="wrap">
@@ -738,17 +779,59 @@ flowchart LR
     reset(); run(0);
   })();
 
-  mermaid.initialize({
-    startOnLoad:true,
-    theme:'base',
-    themeVariables:{
-      darkMode:true, background:'#141b24',
-      primaryColor:'#1a232e', primaryTextColor:'#e6edf3', primaryBorderColor:'#2d3f4e',
-      lineColor:'#37c2d6', secondaryColor:'#11171f', tertiaryColor:'#0a0e13',
-      fontFamily:"ui-monospace, 'SF Mono', monospace", fontSize:'14px',
-      nodeBorder:'#3ad07a', clusterBkg:'#11171f', clusterBorder:'#22303c'
+  // ── theme controller: system default + persisted override + mermaid re-theming ──
+  (function(){
+    var root=document.documentElement, KEY='cc-theme';
+    function resolved(){
+      var a=root.getAttribute('data-theme');
+      if(a) return a;
+      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
     }
-  });
+    function mermaidVars(theme){
+      return theme==='light' ? {
+        darkMode:false, background:'#ffffff',
+        primaryColor:'#eef2f7', primaryTextColor:'#1f2a36', primaryBorderColor:'#c8d4e0',
+        lineColor:'#0e8fa6', secondaryColor:'#f1f5f9', tertiaryColor:'#ffffff',
+        fontFamily:"ui-monospace, 'SF Mono', monospace", fontSize:'14px',
+        nodeBorder:'#1f9d57', clusterBkg:'#eef2f7', clusterBorder:'#dde5ee'
+      } : {
+        darkMode:true, background:'#141b24',
+        primaryColor:'#1a232e', primaryTextColor:'#e6edf3', primaryBorderColor:'#2d3f4e',
+        lineColor:'#37c2d6', secondaryColor:'#11171f', tertiaryColor:'#0a0e13',
+        fontFamily:"ui-monospace, 'SF Mono', monospace", fontSize:'14px',
+        nodeBorder:'#3ad07a', clusterBkg:'#11171f', clusterBorder:'#22303c'
+      };
+    }
+    // stash each diagram's source so we can re-render cleanly on theme change
+    var diagrams=[].slice.call(document.querySelectorAll('.mermaid'));
+    diagrams.forEach(function(d){ d.setAttribute('data-src', d.textContent); });
+    function renderMermaid(){
+      var theme=resolved();
+      mermaid.initialize({ startOnLoad:false, theme:'base', themeVariables:mermaidVars(theme) });
+      diagrams.forEach(function(d){ d.removeAttribute('data-processed'); d.innerHTML=d.getAttribute('data-src'); });
+      try{ mermaid.run({nodes:diagrams}); }catch(e){}
+    }
+    var btn=document.getElementById('themeToggle');
+    function syncBtn(){
+      var t=resolved();
+      if(btn){ btn.textContent = t==='light' ? '🌙' : '☀️';
+               btn.setAttribute('title', t==='light' ? 'Switch to dark' : 'Switch to light'); }
+    }
+    renderMermaid(); syncBtn();
+    if(btn) btn.addEventListener('click', function(){
+      var next = resolved()==='light' ? 'dark' : 'light';
+      root.setAttribute('data-theme', next);
+      try{ localStorage.setItem(KEY, next); }catch(e){}
+      syncBtn(); renderMermaid();
+    });
+    // follow OS changes only while the user hasn't explicitly overridden
+    if(window.matchMedia){
+      var mq=window.matchMedia('(prefers-color-scheme: light)');
+      var onChange=function(){ if(!root.getAttribute('data-theme')){ syncBtn(); renderMermaid(); } };
+      if(mq.addEventListener) mq.addEventListener('change', onChange);
+      else if(mq.addListener) mq.addListener(onChange);
+    }
+  })();
 </script>
 </body>
 </html>
