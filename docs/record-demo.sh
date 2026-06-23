@@ -23,7 +23,10 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-OUT="${1:-docs/demo.cast}"
+# Default output sits next to this script (docs/demo.cast) regardless of where
+# it's invoked from, so running it from inside docs/ doesn't make docs/docs/.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OUT="${1:-$SCRIPT_DIR/demo.cast}"
 WANT_GIF=false
 [[ "${2:-}" == "--gif" ]] && WANT_GIF=true
 

@@ -125,7 +125,7 @@ To make it load in every new shell, add that `source`/`Import-Module` line to yo
 Then run **`cc-help`** to see every command, and **`cc-doctor`** to check which keys
 you have set.
 
-> 🗂️ **Tip:** copy [`.env.example`](../.env.example) to `~/.cc-switcher.env`, fill in
+> 🗂️ **Tip:** copy [`.env.example`](https://github.com/jimstratus/cc-switcher/blob/main/.env.example) to `~/.cc-switcher.env`, fill in
 > the keys you have, and add `[ -f ~/.cc-switcher.env ] && source ~/.cc-switcher.env`
 > to your `~/.bashrc`. Before you paste any real key, read the 5-minute
 > **[API key safety guide](api-key-safety.md)** — it covers keeping keys out of git
@@ -187,7 +187,7 @@ flowchart TD
 
 **Short version:**
 - **Just exploring, $0:** `cc-nemotron` or `cc-owl` (free via OpenRouter), or `cc-nvidia`.
-- **Best first purchase:** **OpenRouter**, $10 of credits. One key, nine `cc-*` commands, plus the free models. *(See §6.)*
+- **Best first purchase:** **OpenRouter**, $10 of credits. One key, nine provider `cc-*` commands (two of them free) plus the generic `cc-openrouter`. *(See §6.)*
 - **Want the absolute cheapest quality coding:** **DeepSeek** direct.
 - **Code every day, hate surprise bills:** **Z.AI GLM Coding Plan** ($18/mo) — easiest signup, best value.
 
@@ -197,7 +197,7 @@ flowchart TD
 
 OpenRouter is a "universal adapter" — one account and one API key gives you access to
 hundreds of models from dozens of companies. **In cc-switcher, a single
-`OPENROUTER_API_KEY` unlocks NINE commands:**
+`OPENROUTER_API_KEY` unlocks nine provider commands:**
 
 `cc-glm` · `cc-gemini` · `cc-grok` · `cc-kimi` · `cc-mimo` · `cc-minimax-or` · `cc-qwen` · `cc-nemotron` (free) · `cc-owl` (free) · plus the generic `cc-openrouter <model>`
 
@@ -541,4 +541,4 @@ Append `--yolo` to any command to skip permission prompts (use carefully).
 
 *Built for cc-switcher v3.3.1. Prices and model versions verified 2026-06-22 and will
 drift — always check the linked provider pages and run `cc-pricing`. Found something
-out of date? See [CONTRIBUTING.md](../CONTRIBUTING.md).*
+out of date? See [CONTRIBUTING.md](https://github.com/jimstratus/cc-switcher/blob/main/CONTRIBUTING.md).*

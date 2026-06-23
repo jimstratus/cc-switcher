@@ -277,7 +277,7 @@ flowchart LR
   <p>cc-switcher already knows two of them for every provider. <b>Your only real job is getting an API key.</b></p>
   <div class="tw"><table class="tbl">
     <tr><th>Thing</th><th>Example</th><th>cc-switcher handles?</th></tr>
-    <tr><td>Endpoint (web address)</td><td class="mono">api.deepseek.com/anthropic</td><td>✅ knows it</td></tr>
+    <tr><td>Endpoint (web address)</td><td class="mono">https://api.deepseek.com/anthropic</td><td>✅ knows it</td></tr>
     <tr><td>Model name</td><td class="mono">deepseek-v4-pro</td><td>✅ knows it</td></tr>
     <tr><td><b>API key</b> (your secret)</td><td class="mono">sk-or-v1-abc123…</td><td>❗ <b>you get this</b></td></tr>
   </table></div>
@@ -388,8 +388,8 @@ flowchart TD
   <p class="kicker">⭐ The fastest start</p>
   <h2>OpenRouter — one key, nine providers</h2>
   <p class="lead">OpenRouter is a universal adapter: one account and one key unlock hundreds of models.
-  In cc-switcher, a single <code>OPENROUTER_API_KEY</code> powers <b>nine</b> commands — so you sign up
-  <i>once</i> and try almost the whole catalog.</p>
+  In cc-switcher, a single <code>OPENROUTER_API_KEY</code> powers <b>nine</b> provider commands
+  (plus the generic <code>cc-openrouter</code>) — so you sign up <i>once</i> and try almost the whole catalog.</p>
   <div class="pills" style="justify-content:flex-start;margin:14px 0">
     <span class="pill">cc-glm</span><span class="pill">cc-gemini</span><span class="pill">cc-grok</span>
     <span class="pill">cc-kimi</span><span class="pill">cc-mimo</span><span class="pill">cc-qwen</span>
@@ -717,8 +717,8 @@ flowchart LR
   <p><a href="https://github.com/jimstratus/cc-switcher">GitHub</a> ·
      <a href="onboarding.md">Markdown version</a> ·
      <a href="api-key-safety.md">🔒 Key safety</a> ·
-     <a href="../.env.example">.env.example</a> ·
-     <a href="../README.md">README</a> ·
+     <a href="https://github.com/jimstratus/cc-switcher/blob/main/.env.example">.env.example</a> ·
+     <a href="https://github.com/jimstratus/cc-switcher/blob/main/README.md">README</a> ·
      <a href="architecture.md">Architecture</a></p>
 </div></footer>
 

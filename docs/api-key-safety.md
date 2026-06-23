@@ -21,7 +21,7 @@
 
 ✅ **Safe places**
 - Your shell profile: `~/.bashrc`, `~/.zshrc`, or PowerShell `$PROFILE`.
-- A dedicated ignored file you `source`, e.g. `~/.cc-switcher.env` (copy from [`.env.example`](../.env.example)).
+- A dedicated ignored file you `source`, e.g. `~/.cc-switcher.env` (copy from [`.env.example`](https://github.com/jimstratus/cc-switcher/blob/main/.env.example)).
 - A real secrets manager (1Password, `pass`, system keychain) if you want to level up.
 
 ❌ **Never put keys in**
@@ -30,7 +30,7 @@
 - A file literally named `.env` that you then `git add -f` (the `-f` defeats the gitignore — don't).
 
 cc-switcher's `.gitignore` already ignores `.env` and `.env.local`. The committed
-[`.env.example`](../.env.example) is a **template with empty values** — safe to share; your filled-in copy is not.
+[`.env.example`](https://github.com/jimstratus/cc-switcher/blob/main/.env.example) is a **template with empty values** — safe to share; your filled-in copy is not.
 
 ```bash
 # Good: keep secrets in an ignored file, load it from your profile
@@ -105,5 +105,5 @@ version control so you can `git diff` and undo. When in doubt, leave it off.
 
 ---
 
-*Part of the [cc-switcher](../README.md) docs. Questions or a security concern? See
-[CONTRIBUTING.md](../CONTRIBUTING.md).*
+*Part of the [cc-switcher](https://github.com/jimstratus/cc-switcher/blob/main/README.md) docs. Questions or a security concern? See
+[CONTRIBUTING.md](https://github.com/jimstratus/cc-switcher/blob/main/CONTRIBUTING.md).*
