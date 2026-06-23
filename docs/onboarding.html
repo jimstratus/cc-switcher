@@ -71,10 +71,12 @@
       background:var(--navbg);border-bottom:1px solid var(--line);transition:background-color .25s ease}
   nav .wrap{display:flex;align-items:center;gap:18px;height:54px;overflow-x:auto}
   nav .brand{font-family:var(--mono);font-weight:700;color:var(--head);white-space:nowrap}
-  .theme-btn{margin-left:auto;flex:none;background:var(--panel2);border:1px solid var(--line2);
-       color:var(--ink);border-radius:8px;padding:4px 9px;font-size:.95rem;line-height:1;
-       cursor:pointer;transition:border-color .15s,color .15s}
+  .theme-btn{margin-left:auto;flex:none;position:sticky;right:6px;z-index:3;
+       background:var(--panel2);border:1px solid var(--line2);color:var(--ink);
+       border-radius:8px;padding:6px 11px;font-size:1.05rem;line-height:1;cursor:pointer;
+       box-shadow:-14px 0 14px -8px var(--navbg);transition:border-color .15s,color .15s}
   .theme-btn:hover{border-color:var(--grn);color:var(--grn)}
+  .theme-btn:active{transform:scale(.94)}
   .theme-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
   nav .brand b{color:var(--grn)}
   nav a{color:var(--mut);font-size:.85rem;white-space:nowrap}
@@ -778,7 +780,10 @@ flowchart LR
     }
     reset(); run(0);
   })();
+</script>
 
+<!-- Theme controller in its own block so an error elsewhere can't disable the toggle. -->
+<script>
   // ── theme controller: system default + persisted override + mermaid re-theming ──
   (function(){
     var root=document.documentElement, KEY='cc-theme';
@@ -806,24 +811,32 @@ flowchart LR
     var diagrams=[].slice.call(document.querySelectorAll('.mermaid'));
     diagrams.forEach(function(d){ d.setAttribute('data-src', d.textContent); });
     function renderMermaid(){
-      var theme=resolved();
-      mermaid.initialize({ startOnLoad:false, theme:'base', themeVariables:mermaidVars(theme) });
-      diagrams.forEach(function(d){ d.removeAttribute('data-processed'); d.innerHTML=d.getAttribute('data-src'); });
-      try{ mermaid.run({nodes:diagrams}); }catch(e){}
+      // Guarded: if the mermaid CDN is blocked/failed (common on mobile data
+      // savers / content blockers), the theme toggle must still work.
+      if(typeof mermaid==='undefined') return;
+      try{
+        mermaid.initialize({ startOnLoad:false, theme:'base', themeVariables:mermaidVars(resolved()) });
+        diagrams.forEach(function(d){ d.removeAttribute('data-processed'); d.innerHTML=d.getAttribute('data-src'); });
+        mermaid.run({nodes:diagrams});
+      }catch(e){}
     }
     var btn=document.getElementById('themeToggle');
     function syncBtn(){
       var t=resolved();
       if(btn){ btn.textContent = t==='light' ? '🌙' : '☀️';
+               btn.setAttribute('aria-label', t==='light' ? 'Switch to dark theme' : 'Switch to light theme');
                btn.setAttribute('title', t==='light' ? 'Switch to dark' : 'Switch to light'); }
     }
-    renderMermaid(); syncBtn();
+    // Wire the toggle FIRST, before any mermaid work, so a mermaid failure
+    // can never leave the button dead.
+    syncBtn();
     if(btn) btn.addEventListener('click', function(){
       var next = resolved()==='light' ? 'dark' : 'light';
       root.setAttribute('data-theme', next);
       try{ localStorage.setItem(KEY, next); }catch(e){}
       syncBtn(); renderMermaid();
     });
+    renderMermaid();  // initial diagram render (guarded; safe if mermaid missing)
     // follow OS changes only while the user hasn't explicitly overridden
     if(window.matchMedia){
       var mq=window.matchMedia('(prefers-color-scheme: light)');
