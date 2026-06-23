@@ -17,6 +17,7 @@
 
 [![CI](https://github.com/jimstratus/cc-switcher/actions/workflows/ci.yml/badge.svg)](https://github.com/jimstratus/cc-switcher/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Getting Started](https://img.shields.io/badge/docs-Getting%20Started-3ad07a?logo=github)](https://jimstratus.github.io/cc-switcher/)
 
 > Multi-shell module for launching Claude Code against any Anthropic-compatible LLM provider — DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, and more.
 
@@ -26,9 +27,9 @@ Available for both **PowerShell** (Windows/macOS) and **bash/zsh** (Linux/macOS)
 
 It also tracks token usage per session, caches OpenRouter pricing, ships a doctor command for health checks, and provides tab completion for OpenRouter / OpenCode Go / NVIDIA NIM model IDs.
 
-> 👋 **New to Claude Code and AI providers?** Start with the **[Getting Started guide](docs/onboarding.md)** —
-> sign-up links, API-key steps, plan vs. pay-per-token pricing, cost/benchmark/context comparisons, and
-> recommended starting recipes. There's a visual [HTML version](docs/onboarding.html) too (open it in a browser).
+> 👋 **New to Claude Code and AI providers?** Read the **[Getting Started guide](https://jimstratus.github.io/cc-switcher/)**
+> (live site) — sign-up links, API-key steps, plan vs. pay-per-token pricing, cost/benchmark/context comparisons,
+> and recommended starting recipes, with a light/dark visual layout. Prefer Markdown? See [`docs/onboarding.md`](docs/onboarding.md).
 
 > Current release. Versions before 3.1.0 are summarized in `CHANGELOG.md`; public history starts at 3.1.0.
 
