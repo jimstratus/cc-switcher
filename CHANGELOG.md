@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+## 3.4.0 — 2026-07-10
+
+### Added
+
+- **`cc-atlas [model]`** — the **Atlas Cloud Coding Plan** on an Anthropic-native
+  endpoint at `https://api.atlascloud.ai`. Like `cc-nvidia` / `cc-openrouter`, it
+  serves **any Atlas model**: `cc-atlas <model>` overrides all three tiers with any
+  Atlas model id (org/model form, e.g. `zai-org/glm-5.2`, `deepseek-ai/deepseek-v4`,
+  `minimax/minimax-m3`); bare `cc-atlas` uses the **GLM-5.2** default (1M context,
+  auto-derives `CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576` + `DISABLE_COMPACT=1`). Auth
+  uses `ATLAS_CP_API_KEY` — the Coding Plan key, **distinct** from the regular
+  `ATLAS_API_KEY` used for Atlas's OpenAI-compatible `/v1` API. Sets
+  `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` per Atlas's docs.
+- `ATLAS_CP_API_KEY` added to the `cc-status` / `cc-doctor` key list.
+
+### Changed
+
+- `cc-reset` now also clears provider-specific `envVars` declared in the catalog
+  (previously only the fixed `ANTHROPIC_*` / `CLAUDE_CODE_*` set), so a skipped
+  restore after a hard interrupt can't leak them — e.g. Atlas's
+  `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` — into later native/other-provider
+  sessions.
+
 ## 3.3.1 — 2026-06-22
 
 ### Fixed

@@ -161,6 +161,22 @@ invoke_cc_opencode() {
 }
 
 #------------------------------------------------------------------------------
+# cc-atlas — Atlas Cloud Coding Plan; serves any model. Optional model arg
+# overrides all tiers, otherwise the catalog's atlas entry supplies the
+# GLM-5.2 default.
+#------------------------------------------------------------------------------
+invoke_cc_atlas() {
+  # Consume the first token as a model override only when it is not a Claude
+  # flag (e.g. --version, --yolo) — otherwise forward it to claude untouched.
+  local model=""
+  if (($# > 0)) && [[ "$1" != -* ]]; then
+    model="$1"
+    shift
+  fi
+  invoke_cc_provider "atlas" "$model" "$@"
+}
+
+#------------------------------------------------------------------------------
 # cc-nvidia — NVIDIA NIM launcher; optional model overrides all tiers,
 # otherwise the catalog's nvidia entry supplies tier defaults
 #------------------------------------------------------------------------------

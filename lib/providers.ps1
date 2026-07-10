@@ -119,6 +119,23 @@ function Invoke-CC-MiniMax-OR { param([string[]]$ClaudeArgs) Invoke-CCProvider -
 function Invoke-CC-Ollama-Glm { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'ollama-glm' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Ollama-MiniMax { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'ollama-minimax' -ClaudeArgs $ClaudeArgs }
 
+# Atlas Cloud: serves any model — bare command uses the catalog's GLM-5.2 default,
+# optional model arg overrides all three tiers with any Atlas model id. A leading
+# token starting with '-' (e.g. --version, --yolo) is a Claude flag, not a model
+# id, so forward it to claude instead of treating it as a model override.
+function Invoke-CC-Atlas {
+    param([string]$Model, [string[]]$ClaudeArgs)
+    if ($Model -and $Model.StartsWith('-')) {
+        $ClaudeArgs = @($Model) + @($ClaudeArgs)
+        $Model = $null
+    }
+    if ($Model) {
+        Invoke-CCProvider -Id 'atlas' -ModelOverride $Model -ClaudeArgs $ClaudeArgs
+    } else {
+        Invoke-CCProvider -Id 'atlas' -ClaudeArgs $ClaudeArgs
+    }
+}
+
 # NVIDIA: tier mapping by default, optional model override
 function Invoke-CC-Nvidia {
     param([string]$Model, [string[]]$ClaudeArgs)

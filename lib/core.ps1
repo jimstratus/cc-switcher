@@ -148,14 +148,26 @@ function Invoke-CC-Yolo {
 # Clear all provider overrides; restores native Anthropic on next `claude`
 function Reset-CC {
     [CmdletBinding()] param([switch]$Quiet)
-    foreach ($var in @(
+    $vars = [System.Collections.Generic.List[string]]@(
         'ANTHROPIC_BASE_URL','ANTHROPIC_AUTH_TOKEN','ANTHROPIC_MODEL',
         'ANTHROPIC_DEFAULT_OPUS_MODEL','ANTHROPIC_DEFAULT_SONNET_MODEL',
         'ANTHROPIC_DEFAULT_HAIKU_MODEL','ANTHROPIC_SMALL_FAST_MODEL',
         'API_TIMEOUT_MS','CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC',
         'CLAUDE_CODE_MAX_OUTPUT_TOKENS','CLAUDE_CODE_MAX_CONTEXT_TOKENS',
         'DISABLE_COMPACT'
-    )) {
+    )
+    # Also clear any provider-specific envVars declared in the catalog so a
+    # skipped restore (e.g. hard interrupt) can't leak them into later sessions.
+    try {
+        foreach ($p in Get-CCProviders) {
+            if ($p.ExtraEnv) {
+                foreach ($k in $p.ExtraEnv.PSObject.Properties.Name) {
+                    if ($vars -notcontains $k) { $vars.Add($k) }
+                }
+            }
+        }
+    } catch { }
+    foreach ($var in $vars) {
         [Environment]::SetEnvironmentVariable($var, $null, 'Process')
     }
     if (-not $Quiet) {
@@ -189,7 +201,8 @@ function Get-CC-Status {
     Write-Host ("-" * 70) -ForegroundColor Yellow
     foreach ($keyName in @('ANTHROPIC_API_KEY','OPENROUTER_API_KEY','DEEPSEEK_API_KEY',
                             'MINIMAX_API_KEY','NVIDIA_API_KEY','OPENCODE_GO_API_KEY',
-                            'ZAI_API_KEY','KIMI_API_KEY','XIAOMI_API_KEY','OLLAMA_API_KEY')) {
+                            'ZAI_API_KEY','KIMI_API_KEY','XIAOMI_API_KEY','OLLAMA_API_KEY',
+                            'ATLAS_CP_API_KEY')) {
         $val = [Environment]::GetEnvironmentVariable($keyName)
         $status = if ([string]::IsNullOrEmpty($val)) { "(not set)" } else { "(set, len=$($val.Length))" }
         Write-Host ("{0,-22} {1}" -f $keyName, $status)
