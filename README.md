@@ -10,7 +10,7 @@
    │   ╚██████╗╚██████╗       ███████║╚███╔███╔╝     ↳ any LLM    │
    │    ╚═════╝ ╚═════╝       ╚══════╝ ╚══╝╚══╝                   │
    │                                                              │
-   │    cc-switcher · v3.3.1  (PowerShell + Bash)                │
+   │    cc-switcher · v3.4.0  (PowerShell + Bash)                │
    │                                                              │
    └──────────────────────────────────────────────────────────────┘
 ```
@@ -133,6 +133,7 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 
 | Command | Provider | Tiers (flagship / standard / fast) |
 |---|---|---|
+| `cc-atlas [model]` | Atlas Cloud Coding Plan (any model, direct) · GLM-5.2 default · **1M** | glm-5.2 default, override with arg |
 | `cc-deepseek` | DeepSeek V4 (direct) | v4-pro / v4-pro / v4-flash |
 | `cc-glm` | GLM-5.2 (OpenRouter) · **1M** | glm-5.2 / glm-5.2 / glm-4.7-flash |
 | `cc-gemini` | Gemini 3.1 Pro (Google via OpenRouter) · **1M** | gemini-3.1-pro-preview (all three) |
@@ -205,6 +206,7 @@ $env:OLLAMA_API_KEY       = "..."         # Ollama Cloud (cc-ollama-glm, cc-olla
 $env:XIAOMI_API_KEY       = "..."         # Xiaomi MiMo direct (token-plan SGP)
 $env:ZAI_API_KEY          = "..."         # Z.AI direct (cc-zai-glm51)
 $env:KIMI_API_KEY         = "..."         # Moonshot direct (optional)
+$env:ATLAS_CP_API_KEY     = "..."         # Atlas Cloud Coding Plan (cc-atlas) — distinct from the regular ATLAS_API_KEY
 ```
 
 ### bash / zsh
@@ -219,6 +221,7 @@ export OLLAMA_API_KEY="..."                # Ollama Cloud (cc-ollama-glm, cc-oll
 export XIAOMI_API_KEY="..."                # Xiaomi MiMo direct (token-plan SGP)
 export ZAI_API_KEY="..."                  # Z.AI direct (cc-zai-glm51)
 export KIMI_API_KEY="..."                 # Moonshot direct (optional)
+export ATLAS_CP_API_KEY="..."             # Atlas Cloud Coding Plan (cc-atlas) — distinct from the regular ATLAS_API_KEY
 ```
 
 Run `cc-doctor` to verify keys are present and reachable.

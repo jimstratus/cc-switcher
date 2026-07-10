@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.3.1",
+  "version": "3.4.0",
   "_doc": {
     "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1/core.sh translates to Claude Code's env var contract.",
     "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",
@@ -11,6 +11,24 @@
     "_tier_mapping": "flagship → /model opus, standard → /model sonnet, fast → /model haiku"
   },
   "providers": {
+    "atlas": {
+      "command": "cc-atlas",
+      "displayName": "Atlas Cloud Coding Plan (any model, GLM-5.2 default)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://api.atlascloud.ai",
+      "authVar": "ATLAS_CP_API_KEY",
+      "tiers": {
+        "flagship": "zai-org/glm-5.2",
+        "standard": "zai-org/glm-5.2",
+        "fast": "zai-org/glm-5.2"
+      },
+      "context": 1048576,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "envVars": { "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1" },
+      "notes": "Atlas Cloud Coding Plan — Anthropic-native endpoint at api.atlascloud.ai that serves ANY Atlas model (like cc-openrouter / cc-nvidia). 'cc-atlas <model>' overrides all three tiers with any Atlas model id in org/model form (e.g. zai-org/glm-5.2, deepseek-ai/deepseek-v4, minimax/minimax-m3); bare 'cc-atlas' uses the GLM-5.2 default in tiers below. Auth uses ATLAS_CP_API_KEY (the Coding Plan key, DISTINCT from the regular ATLAS_API_KEY / ATLASCLOUD_API_KEY used for Atlas's OpenAI-compatible /v1 API). Default GLM-5.2 is 1M context so core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 + DISABLE_COMPACT=1 (see _doc._auto_context). Caveat: when you override to a smaller-window model, the env var stays at 1M (over-promises) — use /compact manually near the real limit. Atlas docs recommend CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1 (set via envVars). Discover model ids at https://www.atlascloud.ai/models.",
+      "docs": "https://www.atlascloud.ai/docs/coding-plan/api"
+    },
     "deepseek": {
       "command": "cc-deepseek",
       "displayName": "DeepSeek V4",

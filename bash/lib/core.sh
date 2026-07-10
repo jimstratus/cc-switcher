@@ -34,6 +34,7 @@ _CC_API_KEY_VARS=(
   KIMI_API_KEY
   XIAOMI_API_KEY
   OLLAMA_API_KEY
+  ATLAS_CP_API_KEY
 )
 
 #------------------------------------------------------------------------------

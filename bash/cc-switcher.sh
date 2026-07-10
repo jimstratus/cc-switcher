@@ -1,11 +1,11 @@
 # =============================================================================
-# cc-switcher.sh — Claude Code multi-provider launcher (bash port v3.3.1)
+# cc-switcher.sh — Claude Code multi-provider launcher (bash port v3.4.0)
 # This file is sourced into interactive shells: it must not alter shell options
 # (set -e/-u/pipefail would leak into the user's session).
 # =============================================================================
 
 export CCSWITCHER_ROOT="${CCSWITCHER_ROOT:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)}"
-export CCSWITCHER_VERSION="3.3.1"
+export CCSWITCHER_VERSION="3.4.0"
 
 # Load library files in dependency order
 # shellcheck source=lib/core.sh
@@ -29,6 +29,7 @@ source "${CCSWITCHER_ROOT}/lib/update-check.sh"
 # Public aliases / functions
 # =============================================================================
 
+cc-atlas()          { invoke_cc_atlas "$@"; }
 cc-deepseek()       { invoke_cc_provider "deepseek" "" "$@"; }
 cc-glm()            { invoke_cc_provider "glm" "" "$@"; }
 cc-kimi()           { invoke_cc_provider "kimi" "" "$@"; }

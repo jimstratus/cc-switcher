@@ -1,11 +1,11 @@
 # =============================================================================
 # cc-switcher.psm1 — Claude Code multi-provider launcher
-# Version 3.3.1 — single source of truth: $script:CCSwitcherVersion below.
+# Version 3.4.0 — single source of truth: $script:CCSwitcherVersion below.
 # Repo: https://github.com/jimstratus/cc-switcher
 # =============================================================================
 
 $script:CCSwitcherRoot = $PSScriptRoot
-$script:CCSwitcherVersion = '3.3.1'
+$script:CCSwitcherVersion = '3.4.0'
 
 # Load lib files in dependency order. Tiny files — total parse <50ms.
 . (Join-Path $PSScriptRoot 'lib\core.ps1')
@@ -22,6 +22,7 @@ $script:CCSwitcherVersion = '3.3.1'
 Register-CCCompleters
 
 # Public command aliases (alphabetical, slow last)
+Set-Alias -Name cc-atlas             -Value Invoke-CC-Atlas
 Set-Alias -Name cc-deepseek          -Value Invoke-CC-DeepSeek
 Set-Alias -Name cc-glm               -Value Invoke-CC-Glm
 Set-Alias -Name cc-kimi              -Value Invoke-CC-Kimi
@@ -78,6 +79,7 @@ function Show-CCHelp {
     Write-Host ""
     Write-Host " Generic launchers (pass model id) " -ForegroundColor Yellow
     Write-Host ("-" * 78) -ForegroundColor DarkYellow
+    Write-Host "  cc-atlas <model>               Any Atlas Cloud model (omit for GLM-5.2 default)"
     Write-Host "  cc-openrouter <model>          Any OpenRouter model"
     Write-Host "  cc-opencode <model>            Any OpenCode Go model"
     Write-Host "  cc-nvidia <model>              Any NVIDIA NIM model (omit for tier defaults)"
@@ -134,7 +136,7 @@ switch ($bannerMode) {
             }
         }
         Write-Host ("  Providers: {0}" -f ($providerCmds -join ' ')) -ForegroundColor DarkGray
-        Write-Host "  Generic:   cc-openrouter <model>  cc-opencode <model>  cc-nvidia <model>" -ForegroundColor DarkGray
+        Write-Host "  Generic:   cc-atlas <model>  cc-openrouter <model>  cc-opencode <model>  cc-nvidia <model>" -ForegroundColor DarkGray
         Write-Host "  Utility:   cc-launch cc-pick cc-doctor cc-pricing cc-status cc-usage cc-reset cc-yolo cc-help" -ForegroundColor DarkGray
     }
 }
