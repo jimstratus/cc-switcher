@@ -166,8 +166,13 @@ invoke_cc_opencode() {
 # GLM-5.2 default.
 #------------------------------------------------------------------------------
 invoke_cc_atlas() {
-  local model="${1:-}"
-  if (($# > 0)); then shift; fi
+  # Consume the first token as a model override only when it is not a Claude
+  # flag (e.g. --version, --yolo) — otherwise forward it to claude untouched.
+  local model=""
+  if (($# > 0)) && [[ "$1" != -* ]]; then
+    model="$1"
+    shift
+  fi
   invoke_cc_provider "atlas" "$model" "$@"
 }
 

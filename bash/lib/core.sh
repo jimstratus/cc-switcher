@@ -256,6 +256,16 @@ reset_cc() {
     unset "$var" 2>/dev/null || true
   done
 
+  # Also clear any provider-specific envVars declared in the catalog so a
+  # skipped restore (e.g. hard interrupt) can't leak them into later sessions.
+  if command -v jq >/dev/null 2>&1 && [[ -f "${CC_CATALOG_PATH:-}" ]]; then
+    local ev
+    while IFS= read -r ev; do
+      ev="${ev%$'\r'}"   # strip trailing CR (Windows jq emits CRLF)
+      [[ -n "$ev" ]] && unset "$ev" 2>/dev/null || true
+    done < <(jq -r '.providers[].envVars // {} | keys[]' "$CC_CATALOG_PATH" 2>/dev/null)
+  fi
+
   if [[ "$quiet" != "true" ]]; then
     echo "[cc] Provider overrides cleared. Native Anthropic restored."
   fi

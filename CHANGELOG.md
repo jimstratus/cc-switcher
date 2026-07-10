@@ -17,6 +17,14 @@
   `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` per Atlas's docs.
 - `ATLAS_CP_API_KEY` added to the `cc-status` / `cc-doctor` key list.
 
+### Changed
+
+- `cc-reset` now also clears provider-specific `envVars` declared in the catalog
+  (previously only the fixed `ANTHROPIC_*` / `CLAUDE_CODE_*` set), so a skipped
+  restore after a hard interrupt can't leak them — e.g. Atlas's
+  `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` — into later native/other-provider
+  sessions.
+
 ## 3.3.1 — 2026-06-22
 
 ### Fixed
