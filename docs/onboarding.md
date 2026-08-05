@@ -315,11 +315,11 @@ up, and how to get the key. **You only need to set up the ones you actually want
   Kimi are OpenAI-only there) — that's why cc-switcher pins `cc-opencode-minimax`.
 - **Docs:** <https://opencode.ai/docs/providers/#opencode-go>
 
-### 📅 OpenAI Codex — via ChatGPT subscription · `cc-codex`
-- **Auth:** OAuth, not an API key. Run **`cc-codex-login`** first (browser device flow).
-- **Sign up:** <https://chatgpt.com/pricing> — Plus **$20/mo** / Pro $100–$200 include Codex.
-- **Why:** if you already pay for ChatGPT, you can drive GPT-5.4 from Claude Code at no
-  extra per-token cost.
+### OpenAI Codex — native CLI only
+- A ChatGPT subscription works with the native Codex CLI: run **`codex login --device-auth`**.
+- It cannot be reused as Claude Code provider auth. ChatGPT OAuth tokens are not valid for OpenAI's public API, which also lacks an Anthropic Messages endpoint.
+- `cc-codex` / `cc-codex-login` now explain this incompatibility instead of starting a login that cannot yield a working session.
+- To use GPT from Claude Code, run **`cc-openrouter openai/gpt-5.4`** with `OPENROUTER_API_KEY` (separate gateway billing).
 - **Docs:** <https://codex.openai.com>
 
 ### Reference: Anthropic itself (the baseline you're saving against) · `cc-reset`, `cc-yolo`
@@ -369,7 +369,7 @@ up, and how to get the key. **You only need to set up the ones you actually want
 | **MiniMax Token Plan** | $20 Plus | $50 Max | $120 Ultra | `cc-minimax` |
 | **Ollama Cloud** | Free / $20 Pro | — | $100 Max | `cc-ollama-*` |
 | **OpenCode Go** | $10/mo flat | — | — | `cc-opencode-*` |
-| **OpenAI ChatGPT/Codex** | $20 Plus | $100 Pro | $200 Pro | `cc-codex` |
+| **OpenAI ChatGPT/Codex** | $20 Plus | $100 Pro | $200 Pro | native `codex` only |
 | *Anthropic (baseline)* | *$20 Pro* | *$100 Max 5×* | *$200 Max 20×* | *`cc-reset`* |
 
 ### How much will I actually spend? (rough intuition)

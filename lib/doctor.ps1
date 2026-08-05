@@ -84,6 +84,10 @@ function Invoke-CC-Doctor {
     Write-Host ("-" * 78) -ForegroundColor DarkYellow
     $providers = Get-CCProviders | Sort-Object Command
     foreach ($p in $providers) {
+        if ($p.Disabled) {
+            Write-Host ("  [--] {0,-30} (disabled)" -f $p.Command) -ForegroundColor DarkGray
+            continue
+        }
         # Skip if auth var missing — we only ping endpoints the user can actually use
         $hasKey = -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable($p.AuthVar))
         if (-not $hasKey -and -not $p.RequiresOAuth) {

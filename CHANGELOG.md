@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Fixed
+
+- **`cc-codex-login` no longer runs a dead OAuth flow.** The previous code used
+  retired `oauth.openai.com/v1/*` endpoints and failed at device authorization
+  with HTTP 403. More importantly, current Codex device auth returns a ChatGPT
+  OAuth token that OpenAI explicitly does not accept on the public API, and
+  `api.openai.com/v1` does not implement Claude Code's Anthropic Messages wire
+  protocol. `cc-codex` and `cc-codex-login` now fail immediately with honest
+  migration guidance: use native `codex login --device-auth`, or use
+  `cc-openrouter openai/gpt-5.4` with `OPENROUTER_API_KEY` for GPT from Claude
+  Code. `cc-codex-logout` remains available to delete any legacy cached token.
+- Added generic catalog `disabled` / `disabledReason` handling in both ports so
+  menus and direct dispatcher calls cannot bypass a retired integration guard.
+
 ## 3.4.0 — 2026-07-10
 
 ### Added

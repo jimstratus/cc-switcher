@@ -138,7 +138,13 @@ invoke_cc_doctor() {
 
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    IFS='|' read -r _ command _ _ base_url auth_var _ _ _ _ _ _ <<< "$line"
+    local disabled
+    IFS='|' read -r _ command _ _ base_url auth_var _ _ _ _ _ _ disabled _ <<< "$line"
+
+    if [[ "$disabled" == "true" ]]; then
+      echo "  [--] $command (disabled)"
+      continue
+    fi
 
     # Check if we have auth for this provider
     local has_key=false

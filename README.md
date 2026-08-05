@@ -149,7 +149,7 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 | `cc-ollama-glm` | GLM-5.2 (Ollama Cloud) · 976K | glm-5.2:cloud (all three) |
 | `cc-ollama-minimax` | MiniMax M3 (Ollama Cloud) · 512K | minimax-m3:cloud (all three) |
 | `cc-owl` | Owl Alpha (OpenRouter Stealth, free) · **1M** | owl-alpha (all three) |
-| `cc-codex` | OpenAI Codex (OAuth) | gpt-5.4 (run `cc-codex-login` first) |
+| `cc-codex` | OpenAI Codex direct OAuth | **Unsupported migration guard** — see below |
 | `cc-opencode <model>` | OpenCode Go generic | model passed via arg |
 | `cc-opencode-minimax` | OpenCode Go MiniMax M3 (US) | minimax-m3 |
 | `cc-openrouter <model>` | OpenRouter generic | model passed via arg |
@@ -162,9 +162,9 @@ For providers whose flagship tier is ≥ 500K tokens, `cc-switcher` automaticall
 ```mermaid
 xychart-beta
     title "Flagship-tier context window by provider (K tokens)"
-    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "opencode-mm", "codex", "nvidia"]
+    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "opencode-mm", "nvidia"]
     y-axis "K tokens" 0 --> 2100
-    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 205, 200, 128]
+    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 205, 128]
 ```
 
 Every provider whose flagship tier is ≥ 500K (everything left of `kimi`) gets auto-context; `kimi` (256K) and below keep Claude Code's auto-compaction instead — see `docs/architecture.md` "Auto-context derivation" for the threshold rationale. Note `cc-opencode-minimax` runs MiniMax M3 but is pinned at ~205K because OpenCode Go's effective cap is unverified; use `cc-minimax` or `cc-minimax-or` for the guaranteed 1M window.
@@ -186,7 +186,8 @@ The provider catalog is JSON. Add or change providers by editing `data/providers
 | `cc-usage` | Token usage history (last 20 sessions) |
 | `cc-reset` | Clear overrides → native Anthropic |
 | `cc-yolo` | Native Anthropic + `--dangerously-skip-permissions` |
-| `cc-codex-login` / `cc-codex-logout` | Codex OAuth device flow |
+| `cc-codex-login` | Explains why direct ChatGPT OAuth is unsupported and shows alternatives |
+| `cc-codex-logout` | Deletes a legacy cc-switcher OAuth token cache, if present |
 
 ---
 
@@ -301,7 +302,7 @@ Runtime caches (`data/.pricing-cache.json`, `data/.usage-log.jsonl`, `bash/data/
 - bash 5.0+ or zsh 5.8+
 - [Claude Code](https://docs.anthropic.com/claude/docs/claude-code) installed and on `PATH` as `claude`
 - `jq` (required — all catalog parsing and usage aggregation)
-- `curl` (for `cc-doctor`, `cc-pricing`, and `cc-codex-login`)
+- `curl` (for `cc-doctor` and `cc-pricing`)
 - `sqlite3` (optional, for `cc-usage` enhanced history)
 
 ---

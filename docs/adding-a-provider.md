@@ -8,7 +8,7 @@ Two paths:
 
 - **Catalog-only** — works for the standard pattern: env-var auth, three-tier mapping, no custom logic. The dispatcher (`Invoke-CCProvider`) reads `data/providers.json` at runtime and handles everything generically. You still need a wrapper function and alias for the user-facing command, but the wrapper is one line. This is the right path for ~95% of providers, including the Cohere example below.
 
-- **Wrapper-needed** — the provider needs custom logic outside the catalog. Examples: OAuth flow (Codex), generic dispatcher with required model arg (`cc-openrouter`, `cc-opencode`). You write a real function in `lib/providers.ps1` (or a new file in `lib/`), bypassing or extending `Invoke-CCProvider`. Reach for this only when you've confirmed the standard path can't express what you need.
+- **Wrapper-needed** — the provider needs custom logic outside the catalog. Examples: a generic dispatcher with required model arg (`cc-openrouter`, `cc-opencode`) or a vendor-specific supported auth exchange. You write a real function in `lib/providers.ps1` (or a new file in `lib/`), bypassing or extending `Invoke-CCProvider`. Reach for this only when you've confirmed the standard path can't express what you need and the resulting credential is valid for an Anthropic-compatible endpoint.
 
 The Cohere example below is catalog-only.
 

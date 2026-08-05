@@ -27,7 +27,9 @@ list_cc_providers() {
       .value.tiers.fast,
       (.value.contextByTier.flagship // .value.context // 0),
       (.value.timeoutMs // 3000000),
-      (.value.disableNonEssential == true)
+      (.value.disableNonEssential == true),
+      (.value.disabled == true),
+      (.value.disabledReason // "")
     ] | map(tostring) | join("|")' "$CC_CATALOG_PATH" 2>/dev/null
 }
 
@@ -49,17 +51,26 @@ invoke_cc_provider() {
 
   # Fetch all provider fields in one jq pass
   local display_name base_url auth_var flagship standard fast
-  local context_flagship timeout_ms disable_noness requires_oauth
+  local context_flagship timeout_ms disable_noness requires_oauth disabled disabled_reason
   IFS='|' read -r display_name base_url auth_var flagship standard fast \
-      context_flagship timeout_ms disable_noness requires_oauth < <(
+      context_flagship timeout_ms disable_noness requires_oauth disabled disabled_reason < <(
     echo "$provider_json" | jq -r '[
         .displayName, .baseUrl, .authVar,
         .tiers.flagship, .tiers.standard, .tiers.fast,
         (.contextByTier.flagship // .context // 0),
         (.timeoutMs // 3000000),
         (.disableNonEssential == true),
-        (.requiresOAuth == true)
+        (.requiresOAuth == true),
+        (.disabled == true),
+        (.disabledReason // "")
       ] | map(tostring) | join("|")')
+
+  # Disabled catalog entries remain visible for migration/history, but every
+  # dispatcher path (including cc-launch) must stop before auth and launch.
+  if [[ "$disabled" == "true" ]]; then
+    echo "[ERROR] cc-${id} is disabled: $disabled_reason" >&2
+    return 1
+  fi
 
   # Auth token
   local auth_token

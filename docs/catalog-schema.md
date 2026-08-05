@@ -117,7 +117,11 @@ Extra `{ NAME: value }` map applied AFTER the auto-context block (`lib/core.ps1:
 
 ### `requiresOAuth`
 
-Boolean. When `true`, `Invoke-CCProvider` routes auth through `Get-CC-CodexToken` instead of reading `authVar`. Currently used only by `codex`. The user must run `cc-codex-login` first to populate the token cache at `~/.config/codex-oauth/token.json`.
+Boolean. Historical extension point that routes auth through `Get-CC-CodexToken` instead of reading `authVar`. No supported provider currently uses this path; the retired Codex entry is blocked by `disabled` before auth.
+
+### `disabled` / `disabledReason`
+
+Set `disabled: true` when an entry must remain visible for migration/history but must never launch. Both dispatchers stop before auth and print `disabledReason`. Use this only for retired integrations; remove ordinary providers from the catalog instead of accumulating disabled entries.
 
 ### `notes`
 
@@ -135,6 +139,7 @@ The dispatcher (`Invoke-CCProvider` in `lib/providers.ps1`) tolerates missing op
 - Missing `envVars` → empty hashtable, no extra env applied.
 - Missing `context` AND `contextByTier` → `$flagshipContext = 0`, auto-context skipped.
 - Missing `notes` / `docs` → ignored.
+- Missing `disabled` → provider remains launchable.
 - Missing `timeoutMs` → falls through to `Invoke-CCLaunch`'s 3000000 default.
 
 **Mandatory fields:**
