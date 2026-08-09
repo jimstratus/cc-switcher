@@ -16,6 +16,9 @@
   child-`pwsh` proxies in Windows PowerShell 5. This fixes both the initial
   `cc-minimax is not recognized` error and the partial PS5 import that left
   `Invoke-CCLaunch` undefined after `cc-help`.
+- PowerShell resolves the legacy Codex token-cache location through .NET's
+  cross-platform user profile instead of the Windows-only `USERPROFILE`
+  variable, so the module also imports in Linux PowerShell and CI.
 - PowerShell environment restoration now removes variables that were originally
   absent instead of leaving empty-string entries behind. This keeps catalog
   `envVars`, including Muse tool-search settings, strictly session-scoped.

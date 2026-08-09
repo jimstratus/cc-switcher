@@ -15,6 +15,7 @@ parse errors and left `cc-minimax` present but unable to find `Invoke-CCLaunch`.
    `cc-minimax` launch through the Windows PowerShell proxy.
 4. Installed the loader through the existing shared wrapper and verified fresh
    real-user shell sessions.
+5. Ran the module-level smoke in Linux PowerShell CI after Windows passed.
 
 ## What happened
 The shared wrapper intentionally defined only `cc-help`, so every other `cc-*`
@@ -27,6 +28,11 @@ leaving a partially imported module.
 Lazy loading hid every provider command, and the lazy entry point bypassed the
 module's declared runtime boundary. Directly parsing a PowerShell 7 module in
 Windows PowerShell 5 can never be a safe compatibility strategy.
+
+The first Linux CI import also exposed a separate portability assumption:
+`lib/codex.ps1` built its legacy cache path from Windows-only `USERPROFILE`.
+Using .NET's `UserProfile` special folder keeps the module importable on all
+supported PowerShell platforms.
 
 ## Takeaway
 Expose all commands at profile load. Import normally in PowerShell 7; in Windows

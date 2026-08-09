@@ -1,9 +1,14 @@
 # =============================================================================
 # codex.ps1 — Unsupported direct Codex guard + legacy token-cache cleanup
-# Historical token cache: $env:USERPROFILE\.config\codex-oauth\token.json
+# Historical token cache: <user profile>/.config/codex-oauth/token.json
 # =============================================================================
 
-$script:CodexTokenCachePath = Join-Path $env:USERPROFILE '.config\codex-oauth\token.json'
+# USERPROFILE is Windows-specific and is unset on Linux CI. Ask .NET for the
+# cross-platform user profile so importing the module never depends on a shell-
+# specific environment variable.
+$script:CodexTokenCachePath = Join-Path `
+    ([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)) `
+    '.config\codex-oauth\token.json'
 
 function Get-CC-CodexToken {
     if (-not (Test-Path $script:CodexTokenCachePath)) { return $null }
