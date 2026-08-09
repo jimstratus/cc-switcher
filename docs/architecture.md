@@ -44,7 +44,8 @@ A typical invocation, end to end (using `cc-mimo` as the example):
 1. **Alias resolves.** `cc-mimo` → `Invoke-CC-MiMo` (cc-switcher.psm1:29).
 2. **Wrapper dispatches.** `Invoke-CC-MiMo` is a one-liner that calls `Invoke-CCProvider -Id 'mimo' -ClaudeArgs $ClaudeArgs` (`lib/providers.ps1:109`).
 3. **Dispatcher loads catalog.** `Invoke-CCProvider` calls `Get-CCProviders` (`lib/providers.ps1:46`), which parses `data/providers.json` once and projects each provider into a flat object (`lib/providers.ps1:17-43`).
-4. **Auth resolves.** If `requiresOAuth: true` (only Codex), `Get-CC-CodexToken` reads the cached OAuth token (`lib/providers.ps1:57-63`, `lib/codex.ps1:8-17`). Otherwise the dispatcher reads `[Environment]::GetEnvironmentVariable($p.AuthVar)` (`lib/providers.ps1:65`).
+4. **Disabled entries stop.** A catalog entry with `disabled: true` returns its `disabledReason` before auth or launch. The retired direct Codex integration uses this guard.
+5. **Auth resolves.** Supported providers read `[Environment]::GetEnvironmentVariable($p.AuthVar)`. The old `requiresOAuth` branch remains only for catalog compatibility; no supported provider currently uses it.
 5. **Tier names translate.** Catalog `tiers.flagship/standard/fast` → wrapper params `OpusModel/SonnetModel/HaikuModel` (`lib/providers.ps1:72-74`). The translation is the public contract — catalog uses semantic names, Claude Code uses Anthropic's product names.
 6. **Flagship context resolves.** `contextByTier.flagship` if present, else uniform `context` field, else `0` (`lib/providers.ps1:85-90`).
 7. **`Invoke-CCLaunch` runs** (`lib/core.ps1:6-137`). See "The env-var contract" below.
@@ -138,20 +139,16 @@ Use it for ad-hoc experimentation. If a particular OpenRouter model becomes a re
 
 `Invoke-CC-OpenCode` (`lib/providers.ps1:139-150`) is the OpenCode Go equivalent — same pattern, default `minimax-m2.7`, hardcoded base URL `https://opencode.ai/zen/go`, sets `disableNonEssential`.
 
-## Codex OAuth
+## Unsupported direct Codex OAuth
 
-`cc-codex-login` runs an OAuth device flow (`lib/codex.ps1:19-59`):
+`cc-codex` is retained only as a migration guard. A ChatGPT OAuth access token issued to Codex is not valid for OpenAI's public API, and the public OpenAI API does not expose the Anthropic Messages protocol Claude Code sends. Fixing the device-code exchange would therefore produce a token that still cannot launch a Claude Code session.
 
-1. POSTs to `oauth.openai.com/v1/device_authorization` for a `device_code` + `user_code` + `verification_uri`.
-2. Opens the verification URL in the browser, prints the user code.
-3. Polls `oauth.openai.com/v1/token` every 5s for up to 120s.
-4. On success, writes the token JSON to `~/.config/codex-oauth/token.json`.
+Both `cc-codex` and `cc-codex-login` stop immediately and recommend one of two supported paths:
 
-`Get-CC-CodexToken` (`lib/codex.ps1:8-17`) reads the cached token, returns `$null` if the file is missing or `expires_at` is in the past.
+- `codex login --device-auth` for the native Codex CLI and ChatGPT subscription.
+- `cc-openrouter openai/gpt-5.4` for GPT through an Anthropic-compatible gateway (requires `OPENROUTER_API_KEY` and is billed by that gateway).
 
-`Invoke-CCProvider` checks `requiresOAuth: true` in the catalog (`lib/providers.ps1:57-63`) and routes auth through `Get-CC-CodexToken` instead of reading an env var.
-
-`cc-codex-logout` deletes the cache file.
+`cc-codex-logout` remains as cleanup for the historical `~/.config/codex-oauth/token.json` cache. The catalog entry has `disabled: true` so `cc-launch`, `cc-pick`, and direct dispatcher calls cannot bypass the guard.
 
 ## Token usage tracking
 

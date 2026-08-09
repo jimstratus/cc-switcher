@@ -1,6 +1,6 @@
 # =============================================================================
-# codex.sh — OpenAI Codex OAuth device flow + launcher
-# Token cached at ~/.config/codex-oauth/token.json
+# codex.sh — Unsupported direct Codex guard + legacy token-cache cleanup
+# Historical token cache: ~/.config/codex-oauth/token.json
 # =============================================================================
 
 CC_CODEX_TOKEN_CACHE="${HOME}/.config/codex-oauth/token.json"
@@ -26,73 +26,21 @@ get_cc_codex_token() {
 }
 
 #------------------------------------------------------------------------------
-# cc-codex-login — OAuth device code flow
+# Explain why direct Codex OAuth cannot back Claude Code
 #------------------------------------------------------------------------------
+show_cc_codex_unsupported() {
+  echo "[ERROR] Direct ChatGPT OAuth cannot be used as a Claude Code provider." >&2
+  echo "        ChatGPT OAuth tokens do not authenticate api.openai.com, and that API" >&2
+  echo "        does not implement Claude Code's Anthropic Messages protocol." >&2
+  echo "        For native Codex: codex login --device-auth" >&2
+  echo "        For GPT via Claude Code: cc-openrouter openai/gpt-5.4" >&2
+}
+
 invoke_cc_codex_login() {
-  echo "[cc-codex] OAuth device code flow..." >&2
-
-  local resp device_code user_code verify_uri
-  resp=$(curl -s -X POST "https://oauth.openai.com/v1/device_authorization" \
-    -H "Content-Type: application/x-www-form-urlencoded" \
-    -d "client_id=chatbot&scope=platform") || {
-    echo "[cc-codex] Failed to initiate device flow: $resp" >&2
-    return 1
-  }
-
-  device_code=$(echo "$resp" | jq -r '.device_code')
-  user_code=$(echo "$resp" | jq -r '.user_code')
-  verify_uri=$(echo "$resp" | jq -r '.verification_uri')
-
-  if [[ -z "$device_code" ]] || [[ "$device_code" == "null" ]]; then
-    echo "[cc-codex] Failed to get device code. Response: $resp" >&2
-    return 1
-  fi
-
-  echo "[cc-codex] URL:  $verify_uri"
-  echo "[cc-codex] Code: $user_code"
-
-  # Try to open browser (macOS open, Linux xdg-open)
-  if command -v open &>/dev/null; then
-    open "$verify_uri" &>/dev/null &
-  elif command -v xdg-open &>/dev/null; then
-    xdg-open "$verify_uri" &>/dev/null &
-  fi
-
-  local deadline=$(( $(date +%s) + 120 ))
-  while (( $(date +%s) < deadline )); do
-    sleep 5
-    local token_resp
-    token_resp=$(curl -s -X POST "https://oauth.openai.com/v1/token" \
-      -H "Content-Type: application/x-www-form-urlencoded" \
-      -d "grant_type=urn:ietf:params:oauth:grant-type:device_code&device_code=$device_code&client_id=chatbot")
-
-    local access_token
-    access_token=$(echo "$token_resp" | jq -r '.access_token // empty')
-    if [[ -n "$access_token" ]] && [[ "$access_token" != "null" ]]; then
-      local cache_dir
-      cache_dir=$(dirname "$CC_CODEX_TOKEN_CACHE")
-      # OAuth returns expires_in (relative seconds); get_cc_codex_token requires an
-      # absolute expires_at epoch. Derive it, else the fresh token reads as expired.
-      local now expires_at
-      now=$(date +%s)
-      expires_at=$(echo "$token_resp" | jq -r --argjson now "$now" '(.expires_in // 3600) + $now')
-      # Bearer token on disk: keep dir and file user-only
-      (umask 077; mkdir -p "$cache_dir"; echo "$token_resp" \
-        | jq --argjson exp "$expires_at" '. + {expires_at: $exp}' > "$CC_CODEX_TOKEN_CACHE")
-      chmod 600 "$CC_CODEX_TOKEN_CACHE" 2>/dev/null || true
-      echo "[cc-codex] Login successful."
-      return 0
-    fi
-
-    local error
-    error=$(echo "$token_resp" | jq -r '.error // empty')
-    if [[ -n "$error" ]] && [[ "$error" != "authorization_pending" ]]; then
-      echo "[cc-codex] Polling error: $error — $token_resp"
-      break
-    fi
-  done
-
-  echo "[cc-codex] Timeout. Manual code: $user_code | URL: $verify_uri"
+  # A successful device login would still yield an unusable token here, so fail
+  # before asking the user to authenticate or persisting another bearer token.
+  show_cc_codex_unsupported
+  return 1
 }
 
 #------------------------------------------------------------------------------
@@ -111,5 +59,6 @@ invoke_cc_codex_logout() {
 # cc-codex — launch via Codex OAuth
 #------------------------------------------------------------------------------
 invoke_cc_codex() {
-  invoke_cc_provider "codex" "" "$@"
+  show_cc_codex_unsupported
+  return 1
 }

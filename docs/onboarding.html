@@ -489,10 +489,10 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
       <p class="links"><a href="https://opencode.ai/auth">Sign up ↗</a></p>
     </div>
 
-    <div class="card"><h4>📅 OpenAI Codex</h4>
-      <div class="cmd">cc-codex (run cc-codex-login first)</div>
-      <p class="meta"><b>Auth:</b> OAuth via your ChatGPT account (no key)</p>
-      <p class="meta"><b>Billing:</b> 📅 ChatGPT Plus $20 / Pro $100–$200 include Codex (GPT-5.4).</p>
+    <div class="card"><h4>OpenAI Codex — native CLI only</h4>
+      <div class="cmd">codex login --device-auth</div>
+      <p class="meta"><b>Compatibility:</b> ChatGPT OAuth cannot authenticate Claude Code against the public OpenAI API.</p>
+      <p class="meta"><b>Claude Code alternative:</b> <code>cc-openrouter openai/gpt-5.4</code> (separate OpenRouter billing).</p>
       <p class="links"><a href="https://chatgpt.com/pricing">Plans ↗</a> · <a href="https://codex.openai.com">Docs ↗</a></p>
     </div>
 
@@ -537,7 +537,7 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
     <tr><td><b>MiniMax</b> Token Plan</td><td>$20</td><td>$50</td><td>$120</td><td class="mono">cc-minimax</td></tr>
     <tr><td><b>Ollama Cloud</b></td><td>Free / $20</td><td>—</td><td>$100</td><td class="mono">cc-ollama-*</td></tr>
     <tr><td><b>OpenCode Go</b></td><td><span class="badge b-cheap">$10 flat</span></td><td>—</td><td>—</td><td class="mono">cc-opencode-*</td></tr>
-    <tr><td><b>ChatGPT/Codex</b></td><td>$20</td><td>$100</td><td>$200</td><td class="mono">cc-codex</td></tr>
+    <tr><td><b>ChatGPT/Codex</b></td><td>$20</td><td>$100</td><td>$200</td><td class="mono">native codex only</td></tr>
     <tr class="base"><td>Anthropic (baseline)</td><td>$20 Pro</td><td>$100</td><td>$200</td><td class="mono">cc-reset</td></tr>
   </table></div>
 
@@ -576,7 +576,6 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
     <div class="row"><span class="lbl">cc-ollama-glm</span><div class="track"><div class="fill cyan" style="width:48.8%"></div></div><span class="val">976K</span></div>
     <div class="row"><span class="lbl">cc-ollama-minimax</span><div class="track"><div class="fill cyan" style="width:25.6%"></div></div><span class="val">512K</span></div>
     <div class="row"><span class="lbl">cc-kimi</span><div class="track"><div class="fill amber" style="width:12.8%"></div></div><span class="val">256K</span></div>
-    <div class="row"><span class="lbl">cc-codex</span><div class="track"><div class="fill amber" style="width:10%"></div></div><span class="val">200K</span></div>
     <div class="row"><span class="lbl">cc-nvidia</span><div class="track"><div class="fill amber" style="width:6.4%"></div></div><span class="val">128K</span></div>
     <p class="legend">Most of the 1M+ club is also <b>cheap</b> — big memory no longer means premium price.
     (Anthropic's default is 200K for reference.)</p>
@@ -677,7 +676,7 @@ flowchart LR
     <tr><td class="mono">cc-ollama-glm</td><td>GLM-5.2 (Ollama Cloud)</td><td>976K</td></tr>
     <tr><td class="mono">cc-ollama-minimax</td><td>MiniMax M3 (Ollama Cloud)</td><td>512K</td></tr>
     <tr><td class="mono">cc-owl</td><td>Owl Alpha (OpenRouter, free)</td><td><b>1M</b></td></tr>
-    <tr><td class="mono">cc-codex</td><td>OpenAI Codex (OAuth)</td><td>200K</td></tr>
+    <tr><td class="mono">cc-codex</td><td>Unsupported direct OAuth migration guard</td><td>—</td></tr>
     <tr><td class="mono">cc-opencode &lt;model&gt;</td><td>OpenCode Go generic</td><td>—</td></tr>
     <tr><td class="mono">cc-opencode-minimax</td><td>MiniMax M3 via OpenCode Go</td><td>205K</td></tr>
     <tr><td class="mono">cc-openrouter &lt;model&gt;</td><td>any OpenRouter model</td><td>—</td></tr>
@@ -695,7 +694,8 @@ flowchart LR
     <tr><td class="mono">cc-usage</td><td>Token usage history (last 20 sessions)</td></tr>
     <tr><td class="mono">cc-reset</td><td>Clear overrides → native Anthropic</td></tr>
     <tr><td class="mono">cc-yolo</td><td>Native Anthropic + --dangerously-skip-permissions</td></tr>
-    <tr><td class="mono">cc-codex-login / cc-codex-logout</td><td>Codex OAuth device flow</td></tr>
+    <tr><td class="mono">cc-codex-login</td><td>Explains the incompatibility and supported alternatives</td></tr>
+    <tr><td class="mono">cc-codex-logout</td><td>Deletes a legacy cc-switcher token cache</td></tr>
   </table></div>
   <p class="meta">Inside a session, <code>/model opus|sonnet|haiku</code> swaps the provider's three tiers.
   Append <code>--yolo</code> to any command to skip permission prompts.</p>

@@ -3,6 +3,16 @@
 Unless marked otherwise, entries apply to both the PowerShell module and the
 bash port — the two implementations share the catalog and feature set.
 
+## OpenAI Codex direct OAuth — intentionally disabled
+
+`cc-codex` cannot be implemented as a direct Claude Code provider with a ChatGPT subscription. Codex device login issues a ChatGPT OAuth token that is not accepted by OpenAI's public API, and the public API does not implement the Anthropic Messages protocol Claude Code requires.
+
+**Supported alternatives:** use `codex login --device-auth` with the native Codex CLI, or set `OPENROUTER_API_KEY` and run `cc-openrouter openai/gpt-5.4` from Claude Code. The latter is gateway-billed; it does not consume a ChatGPT subscription.
+
+`cc-codex` and `cc-codex-login` are retained as explicit migration guards. `cc-codex-logout` removes the legacy token cache.
+
+---
+
 ## Z.AI GLM-5.2 (`cc-zai-glm51`) — Slow
 
 The Z.AI Anthropic-compatible endpoint (`https://api.z.ai/api/anthropic`) is
@@ -65,7 +75,7 @@ context is `>= 500000`. No catalog edit required for these:
 | `cc-ollama-minimax` (MiniMax M3, Ollama Cloud) | yes | 512K |
 | `cc-kimi` (K2.7 Code) | no | 256K (below the 500K threshold) |
 | `cc-opencode-minimax` | no | ~205K (OpenCode Go cap unverified) |
-| `cc-codex` | no | 200K |
+| `cc-codex` | n/a | disabled (incompatible auth + wire protocol) |
 | `cc-nvidia` | no | 128K |
 
 See [`docs/architecture.md`](docs/architecture.md#auto-context-derivation) for
@@ -109,7 +119,6 @@ If format translation is ever needed again, prefer the upstream
 These commands exist in the catalog but haven't been launched end-to-end. Run
 `cc-doctor` for a quick reachability check before relying on any:
 
-- `cc-codex` (OAuth flow not exercised)
 - `cc-kimi` (OpenRouter only — no direct Moonshot account)
 - `cc-qwen` (OpenRouter only — no direct DashScope account)
 - `cc-nvidia` (depends on NVIDIA_API_KEY being valid)

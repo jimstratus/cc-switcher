@@ -1,6 +1,6 @@
 # =============================================================================
-# codex.ps1 — OpenAI Codex OAuth device flow + launcher
-# Token cached at $env:USERPROFILE\.config\codex-oauth\token.json
+# codex.ps1 — Unsupported direct Codex guard + legacy token-cache cleanup
+# Historical token cache: $env:USERPROFILE\.config\codex-oauth\token.json
 # =============================================================================
 
 $script:CodexTokenCachePath = Join-Path $env:USERPROFILE '.config\codex-oauth\token.json'
@@ -16,46 +16,19 @@ function Get-CC-CodexToken {
     return $null
 }
 
+function Show-CCCodexUnsupported {
+    Write-Host "[ERROR] Direct ChatGPT OAuth cannot be used as a Claude Code provider." -ForegroundColor Red
+    Write-Host "        ChatGPT OAuth tokens do not authenticate api.openai.com, and that API" -ForegroundColor Yellow
+    Write-Host "        does not implement Claude Code's Anthropic Messages protocol." -ForegroundColor Yellow
+    Write-Host "        For native Codex: codex login --device-auth" -ForegroundColor Cyan
+    Write-Host "        For GPT via Claude Code: cc-openrouter openai/gpt-5.4" -ForegroundColor Cyan
+    throw "[cc-codex] Unsupported direct OAuth integration; no launch was attempted."
+}
+
 function Invoke-CC-Codex-Login {
-    Write-Host "[cc-codex] OAuth device code flow..." -ForegroundColor Cyan
-    try {
-        $resp = Invoke-RestMethod -Uri "https://oauth.openai.com/v1/device_authorization" `
-            -Method Post -ContentType "application/x-www-form-urlencoded" `
-            -Body "client_id=chatbot&scope=platform"
-        $deviceCode = $resp.device_code
-        $userCode   = $resp.user_code
-        $verifyUri  = $resp.verification_uri
-
-        Write-Host "[cc-codex] URL:  $verifyUri" -ForegroundColor Cyan
-        Write-Host "[cc-codex] Code: $userCode" -ForegroundColor Yellow
-        Start-Process -FilePath $verifyUri
-
-        $deadline = [DateTimeOffset]::Now.ToUnixTimeSeconds() + 120
-        while ([DateTimeOffset]::Now.ToUnixTimeSeconds() -lt $deadline) {
-            Start-Sleep -Seconds 5
-            try {
-                $tokenResp = Invoke-RestMethod -Uri "https://oauth.openai.com/v1/token" `
-                    -Method Post -ContentType "application/x-www-form-urlencoded" `
-                    -Body "grant_type=urn:ietf:params:oauth:grant-type:device_code&device_code=$deviceCode&client_id=chatbot"
-                if ($tokenResp.access_token) {
-                    $cacheDir = Split-Path $script:CodexTokenCachePath -Parent
-                    if (-not (Test-Path $cacheDir)) {
-                        New-Item -ItemType Directory -Path $cacheDir -Force | Out-Null
-                    }
-                    $tokenResp | ConvertTo-Json | Set-Content $script:CodexTokenCachePath
-                    Write-Host "[cc-codex] Login successful." -ForegroundColor Green
-                    return
-                }
-            } catch {
-                if ($_.Exception.Message -match "authorization_pending|pending") { continue }
-                Write-Host "[cc-codex] Polling error: $($_.Exception.Message)" -ForegroundColor Yellow
-                break
-            }
-        }
-        Write-Host "[cc-codex] Timeout. Manual code: $userCode | URL: $verifyUri" -ForegroundColor Yellow
-    } catch {
-        Write-Host "[cc-codex] Login failed: $($_.Exception.Message)" -ForegroundColor Red
-    }
+    # Do not run the otherwise valid Codex device flow here: its token is scoped
+    # to Codex's ChatGPT backend and cannot make this launcher's transport work.
+    Show-CCCodexUnsupported
 }
 
 function Invoke-CC-Codex-Logout {
@@ -69,5 +42,5 @@ function Invoke-CC-Codex-Logout {
 
 function Invoke-CC-Codex {
     param([string[]]$ClaudeArgs)
-    Invoke-CCProvider -Id 'codex' -ClaudeArgs $ClaudeArgs
+    Show-CCCodexUnsupported
 }
