@@ -131,7 +131,15 @@ function Invoke-CCLaunch {
     }
     finally {
         foreach ($k in $snapshot.Keys) {
-            [Environment]::SetEnvironmentVariable($k, $snapshot[$k], 'Process')
+            if ($null -eq $snapshot[$k]) {
+                # PowerShell binds a null string argument to SetEnvironmentVariable
+                # as an empty value on Windows, leaving the variable present. The
+                # environment provider removes it unambiguously.
+                Remove-Item -LiteralPath ("Env:{0}" -f $k) -ErrorAction SilentlyContinue
+            }
+            else {
+                [Environment]::SetEnvironmentVariable($k, $snapshot[$k], 'Process')
+            }
         }
     }
 }
@@ -145,9 +153,8 @@ function Invoke-CC-Yolo {
     & claude @allArgs
 }
 
-# Clear all provider overrides; restores native Anthropic on next `claude`
-function Reset-CC {
-    [CmdletBinding()] param([switch]$Quiet)
+function Get-CCManagedEnvironmentNames {
+    [CmdletBinding()] param()
     $vars = [System.Collections.Generic.List[string]]@(
         'ANTHROPIC_BASE_URL','ANTHROPIC_AUTH_TOKEN','ANTHROPIC_MODEL',
         'ANTHROPIC_DEFAULT_OPUS_MODEL','ANTHROPIC_DEFAULT_SONNET_MODEL',
@@ -156,8 +163,6 @@ function Reset-CC {
         'CLAUDE_CODE_MAX_OUTPUT_TOKENS','CLAUDE_CODE_MAX_CONTEXT_TOKENS',
         'DISABLE_COMPACT'
     )
-    # Also clear any provider-specific envVars declared in the catalog so a
-    # skipped restore (e.g. hard interrupt) can't leak them into later sessions.
     try {
         foreach ($p in Get-CCProviders) {
             if ($p.ExtraEnv) {
@@ -167,8 +172,14 @@ function Reset-CC {
             }
         }
     } catch { }
-    foreach ($var in $vars) {
-        [Environment]::SetEnvironmentVariable($var, $null, 'Process')
+    return $vars
+}
+
+# Clear all provider overrides; restores native Anthropic on next `claude`
+function Reset-CC {
+    [CmdletBinding()] param([switch]$Quiet)
+    foreach ($var in Get-CCManagedEnvironmentNames) {
+        Remove-Item -LiteralPath ("Env:{0}" -f $var) -ErrorAction SilentlyContinue
     }
     if (-not $Quiet) {
         Write-Host "[cc] Provider overrides cleared. Native Anthropic restored." -ForegroundColor Green
@@ -202,7 +213,7 @@ function Get-CC-Status {
     foreach ($keyName in @('ANTHROPIC_API_KEY','OPENROUTER_API_KEY','DEEPSEEK_API_KEY',
                             'MINIMAX_API_KEY','NVIDIA_API_KEY','OPENCODE_GO_API_KEY',
                             'ZAI_API_KEY','KIMI_API_KEY','XIAOMI_API_KEY','OLLAMA_API_KEY',
-                            'ATLAS_CP_API_KEY')) {
+                            'ATLAS_CP_API_KEY','MODEL_API_KEY')) {
         $val = [Environment]::GetEnvironmentVariable($keyName)
         $status = if ([string]::IsNullOrEmpty($val)) { "(not set)" } else { "(set, len=$($val.Length))" }
         Write-Host ("{0,-22} {1}" -f $keyName, $status)

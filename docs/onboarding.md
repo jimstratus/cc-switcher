@@ -272,6 +272,15 @@ up, and how to get the key. **You only need to set up the ones you actually want
   Ultra $120 — flat monthly, great for daily Claude Code use. 1M context.
 - **Docs:** <https://platform.minimax.io/docs/token-plan/claude-code>
 
+### Meta Muse Spark 1.2 — direct · `cc-muse`
+- **Env var:** `MODEL_API_KEY`
+- **Endpoint:** <https://api.meta.ai>
+- **Model:** `muse-spark-1.2` on the flagship, standard, and fast slots.
+- **Launch behavior:** also sets `CLAUDE_CODE_SUBAGENT_MODEL=muse-spark-1.2`
+  and `ENABLE_TOOL_SEARCH=true` for the session, then restores prior values.
+- **Note:** context size and pricing are intentionally not claimed until they
+  can be verified from provider documentation.
+
 ### 📅/💧 Moonshot / Kimi — strong agentic coder · `cc-kimi` (via OpenRouter)
 - **Env var:** uses your `OPENROUTER_API_KEY` (or `KIMI_API_KEY` for the direct API)
 - **Sign up:** <https://platform.moonshot.ai> (international; `sk-...` key)
