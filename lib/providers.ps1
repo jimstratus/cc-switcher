@@ -116,6 +116,7 @@ function Invoke-CC-Glm         { param([string[]]$ClaudeArgs) Invoke-CCProvider 
 function Invoke-CC-Kimi        { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'kimi' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-MiniMax     { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'minimax' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-MiMo        { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'mimo' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-Muse        { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'muse' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Qwen        { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'qwen' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Xiaomi      { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'xiaomi' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-ZAI-GLM51   { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'zai-glm51' -ClaudeArgs $ClaudeArgs }

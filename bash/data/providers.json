@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "_doc": {
     "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1/core.sh translates to Claude Code's env var contract.",
     "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",
@@ -165,6 +165,23 @@
       "disableNonEssential": true,
       "notes": "Tier contexts differ: flagship/standard are 1M (1024K), V2-Flash (fast tier) is 256K. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship (see _doc._auto_context). Caveat: env var stays at 1M for the whole session, so /model haiku (v2-flash, 256K) will display 1M but the API will reject prompts beyond ~256K — acceptable for opus-primary workflows.",
       "docs": "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
+    },
+    "muse": {
+      "command": "cc-muse",
+      "displayName": "Meta Muse Spark 1.2",
+      "qualityTier": "standard",
+      "baseUrl": "https://api.meta.ai",
+      "authVar": "MODEL_API_KEY",
+      "tiers": {
+        "flagship": "muse-spark-1.2",
+        "standard": "muse-spark-1.2",
+        "fast": "muse-spark-1.2"
+      },
+      "timeoutMs": 3000000,
+      "envVars": {
+        "CLAUDE_CODE_SUBAGENT_MODEL": "muse-spark-1.2",
+        "ENABLE_TOOL_SEARCH": "true"
+      }
     },
     "nemotron": {
       "command": "cc-nemotron",

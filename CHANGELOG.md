@@ -2,8 +2,32 @@
 
 ## Unreleased
 
+### Added
+
+- **`cc-muse`** — Meta Muse Spark 1.2 through `https://api.meta.ai`, using
+  `MODEL_API_KEY`. All Claude Code tiers map to `muse-spark-1.2`; launches also
+  set `CLAUDE_CODE_SUBAGENT_MODEL=muse-spark-1.2` and `ENABLE_TOOL_SEARCH=true`.
+- `MODEL_API_KEY` added to the `cc-status` / `cc-doctor` key list.
+
 ### Fixed
 
+- **Fresh PowerShell profiles expose every `cc-*` command again.** The tracked
+  profile loader eagerly imports the module in PowerShell 7 and creates safe
+  child-`pwsh` proxies in Windows PowerShell 5. This fixes both the initial
+  `cc-minimax is not recognized` error and the partial PS5 import that left
+  `Invoke-CCLaunch` undefined after `cc-help`.
+- Windows PowerShell 5 proxies serialize forwarded arguments and bind only
+  parameters declared by the target `cc-*` command, preserving Claude flags
+  such as `-p` and `-Verbose` as raw arguments.
+- PowerShell resolves user-specific Codex cache and Claude session locations
+  through .NET's cross-platform user profile instead of the Windows-only
+  `USERPROFILE` variable, so launches also work in Linux PowerShell and CI.
+- PowerShell environment restoration now removes variables that were originally
+  absent instead of leaving empty-string entries behind. This keeps catalog
+  `envVars`, including Muse tool-search settings, strictly session-scoped.
+- Bash catalog parsing normalizes both fields from CRLF records emitted by
+  native `jq.exe`, preventing hidden carriage returns in provider `envVars`
+  under Windows Git Bash.
 - **`cc-codex-login` no longer runs a dead OAuth flow.** The previous code used
   retired `oauth.openai.com/v1/*` endpoints and failed at device authorization
   with HTTP 403. More importantly, current Codex device auth returns a ChatGPT

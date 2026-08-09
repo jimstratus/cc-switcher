@@ -10,7 +10,7 @@
    │   ╚██████╗╚██████╗       ███████║╚███╔███╔╝     ↳ any LLM    │
    │    ╚═════╝ ╚═════╝       ╚══════╝ ╚══╝╚══╝                   │
    │                                                              │
-   │    cc-switcher · v3.4.0  (PowerShell + Bash)                │
+   │    cc-switcher · v3.5.0  (PowerShell + Bash)                │
    │                                                              │
    └──────────────────────────────────────────────────────────────┘
 ```
@@ -65,10 +65,13 @@ Import-Module .\cc-switcher\cc-switcher.psd1
 Or add to your `$PROFILE` so it loads in every shell:
 
 ```powershell
-Import-Module C:\path\to\cc-switcher\cc-switcher.psd1
+. 'C:\path\to\cc-switcher\powershell\profile-loader.ps1'
 ```
 
-Reload (`. $PROFILE`) and type `cc-help` for the full command list.
+The profile loader imports the module directly in PowerShell 7. If a Windows
+PowerShell 5 terminal is opened, it exposes the same `cc-*` commands as proxy
+functions that run the PowerShell 7 module in `pwsh`, avoiding partial imports
+and parse failures. Reload (`. $PROFILE`) and type `cc-help` for the full list.
 
 ### bash / zsh (Linux / macOS)
 
@@ -142,6 +145,7 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 | `cc-minimax` | MiniMax M3 (direct) · **1M** | M3 (all three) |
 | `cc-minimax-or` | MiniMax M3 (OpenRouter, US-latency) · **1M** | minimax-m3 (all three) |
 | `cc-mimo` | MiMo V2.5 (Xiaomi via OpenRouter) | v2.5-pro / v2.5 / v2-flash |
+| `cc-muse` | Meta Muse Spark 1.2 (direct) | muse-spark-1.2 (all three) |
 | `cc-xiaomi` | Xiaomi MiMo (token-plan SGP, direct) | v2.5-pro / v2.5 / v2-pro |
 | `cc-nvidia [model]` | NVIDIA NIM (free) | tier defaults, override with arg |
 | `cc-nemotron` | NVIDIA Nemotron 3 Super (OpenRouter, free) · **1M** | nemotron-3-super-120b (all three) |
@@ -208,6 +212,7 @@ $env:XIAOMI_API_KEY       = "..."         # Xiaomi MiMo direct (token-plan SGP)
 $env:ZAI_API_KEY          = "..."         # Z.AI direct (cc-zai-glm51)
 $env:KIMI_API_KEY         = "..."         # Moonshot direct (optional)
 $env:ATLAS_CP_API_KEY     = "..."         # Atlas Cloud Coding Plan (cc-atlas) — distinct from the regular ATLAS_API_KEY
+$env:MODEL_API_KEY        = "..."         # Meta Muse Spark 1.2 direct (cc-muse)
 ```
 
 ### bash / zsh
@@ -223,6 +228,7 @@ export XIAOMI_API_KEY="..."                # Xiaomi MiMo direct (token-plan SGP)
 export ZAI_API_KEY="..."                  # Z.AI direct (cc-zai-glm51)
 export KIMI_API_KEY="..."                 # Moonshot direct (optional)
 export ATLAS_CP_API_KEY="..."             # Atlas Cloud Coding Plan (cc-atlas) — distinct from the regular ATLAS_API_KEY
+export MODEL_API_KEY="..."                # Meta Muse Spark 1.2 direct (cc-muse)
 ```
 
 Run `cc-doctor` to verify keys are present and reachable.

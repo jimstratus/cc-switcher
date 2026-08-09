@@ -54,6 +54,9 @@ jobs:
             echo "smoke test OK"
           '
 
+      - name: Muse provider mapping and restore
+        run: bash tests/muse-provider-smoke.sh
+
       - name: Install layout
         run: |
           make -C bash install PREFIX=/tmp/cc-install
@@ -104,3 +107,21 @@ jobs:
           }
           if ($errors) { $errors | ForEach-Object { Write-Error $_.ToString() }; exit 1 }
           Test-ModuleManifest ./cc-switcher.psd1 | Out-Null
+
+      - name: Muse provider mapping and restore
+        shell: pwsh
+        run: ./tests/muse-provider-smoke.ps1
+
+  powershell-profile:
+    name: PowerShell profile loader - PS7 + Windows PS5 proxy
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PowerShell 7 profile smoke test
+        shell: pwsh
+        run: ./tests/profile-loader-smoke.ps1
+
+      - name: Windows PowerShell 5 profile proxy smoke test
+        shell: powershell
+        run: ./tests/profile-loader-smoke.ps1
