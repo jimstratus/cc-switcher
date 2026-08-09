@@ -1,5 +1,5 @@
 # Codex OAuth Protocol Drift
-Date: 2026-08-09
+Date: 2026-08-02
 Project: cc-switcher
 Tags: codex, oauth, device-flow, powershell, bash
 

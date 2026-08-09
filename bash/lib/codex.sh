@@ -56,7 +56,7 @@ invoke_cc_codex_logout() {
 }
 
 #------------------------------------------------------------------------------
-# cc-codex — disabled direct Codex launch path (migration guard)
+# cc-codex — launch via Codex OAuth
 #------------------------------------------------------------------------------
 invoke_cc_codex() {
   show_cc_codex_unsupported
