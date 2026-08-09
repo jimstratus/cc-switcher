@@ -5,6 +5,8 @@
 # =============================================================================
 
 $script:CCUsageLogPath = Join-Path $script:CCSwitcherRoot 'data\.usage-log.jsonl'
+$usageUserProfile = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+$script:CCClaudeProjectsPath = Join-Path (Join-Path $usageUserProfile '.claude') 'projects'
 
 function Write-CCSessionStart {
     param(
@@ -16,7 +18,7 @@ function Write-CCSessionStart {
     $script:CCSessionLatestSessionFile = $null
     # Capture the latest session file timestamp so we can find the new one after exit
     $script:CCSessionPreExistingFiles = @{}
-    $sessionsRoot = Join-Path $env:USERPROFILE '.claude\projects'
+    $sessionsRoot = $script:CCClaudeProjectsPath
     if (Test-Path $sessionsRoot) {
         Get-ChildItem $sessionsRoot -Recurse -Filter '*.jsonl' -ErrorAction SilentlyContinue |
             ForEach-Object { $script:CCSessionPreExistingFiles[$_.FullName] = $_.LastWriteTime }
@@ -32,7 +34,7 @@ function Write-CCSessionEnd {
     $duration = ($endedAt - $StartedAt).TotalSeconds
 
     # Find session JSONL files modified during this session
-    $sessionsRoot = Join-Path $env:USERPROFILE '.claude\projects'
+    $sessionsRoot = $script:CCClaudeProjectsPath
     $tokensIn = 0; $tokensOut = 0; $cacheReads = 0; $cacheCreates = 0; $turns = 0
     if (Test-Path $sessionsRoot) {
         $touched = Get-ChildItem $sessionsRoot -Recurse -Filter '*.jsonl' -ErrorAction SilentlyContinue |

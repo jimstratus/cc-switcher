@@ -6,9 +6,10 @@
 # USERPROFILE is Windows-specific and is unset on Linux CI. Ask .NET for the
 # cross-platform user profile so importing the module never depends on a shell-
 # specific environment variable.
+$codexUserProfile = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
 $script:CodexTokenCachePath = Join-Path `
-    ([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)) `
-    '.config\codex-oauth\token.json'
+    (Join-Path (Join-Path $codexUserProfile '.config') 'codex-oauth') `
+    'token.json'
 
 function Get-CC-CodexToken {
     if (-not (Test-Path $script:CodexTokenCachePath)) { return $null }

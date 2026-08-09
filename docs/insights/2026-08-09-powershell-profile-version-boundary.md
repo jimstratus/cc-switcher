@@ -29,9 +29,10 @@ Lazy loading hid every provider command, and the lazy entry point bypassed the
 module's declared runtime boundary. Directly parsing a PowerShell 7 module in
 Windows PowerShell 5 can never be a safe compatibility strategy.
 
-The first Linux CI import also exposed a separate portability assumption:
-`lib/codex.ps1` built its legacy cache path from Windows-only `USERPROFILE`.
-Using .NET's `UserProfile` special folder keeps the module importable on all
+The first Linux CI import and launch also exposed a separate portability
+assumption: `lib/codex.ps1` and `lib/usage.ps1` built user-specific paths from
+Windows-only `USERPROFILE`. Using .NET's `UserProfile` special folder and
+platform-native `Join-Path` segments keeps both import and launch working on all
 supported PowerShell platforms.
 
 ## Takeaway
