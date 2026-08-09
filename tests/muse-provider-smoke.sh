@@ -8,6 +8,21 @@ set -e
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 source "$repo_root/bash/cc-switcher.sh" >/dev/null
 
+# Force the envVars jq query through a CRLF fixture that also decorates the key.
+# This deterministically exercises both defensive normalizations on every CI OS.
+real_jq=$(command -v jq)
+jq() {
+  if [[ "$*" == *"to_entries[]"* ]]; then
+    "$real_jq" "$@" | while IFS=$'\t' read -r key value; do
+      key="${key%$'\r'}"
+      value="${value%$'\r'}"
+      printf '%s\r\t%s\r\n' "$key" "$value"
+    done
+  else
+    "$real_jq" "$@"
+  fi
+}
+
 claude() {
   [[ "$ANTHROPIC_BASE_URL" == "https://api.meta.ai" ]]
   [[ "$ANTHROPIC_AUTH_TOKEN" == "$MODEL_API_KEY" ]]

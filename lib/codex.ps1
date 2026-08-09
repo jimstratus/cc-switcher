@@ -3,9 +3,9 @@
 # Historical token cache: <user profile>/.config/codex-oauth/token.json
 # =============================================================================
 
-# USERPROFILE is Windows-specific and is unset on Linux CI. Ask .NET for the
-# cross-platform user profile so importing the module never depends on a shell-
-# specific environment variable.
+# USERPROFILE is unset in some CI runners, and Join-Path with $null throws at
+# module load. Ask .NET for the cross-platform user profile so importing the
+# module never depends on a shell-specific environment variable.
 $codexUserProfile = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
 $script:CodexTokenCachePath = Join-Path `
     (Join-Path (Join-Path $codexUserProfile '.config') 'codex-oauth') `

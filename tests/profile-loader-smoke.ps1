@@ -45,6 +45,7 @@ else {
     $mockBin = Join-Path ([System.IO.Path]::GetTempPath()) ("cc-switcher-smoke-{0}" -f [guid]::NewGuid())
     $previousPath = $env:PATH
     $previousKey = $env:MINIMAX_API_KEY
+    $previousOpenRouterKey = $env:OPENROUTER_API_KEY
     try {
         New-Item -ItemType Directory -Path $mockBin | Out-Null
         Set-Content -LiteralPath (Join-Path $mockBin 'claude.cmd') -Encoding Ascii -Value @(
@@ -55,14 +56,31 @@ else {
         $env:PATH = "$mockBin;$previousPath"
         $env:MINIMAX_API_KEY = 'sk-test-profile-loader-1234567890'
 
-        $launchOutput = cc-minimax --profile-smoke 6>&1 | Out-String
-        if ($launchOutput -notmatch '\[stub\] claude invoked --profile-smoke') {
-            throw 'The PowerShell 5 proxy did not forward cc-minimax and its arguments to PowerShell 7.'
+        $launchOutput = cc-minimax -p -Verbose --profile-smoke 6>&1 | Out-String
+        if ($launchOutput -notmatch '\[stub\] claude invoked -p -Verbose --profile-smoke') {
+            throw 'The PowerShell 5 proxy did not preserve Claude-style flags as raw arguments.'
+        }
+
+        $env:OPENROUTER_API_KEY = 'sk-or-test-profile-loader-1234567890'
+        $modelLaunchOutput = cc-openrouter 'review/model' -p --model-smoke 6>&1 | Out-String
+        if ($modelLaunchOutput -notmatch 'OpenRouter model: review/model' -or
+            $modelLaunchOutput -notmatch '\[stub\] claude invoked -p --model-smoke') {
+            throw 'The PowerShell 5 proxy did not preserve model-plus-Claude argument semantics.'
         }
     }
     finally {
         $env:PATH = $previousPath
-        $env:MINIMAX_API_KEY = $previousKey
+        foreach ($keyState in @(
+            @{ Name = 'MINIMAX_API_KEY'; Value = $previousKey },
+            @{ Name = 'OPENROUTER_API_KEY'; Value = $previousOpenRouterKey }
+        )) {
+            if ($null -eq $keyState.Value) {
+                Remove-Item -LiteralPath ("Env:{0}" -f $keyState.Name) -ErrorAction SilentlyContinue
+            }
+            else {
+                [Environment]::SetEnvironmentVariable($keyState.Name, $keyState.Value, 'Process')
+            }
+        }
         Remove-Item -LiteralPath $mockBin -Recurse -Force -ErrorAction SilentlyContinue
     }
 

@@ -65,7 +65,7 @@ Import-Module .\cc-switcher\cc-switcher.psd1
 Or add to your `$PROFILE` so it loads in every shell:
 
 ```powershell
-. C:\path\to\cc-switcher\powershell\profile-loader.ps1
+. 'C:\path\to\cc-switcher\powershell\profile-loader.ps1'
 ```
 
 The profile loader imports the module directly in PowerShell 7. If a Windows

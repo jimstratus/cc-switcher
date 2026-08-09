@@ -39,17 +39,18 @@ foreach ($aliasName in $manifestData.AliasesToExport) {
         $pwshPath = $pwshCommand.Source
         $runnerPath = $ccSwitcherRunner
         $proxy = {
-            [CmdletBinding()]
-            param(
-                [Parameter(Position = 0, ValueFromRemainingArguments = $true)]
-                [object[]]$CommandArgs
-            )
-
             # The module intentionally requires PowerShell 7. A child process is
             # safer than partially parsing PS7 source inside Windows PowerShell 5.
-            $forwardArgs = @($CommandArgs | Where-Object { $null -ne $_ })
+            # Serialize arguments into one opaque value so PowerShell's native
+            # command parser cannot reinterpret Claude flags as runner params.
+            $forwardArgs = @($args | Where-Object { $null -ne $_ } | ForEach-Object { [string]$_ })
+            $argumentJson = ConvertTo-Json -InputObject @($forwardArgs) -Compress
+            $encodedArguments = [Convert]::ToBase64String(
+                [Text.Encoding]::UTF8.GetBytes($argumentJson)
+            )
             & $pwshPath -NoLogo -NoProfile -File $runnerPath `
-                -CommandName $MyInvocation.MyCommand.Name @forwardArgs
+                -CommandName $MyInvocation.MyCommand.Name `
+                -EncodedArguments $encodedArguments
         }.GetNewClosure()
     }
     else {

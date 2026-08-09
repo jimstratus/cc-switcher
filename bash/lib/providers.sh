@@ -102,8 +102,9 @@ invoke_cc_provider() {
   # and they vanish with this function even if the launch is interrupted
   local ek ev
   while IFS=$'\t' read -r ek ev; do
-    # Native jq.exe writes CRLF under Git Bash. Strip the record terminator so
-    # catalog envVars do not acquire a hidden carriage return on Windows.
+    # Normalize both fields defensively when native jq.exe writes CRLF under
+    # Git Bash, then validate the environment-variable name.
+    ek="${ek%$'\r'}"
     ev="${ev%$'\r'}"
     [[ "$ek" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
     local "CC_EXTRA_ENV_${ek}=${ev}"
