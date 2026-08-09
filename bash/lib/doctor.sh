@@ -138,12 +138,19 @@ invoke_cc_doctor() {
 
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    IFS='|' read -r _ command _ _ base_url auth_var _ _ _ _ _ _ <<< "$line"
+    local disabled
+    IFS='|' read -r _ command _ _ base_url auth_var _ _ _ _ _ _ disabled _ <<< "$line"
+
+    if [[ "$disabled" == "true" ]]; then
+      echo "  [--] $command (disabled)"
+      continue
+    fi
 
     # Check if we have auth for this provider
     local has_key=false
     if [[ "$auth_var" == "_codex_oauth_token" ]]; then
-      # Special case: codex uses OAuth — valid only if a non-expired token exists
+      # Special case: historical codex OAuth cache — valid only if a non-expired
+      # token exists (no supported provider uses this path today)
       local tok
       tok=$(get_cc_codex_token 2>/dev/null)
       [[ -n "$tok" ]] && has_key=true

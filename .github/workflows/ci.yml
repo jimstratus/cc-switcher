@@ -44,6 +44,16 @@ jobs:
             [[ $(list_cc_providers | wc -l) -ge 10 ]] || { echo "FAIL: provider list short"; exit 1; }
             cc-help | grep -q cc-deepseek || { echo "FAIL: cc-help"; exit 1; }
             cc-doctor --no-network | grep -q "API keys" || { echo "FAIL: cc-doctor"; exit 1; }
+            cc-doctor | grep -q "cc-codex (disabled)" || { echo "FAIL: doctor disabled marker"; exit 1; }
+            cc-help | grep -q cc-codex || { echo "FAIL: cc-help hides retired guard"; exit 1; }
+            # Retired codex integration: every path must fail nonzero WITHOUT launching claude
+            out=$(cc-codex 2>&1) && { echo "FAIL: cc-codex guard did not fail"; exit 1; }
+            [[ "$out" == *"codex login --device-auth"* ]] || { echo "FAIL: cc-codex guard missing migration guidance"; exit 1; }
+            out=$(cc-codex-login 2>&1) && { echo "FAIL: cc-codex-login guard did not fail"; exit 1; }
+            [[ "$out" == *"codex login --device-auth"* ]] || { echo "FAIL: cc-codex-login guard missing migration guidance"; exit 1; }
+            out=$(invoke_cc_provider codex "" 2>&1) && { echo "FAIL: dispatcher bypassed disabled guard"; exit 1; }
+            [[ "$out" == *"disabled"* ]] || { echo "FAIL: dispatcher did not report disabled reason"; exit 1; }
+            printf '0\n' | cc-launch >/dev/null 2>&1 || { echo "FAIL: cc-launch cancel path"; exit 1; }
             unset DEEPSEEK_API_KEY
             cc-deepseek 2>&1 | grep -q "Auth token is empty" || { echo "FAIL: no-key error path"; exit 1; }
             export DEEPSEEK_API_KEY=sk-citestkey1234567890

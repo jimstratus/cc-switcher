@@ -37,7 +37,7 @@ cc-switcher/
 ├── lib/                        # PowerShell implementation
 │   ├── core.ps1                # Invoke-CCLaunch (env contract), Reset-CC, Get-CC-Status
 │   ├── providers.ps1           # Get-CCCatalog, Get-CCProviders, Invoke-CCProvider, wrappers
-│   ├── codex.ps1               # OAuth device flow, Get-CC-CodexToken
+│   ├── codex.ps1               # unsupported direct OAuth guard, legacy cleanup
 │   ├── pricing.ps1             # OpenRouter live pricing + disk cache
 │   ├── doctor.ps1              # cc-doctor health check
 │   ├── completers.ps1          # tab completion for cc-openrouter / cc-opencode / cc-nvidia
@@ -50,7 +50,7 @@ cc-switcher/
 │   ├── lib/                    # 1:1 ports of the PowerShell lib files (no picker)
 │   │   ├── core.sh             # invoke_cc_launch, reset_cc, get_cc_status, _CC_MANAGED_VARS
 │   │   ├── providers.sh        # catalog lookup, invoke_cc_provider, cc-launch menu
-│   │   ├── codex.sh            # OAuth device flow, token cache (0600)
+│   │   ├── codex.sh            # unsupported direct OAuth guard, legacy cleanup
 │   │   ├── pricing.sh          # OpenRouter live pricing + disk cache
 │   │   ├── doctor.sh           # cc-doctor health check
 │   │   ├── completers.sh       # bash tab completion

@@ -272,8 +272,8 @@
     },
     "codex": {
       "command": "cc-codex",
-      "displayName": "OpenAI Codex (ChatGPT OAuth)",
-      "qualityTier": "flagship",
+      "displayName": "OpenAI Codex (direct OAuth unsupported)",
+      "qualityTier": "unsupported",
       "baseUrl": "https://api.openai.com/v1",
       "authVar": "_codex_oauth_token",
       "tiers": {
@@ -285,7 +285,9 @@
       "timeoutMs": 3000000,
       "disableNonEssential": true,
       "requiresOAuth": true,
-      "notes": "Uses OAuth token cached at ~/.config/codex-oauth/token.json. Run cc-codex-login first.",
+      "disabled": true,
+      "disabledReason": "ChatGPT OAuth tokens cannot authenticate the public OpenAI API, which also lacks an Anthropic Messages endpoint. Use native 'codex login --device-auth', or 'cc-openrouter openai/gpt-5.4' with OPENROUTER_API_KEY.",
+      "notes": "Retired as a launchable provider; retained as a migration guard. Direct ChatGPT OAuth cannot power Claude Code (incompatible credential scope AND wire protocol), so cc-codex and cc-codex-login fail fast with supported alternatives instead of completing a login that cannot yield a working session. cc-codex-logout still removes the legacy token cache.",
       "docs": "https://codex.openai.com"
     },
     "opencode-minimax": {

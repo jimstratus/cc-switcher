@@ -35,6 +35,8 @@ function Get-CCProviders {
             DisableNonEss= $p.disableNonEssential
             ExtraEnv     = $p.envVars
             RequiresOAuth= $p.requiresOAuth
+            Disabled     = $p.disabled
+            DisabledReason = $p.disabledReason
             Notes        = $p.notes
             Docs         = $p.docs
         }
@@ -53,6 +55,13 @@ function Invoke-CCProvider {
     $providers = Get-CCProviders
     $p = $providers | Where-Object Id -eq $Id | Select-Object -First 1
     if (-not $p) { Write-Host "[ERROR] Unknown provider id: $Id" -ForegroundColor Red; return }
+
+    # Keep retired integrations visible in help/history, but never let a menu or
+    # direct dispatcher call fall through into an auth or wire protocol we know
+    # cannot work.
+    if ($p.Disabled) {
+        throw "$($p.Command) is disabled: $($p.DisabledReason)"
+    }
 
     if ($p.RequiresOAuth) {
         $token = Get-CC-CodexToken

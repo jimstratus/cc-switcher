@@ -19,7 +19,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Getting Started](https://img.shields.io/badge/docs-Getting%20Started-3ad07a?logo=github)](https://jimstratus.github.io/cc-switcher/)
 
-> Multi-shell module for launching Claude Code against any Anthropic-compatible LLM provider — DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, and more.
+> Multi-shell module for launching Claude Code against any Anthropic-compatible LLM provider — DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, and more.
 
 `cc-switcher` flips the `ANTHROPIC_*` environment variables that Claude Code reads on startup, points them at an alternative provider's Anthropic-compatible endpoint, and launches `claude` for you. When the session exits it restores the previous environment, so your shell never gets stuck on a non-default provider.
 
@@ -149,7 +149,7 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 | `cc-ollama-glm` | GLM-5.2 (Ollama Cloud) · 976K | glm-5.2:cloud (all three) |
 | `cc-ollama-minimax` | MiniMax M3 (Ollama Cloud) · 512K | minimax-m3:cloud (all three) |
 | `cc-owl` | Owl Alpha (OpenRouter Stealth, free) · **1M** | owl-alpha (all three) |
-| `cc-codex` | OpenAI Codex (OAuth) | gpt-5.4 (run `cc-codex-login` first) |
+| `cc-codex` | OpenAI Codex direct OAuth | **Unsupported migration guard** — see below |
 | `cc-opencode <model>` | OpenCode Go generic | model passed via arg |
 | `cc-opencode-minimax` | OpenCode Go MiniMax M3 (US) | minimax-m3 |
 | `cc-openrouter <model>` | OpenRouter generic | model passed via arg |
@@ -162,14 +162,23 @@ For providers whose flagship tier is ≥ 500K tokens, `cc-switcher` automaticall
 ```mermaid
 xychart-beta
     title "Flagship-tier context window by provider (K tokens)"
-    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "opencode-mm", "codex", "nvidia"]
+    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "opencode-mm", "nvidia"]
     y-axis "K tokens" 0 --> 2100
-    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 205, 200, 128]
+    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 205, 128]
 ```
 
 Every provider whose flagship tier is ≥ 500K (everything left of `kimi`) gets auto-context; `kimi` (256K) and below keep Claude Code's auto-compaction instead — see `docs/architecture.md` "Auto-context derivation" for the threshold rationale. Note `cc-opencode-minimax` runs MiniMax M3 but is pinned at ~205K because OpenCode Go's effective cap is unverified; use `cc-minimax` or `cc-minimax-or` for the guaranteed 1M window.
 
 The provider catalog is JSON. Add or change providers by editing `data/providers.json` **and** its synchronized copy `bash/data/providers.json` (CI enforces that the two match) — no script authoring required.
+
+### OpenAI Codex — retired as a Claude Code provider
+
+`cc-codex` no longer launches Claude Code. Codex's ChatGPT device login issues an OAuth token that OpenAI's public API does not accept, and that API does not implement the Anthropic Messages protocol Claude Code speaks — so no supported credential + transport combination exists. `cc-codex` and `cc-codex-login` now fail immediately with migration guidance instead of completing a login that cannot produce a working session:
+
+- **Native Codex CLI:** `codex login --device-auth` (uses your ChatGPT subscription).
+- **GPT from Claude Code:** `cc-openrouter openai/gpt-5.4` with `OPENROUTER_API_KEY` (separately billed by OpenRouter; does not consume a ChatGPT subscription).
+
+`cc-codex-logout` remains available to delete the legacy `~/.config/codex-oauth/token.json` cache.
 
 ---
 
@@ -186,7 +195,8 @@ The provider catalog is JSON. Add or change providers by editing `data/providers
 | `cc-usage` | Token usage history (last 20 sessions) |
 | `cc-reset` | Clear overrides → native Anthropic |
 | `cc-yolo` | Native Anthropic + `--dangerously-skip-permissions` |
-| `cc-codex-login` / `cc-codex-logout` | Codex OAuth device flow |
+| `cc-codex-login` | Explains why direct ChatGPT OAuth is unsupported and shows alternatives |
+| `cc-codex-logout` | Deletes a legacy cc-switcher OAuth token cache, if present |
 
 ---
 
@@ -251,7 +261,7 @@ cc-switcher/
 │   └── lib/
 │       ├── core.sh                    # invoke-cc-launch, reset-cc, get-cc-status
 │       ├── providers.sh               # catalog loader + dispatcher
-│       ├── codex.sh                   # OAuth device flow
+│       ├── codex.sh                   # unsupported direct OAuth guard + legacy cache cleanup
 │       ├── pricing.sh                 # OpenRouter live pricing
 │       ├── doctor.sh                  # cc-doctor health check
 │       ├── completers.sh              # bash tab completion
@@ -301,7 +311,7 @@ Runtime caches (`data/.pricing-cache.json`, `data/.usage-log.jsonl`, `bash/data/
 - bash 5.0+ or zsh 5.8+
 - [Claude Code](https://docs.anthropic.com/claude/docs/claude-code) installed and on `PATH` as `claude`
 - `jq` (required — all catalog parsing and usage aggregation)
-- `curl` (for `cc-doctor`, `cc-pricing`, and `cc-codex-login`)
+- `curl` (for `cc-doctor` and `cc-pricing`)
 - `sqlite3` (optional, for `cc-usage` enhanced history)
 
 ---

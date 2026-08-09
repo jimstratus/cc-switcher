@@ -44,12 +44,13 @@ A typical invocation, end to end (using `cc-mimo` as the example):
 1. **Alias resolves.** `cc-mimo` → `Invoke-CC-MiMo` (cc-switcher.psm1:29).
 2. **Wrapper dispatches.** `Invoke-CC-MiMo` is a one-liner that calls `Invoke-CCProvider -Id 'mimo' -ClaudeArgs $ClaudeArgs` (`lib/providers.ps1:109`).
 3. **Dispatcher loads catalog.** `Invoke-CCProvider` calls `Get-CCProviders` (`lib/providers.ps1:46`), which parses `data/providers.json` once and projects each provider into a flat object (`lib/providers.ps1:17-43`).
-4. **Auth resolves.** If `requiresOAuth: true` (only Codex), `Get-CC-CodexToken` reads the cached OAuth token (`lib/providers.ps1:57-63`, `lib/codex.ps1:8-17`). Otherwise the dispatcher reads `[Environment]::GetEnvironmentVariable($p.AuthVar)` (`lib/providers.ps1:65`).
-5. **Tier names translate.** Catalog `tiers.flagship/standard/fast` → wrapper params `OpusModel/SonnetModel/HaikuModel` (`lib/providers.ps1:72-74`). The translation is the public contract — catalog uses semantic names, Claude Code uses Anthropic's product names.
-6. **Flagship context resolves.** `contextByTier.flagship` if present, else uniform `context` field, else `0` (`lib/providers.ps1:85-90`).
-7. **`Invoke-CCLaunch` runs** (`lib/core.ps1:6-137`). See "The env-var contract" below.
-8. **`& claude` runs** with any `$ClaudeArgs` passed through (`lib/core.ps1:121-125`).
-9. **Session ends → env restores.** The `finally` block at `lib/core.ps1:132-136` walks `$snapshot.Keys` and writes each value back via `[Environment]::SetEnvironmentVariable($k, $snapshot[$k], 'Process')`. `$null` values clear the var.
+4. **Disabled entries stop.** A catalog entry with `disabled: true` returns its `disabledReason` before auth or launch. The retired direct Codex integration uses this guard.
+5. **Auth resolves.** Supported providers read `[Environment]::GetEnvironmentVariable($p.AuthVar)`. The old `requiresOAuth` branch remains only for catalog compatibility; no supported provider currently uses it.
+6. **Tier names translate.** Catalog `tiers.flagship/standard/fast` → wrapper params `OpusModel/SonnetModel/HaikuModel` (`lib/providers.ps1:72-74`). The translation is the public contract — catalog uses semantic names, Claude Code uses Anthropic's product names.
+7. **Flagship context resolves.** `contextByTier.flagship` if present, else uniform `context` field, else `0` (`lib/providers.ps1:85-90`).
+8. **`Invoke-CCLaunch` runs** (`lib/core.ps1:6-137`). See "The env-var contract" below.
+9. **`& claude` runs** with any `$ClaudeArgs` passed through (`lib/core.ps1:121-125`).
+10. **Session ends → env restores.** The `finally` block at `lib/core.ps1:132-136` walks `$snapshot.Keys` and writes each value back via `[Environment]::SetEnvironmentVariable($k, $snapshot[$k], 'Process')`. `$null` values clear the var.
 
 ## The env-var contract
 
@@ -58,7 +59,7 @@ A typical invocation, end to end (using `cc-mimo` as the example):
 | Variable | Set when | Source | Cleanup |
 |---|---|---|---|
 | `ANTHROPIC_BASE_URL` | always | catalog `baseUrl` | snapshot/restore |
-| `ANTHROPIC_AUTH_TOKEN` | always | env var named in `authVar` (or OAuth token for Codex) | snapshot/restore |
+| `ANTHROPIC_AUTH_TOKEN` | always | env var named in `authVar` | snapshot/restore |
 | `ANTHROPIC_MODEL` | always | catalog `tiers.flagship` (= `$OpusModel` param) | snapshot/restore |
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | always | `tiers.flagship` | snapshot/restore |
 | `ANTHROPIC_DEFAULT_SONNET_MODEL` | always | `tiers.standard` | snapshot/restore |
@@ -94,7 +95,7 @@ The fix added them to `$snapshot` (`lib/core.ps1:46-47`) and to `Reset-CC`'s cle
 - else `context` (uniform catalog)
 - else `0` (skips auto-context)
 
-**Threshold.** `>= 500000` is deliberate. It cleanly separates 1M-class providers (DeepSeek 1M, MiMo v2.5-Pro 1M, Qwen3.7 Max 1M, Xiaomi v2.5-Pro 1M, Grok 2M) from 256K models (Kimi K2.7 Code, MiMo v2-Flash) and ~200K models (Codex 200K, OpenCode Go MiniMax ~205K) where the trade — losing Claude Code's auto-compaction safety net — is not worth a small bump above the 200K default. Above 500K, the gain is large (5x or more); below it, the gain is marginal.
+**Threshold.** `>= 500000` is deliberate. It cleanly separates 1M-class providers (DeepSeek 1M, MiMo v2.5-Pro 1M, Qwen3.7 Max 1M, Xiaomi v2.5-Pro 1M, Grok 2M) from 256K models (Kimi K2.7 Code, MiMo v2-Flash) and ~200K models (OpenCode Go MiniMax ~205K) where the trade — losing Claude Code's auto-compaction safety net — is not worth a small bump above the 200K default. Above 500K, the gain is large (5x or more); below it, the gain is marginal.
 
 **What it sets.** Two vars, both required (per Claude Code's docs — `MAX_CONTEXT_TOKENS` is ignored unless `DISABLE_COMPACT=1` is also set):
 ```
@@ -138,20 +139,16 @@ Use it for ad-hoc experimentation. If a particular OpenRouter model becomes a re
 
 `Invoke-CC-OpenCode` (`lib/providers.ps1:139-150`) is the OpenCode Go equivalent — same pattern, default `minimax-m2.7`, hardcoded base URL `https://opencode.ai/zen/go`, sets `disableNonEssential`.
 
-## Codex OAuth
+## Unsupported direct Codex OAuth
 
-`cc-codex-login` runs an OAuth device flow (`lib/codex.ps1:19-59`):
+`cc-codex` is retained only as a migration guard. A ChatGPT OAuth access token issued to Codex is not valid for OpenAI's public API, and the public OpenAI API does not expose the Anthropic Messages protocol Claude Code sends. Fixing the device-code exchange would therefore produce a token that still cannot launch a Claude Code session.
 
-1. POSTs to `oauth.openai.com/v1/device_authorization` for a `device_code` + `user_code` + `verification_uri`.
-2. Opens the verification URL in the browser, prints the user code.
-3. Polls `oauth.openai.com/v1/token` every 5s for up to 120s.
-4. On success, writes the token JSON to `~/.config/codex-oauth/token.json`.
+Both `cc-codex` and `cc-codex-login` stop immediately and recommend one of two supported paths:
 
-`Get-CC-CodexToken` (`lib/codex.ps1:8-17`) reads the cached token, returns `$null` if the file is missing or `expires_at` is in the past.
+- `codex login --device-auth` for the native Codex CLI and ChatGPT subscription.
+- `cc-openrouter openai/gpt-5.4` for GPT through an Anthropic-compatible gateway (requires `OPENROUTER_API_KEY` and is billed by that gateway).
 
-`Invoke-CCProvider` checks `requiresOAuth: true` in the catalog (`lib/providers.ps1:57-63`) and routes auth through `Get-CC-CodexToken` instead of reading an env var.
-
-`cc-codex-logout` deletes the cache file.
+`cc-codex-logout` remains as cleanup for the historical `~/.config/codex-oauth/token.json` cache. The catalog entry has `disabled: true` so `cc-launch`, `cc-pick`, and direct dispatcher calls cannot bypass the guard.
 
 ## Token usage tracking
 
@@ -188,7 +185,7 @@ The completer for `cc-openrouter` (`lib/completers.ps1:8-19`) reads the same cac
 | `lib/providers.ps1` `Invoke-CCProvider` | `bash/lib/providers.sh` `invoke_cc_provider` | one `jq` pass fetches all provider fields |
 | `lib/providers.ps1` `Get-CCProviders` | `list_cc_providers` | one `jq` pass emits pipe-delimited rows |
 | `lib/picker.ps1` `cc-launch` / `cc-pick` | `invoke_cc_launch_menu` | numbered menu only; no gridview equivalent |
-| `lib/codex.ps1` | `bash/lib/codex.sh` | token cache written `0600` under `umask 077` |
+| `lib/codex.ps1` | `bash/lib/codex.sh` | unsupported direct OAuth guard + legacy token-cache cleanup |
 | `lib/usage.ps1` | `bash/lib/usage.sh` | adds a SQLite `sessions` table next to the JSONL log |
 | `lib/pricing.ps1` | `bash/lib/pricing.sh` | same `{fetchedAt, data}` disk-cache envelope |
 | `lib/doctor.ps1` | `bash/lib/doctor.sh` | key list shared with `cc-status` via `_CC_API_KEY_VARS` |
@@ -208,7 +205,7 @@ sequenceDiagram
     U->>W: cc-deepseek [args]
     W->>P: invoke_cc_provider "deepseek" "" args
     P->>P: jq .providers["deepseek"] (one pass)
-    P->>P: resolve auth via ${!authVar} or codex token
+    P->>P: resolve auth via ${!authVar}
     P->>P: catalog envVars -> CC_EXTRA_ENV_* locals
     P->>L: launch(display, url, token, tiers, timeout, context)
     L->>L: _cc_snapshot_save (_CC_MANAGED_VARS)
