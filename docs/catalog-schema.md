@@ -160,14 +160,14 @@ All tiers same model + 1M context. Auto-context fires (1M >= 500K).
 ```json
 "deepseek": {
   "command": "cc-deepseek",
-  "displayName": "DeepSeek V4",
+  "displayName": "DeepSeek V4.1 Flash",
   "qualityTier": "flagship",
   "baseUrl": "https://api.deepseek.com/anthropic",
   "authVar": "DEEPSEEK_API_KEY",
   "tiers": {
-    "flagship": "deepseek-v4-pro",
-    "standard": "deepseek-v4-pro",
-    "fast": "deepseek-v4-flash"
+    "flagship": "deepseek-flash",
+    "standard": "deepseek-flash",
+    "fast": "deepseek-flash"
   },
   "context": 1000000,
   "timeoutMs": 600000,
@@ -175,9 +175,10 @@ All tiers same model + 1M context. Auto-context fires (1M >= 500K).
 }
 ```
 
-### Per-tier-context provider (MiMo)
+### Uniform-context provider (MiMo)
 
-Flagship/standard at 1M, fast at 256K. Auto-context fires from `contextByTier.flagship` (1M >= 500K). Documented caveat: status bar shows 1M even when on `/model haiku`.
+All current MiMo V2.5 tiers are 1M-class. Auto-context fires from the uniform
+`context` field (1M >= 500K).
 
 ```json
 "mimo": {
@@ -189,10 +190,9 @@ Flagship/standard at 1M, fast at 256K. Auto-context fires from `contextByTier.fl
   "tiers": {
     "flagship": "xiaomi/mimo-v2.5-pro",
     "standard": "xiaomi/mimo-v2.5",
-    "fast":     "xiaomi/mimo-v2-flash"
+    "fast":     "xiaomi/mimo-v2.5"
   },
-  "context": 262144,
-  "contextByTier": { "flagship": 1048576, "standard": 1048576, "fast": 262144 },
+  "context": 1048576,
   "timeoutMs": 600000,
   "disableNonEssential": true
 }

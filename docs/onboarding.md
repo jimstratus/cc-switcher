@@ -17,7 +17,7 @@
 3. [Step 0 — Install Claude Code + cc-switcher](#3-step-0--install-claude-code--cc-switcher)
 4. [The two ways you pay: per-token vs. subscription](#4-the-two-ways-you-pay-per-token-vs-subscription)
 5. [Pick your path (decision flowchart)](#5-pick-your-path-decision-flowchart)
-6. [⭐ The fastest start: OpenRouter (one key, nine providers)](#6--the-fastest-start-openrouter-one-key-nine-providers)
+6. [⭐ The fastest start: OpenRouter (one key, ten providers)](#6--the-fastest-start-openrouter-one-key-ten-providers)
 7. [Provider sign-up walkthroughs](#7-provider-sign-up-walkthroughs)
 8. [Pricing cheat-sheet (all providers)](#8-pricing-cheat-sheet-all-providers)
 9. [Context windows — the 1M+ club](#9-context-windows--the-1m-club)
@@ -485,7 +485,7 @@ between an 80% and an 88% model is small — but the price difference is **6× t
 3. Daily driver: `cc-glm` (quality) or `cc-qwen` / `cc-mimo` (cheapest).
 4. Want the rock-bottom price? Also sign up for **DeepSeek** and use `cc-deepseek`.
 
-*This gets you 9 providers + free models from a single signup, for ~$10.*
+*This gets you 10 provider commands, including a free model, from a single signup for ~$10.*
 
 ### 📅 Recipe C — "Flat monthly bill, no surprises"
 1. Subscribe to the **Z.AI GLM Coding Plan** (~$18 Lite) at <https://z.ai/subscribe>.
