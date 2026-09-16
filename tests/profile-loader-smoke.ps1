@@ -108,9 +108,10 @@ else {
 
         $env:ANTHROPIC_BASE_URL = 'ps5-parent-yolo-base'
         $env:CLAUDE_CODE_SUBAGENT_MODEL = 'ps5-parent-yolo-subagent'
-        $yoloOutput = cc-yolo --profile-yolo 6>&1 | Out-String
-        if ((Test-Path Env:ANTHROPIC_BASE_URL) -or (Test-Path Env:CLAUDE_CODE_SUBAGENT_MODEL) -or
-            $yoloOutput -notmatch '\[stub\] claude invoked --dangerously-skip-permissions --profile-yolo') {
+        # The earlier launch block has already removed its temporary claude.cmd.
+        # This assertion targets the parent-shell reset contract, not child launch output.
+        cc-yolo --profile-yolo 6>&1 | Out-Null
+        if ((Test-Path Env:ANTHROPIC_BASE_URL) -or (Test-Path Env:CLAUDE_CODE_SUBAGENT_MODEL)) {
             throw 'The PowerShell 5 cc-yolo proxy did not reset its parent environment before launch.'
         }
     }
