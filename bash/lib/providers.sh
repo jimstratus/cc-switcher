@@ -127,7 +127,7 @@ invoke_cc_provider() {
 # cc-openrouter — generic OpenRouter launcher (model param required)
 #------------------------------------------------------------------------------
 invoke_cc_openrouter() {
-  local model="${1:-moonshotai/kimi-k2.7-code}"
+  local model="${1:-moonshotai/kimi-k3}"
   shift || true
   local -a claude_args=("$@")
 
@@ -178,7 +178,7 @@ invoke_cc_opencode() {
 #------------------------------------------------------------------------------
 # cc-atlas — Atlas Cloud Coding Plan; serves any model. Optional model arg
 # overrides all tiers, otherwise the catalog's atlas entry supplies the
-# GLM-5.2 default.
+# GLM-5.3 default.
 #------------------------------------------------------------------------------
 invoke_cc_atlas() {
   # Consume the first token as a model override only when it is not a Claude

@@ -5,7 +5,7 @@ Reference for `data/providers.json`. Edit this file to add, remove, or reconfigu
 ## File location and version
 
 - **Path:** `data/providers.json` (PowerShell) and `bash/data/providers.json` (bash). The two copies must stay in sync — CI's "catalogs in sync" job diffs them and fails the build on divergence. Edit both in the same commit.
-- **Top-level `version`** (string): tracks schema + content revisions. Bumped whenever the file changes meaningfully. Currently `"3.5.0"`. Must move in lockstep with `cc-switcher.psd1`'s `ModuleVersion`, `cc-switcher.psm1`'s `$script:CCSwitcherVersion`, and `bash/cc-switcher.sh`'s `CCSWITCHER_VERSION`.
+- **Top-level `version`** (string): tracks schema + content revisions. Bumped whenever the file changes meaningfully. Currently `"3.7.0"`. Must move in lockstep with `cc-switcher.psd1`'s `ModuleVersion`, `cc-switcher.psm1`'s `$script:CCSwitcherVersion`, and `bash/cc-switcher.sh`'s `CCSWITCHER_VERSION`.
 - **Schema reference**: `"$schema": "https://json-schema.org/draft-07/schema#"` (advisory; no formal JSON Schema is published, but CI validates JSON well-formedness and the mandatory provider fields).
 
 ## Top-level structure
@@ -13,7 +13,7 @@ Reference for `data/providers.json`. Edit this file to add, remove, or reconfigu
 ```json
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.5.0",
+  "version": "3.7.0",
   "_doc": { ... },
   "providers": {
     "<id>": { <provider definition> },
@@ -36,7 +36,7 @@ The user-facing command name for this provider. By convention `cc-<id>`, but fre
 
 ### `displayName`
 
-Human-readable name shown in `cc-help`, `cc-launch`, and `cc-status`. Free-form; include disambiguation suffixes when needed (e.g., `"GLM-5.2 (Z.AI via OpenRouter)"` vs `"Z.AI GLM-5.2 [SLOW — China endpoint]"`).
+Human-readable name shown in `cc-help`, `cc-launch`, and `cc-status`. Free-form; include disambiguation suffixes when needed (e.g., `"GLM-5.3 (Z.AI via OpenRouter)"` vs `"Z.AI GLM-5.3 [SLOW — China endpoint]"`).
 
 ### `qualityTier`
 
@@ -160,14 +160,14 @@ All tiers same model + 1M context. Auto-context fires (1M >= 500K).
 ```json
 "deepseek": {
   "command": "cc-deepseek",
-  "displayName": "DeepSeek V4",
+  "displayName": "DeepSeek V4.1 Flash",
   "qualityTier": "flagship",
   "baseUrl": "https://api.deepseek.com/anthropic",
   "authVar": "DEEPSEEK_API_KEY",
   "tiers": {
-    "flagship": "deepseek-v4-pro",
-    "standard": "deepseek-v4-pro",
-    "fast": "deepseek-v4-flash"
+    "flagship": "deepseek-flash",
+    "standard": "deepseek-flash",
+    "fast": "deepseek-flash"
   },
   "context": 1000000,
   "timeoutMs": 600000,
@@ -175,9 +175,10 @@ All tiers same model + 1M context. Auto-context fires (1M >= 500K).
 }
 ```
 
-### Per-tier-context provider (MiMo)
+### Uniform-context provider (MiMo)
 
-Flagship/standard at 1M, fast at 256K. Auto-context fires from `contextByTier.flagship` (1M >= 500K). Documented caveat: status bar shows 1M even when on `/model haiku`.
+All current MiMo V2.5 tiers are 1M-class. Auto-context fires from the uniform
+`context` field (1M >= 500K).
 
 ```json
 "mimo": {
@@ -189,10 +190,9 @@ Flagship/standard at 1M, fast at 256K. Auto-context fires from `contextByTier.fl
   "tiers": {
     "flagship": "xiaomi/mimo-v2.5-pro",
     "standard": "xiaomi/mimo-v2.5",
-    "fast":     "xiaomi/mimo-v2-flash"
+    "fast":     "xiaomi/mimo-v2.5"
   },
-  "context": 262144,
-  "contextByTier": { "flagship": 1048576, "standard": 1048576, "fast": 262144 },
+  "context": 1048576,
   "timeoutMs": 600000,
   "disableNonEssential": true
 }

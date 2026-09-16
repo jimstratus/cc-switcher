@@ -1,11 +1,11 @@
 # =============================================================================
 # cc-switcher.psm1 — Claude Code multi-provider launcher
-# Version 3.5.0 — single source of truth: $script:CCSwitcherVersion below.
+# Version 3.7.0 — single source of truth: $script:CCSwitcherVersion below.
 # Repo: https://github.com/jimstratus/cc-switcher
 # =============================================================================
 
 $script:CCSwitcherRoot = $PSScriptRoot
-$script:CCSwitcherVersion = '3.5.0'
+$script:CCSwitcherVersion = '3.7.0'
 
 # Load lib files in dependency order. Tiny files — total parse <50ms.
 . (Join-Path $PSScriptRoot 'lib\core.ps1')
@@ -25,6 +25,7 @@ Register-CCCompleters
 Set-Alias -Name cc-atlas             -Value Invoke-CC-Atlas
 Set-Alias -Name cc-deepseek          -Value Invoke-CC-DeepSeek
 Set-Alias -Name cc-glm               -Value Invoke-CC-Glm
+Set-Alias -Name cc-hy4               -Value Invoke-CC-Hy4
 Set-Alias -Name cc-kimi              -Value Invoke-CC-Kimi
 Set-Alias -Name cc-minimax           -Value Invoke-CC-MiniMax
 Set-Alias -Name cc-mimo              -Value Invoke-CC-MiMo
@@ -80,7 +81,7 @@ function Show-CCHelp {
     Write-Host ""
     Write-Host " Generic launchers (pass model id) " -ForegroundColor Yellow
     Write-Host ("-" * 78) -ForegroundColor DarkYellow
-    Write-Host "  cc-atlas <model>               Any Atlas Cloud model (omit for GLM-5.2 default)"
+    Write-Host "  cc-atlas <model>               Any Atlas Cloud model (omit for GLM-5.3 default)"
     Write-Host "  cc-openrouter <model>          Any OpenRouter model"
     Write-Host "  cc-opencode <model>            Any OpenCode Go model"
     Write-Host "  cc-nvidia <model>              Any NVIDIA NIM model (omit for tier defaults)"

@@ -75,7 +75,7 @@ show_cc_help() {
   echo ""
   echo " Generic launchers (pass model id) "
   printf '%s\n' "----------------------------------------------------------------------"
-  echo "  cc-atlas <model>               Any Atlas Cloud model (omit for GLM-5.2 default)"
+  echo "  cc-atlas <model>               Any Atlas Cloud model (omit for GLM-5.3 default)"
   echo "  cc-openrouter <model>          Any OpenRouter model"
   echo "  cc-opencode <model>            Any OpenCode Go model"
   echo "  cc-nvidia <model>             Any NVIDIA NIM model (omit for tier defaults)"

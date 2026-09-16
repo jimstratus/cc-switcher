@@ -34,7 +34,7 @@ $ccSwitcherManagedEnvironment = Join-Path $PSScriptRoot 'get-managed-environment
 $manifestData = Import-PowerShellDataFile $ccSwitcherManifest
 
 foreach ($aliasName in $manifestData.AliasesToExport) {
-    if ($aliasName -eq 'cc-reset') { continue }
+    if ($aliasName -in @('cc-reset', 'cc-yolo')) { continue }
     if ($pwshCommand) {
         $pwshPath = $pwshCommand.Source
         $runnerPath = $ccSwitcherRunner
@@ -87,3 +87,28 @@ else {
     }
 }
 Set-Item -Path 'Function:\global:cc-reset' -Value $resetProxy -Force
+
+if ($pwshCommand) {
+    $pwshPath = $pwshCommand.Source
+    $runnerPath = $ccSwitcherRunner
+    $parentReset = $resetProxy
+    $yoloProxy = {
+        # Invoke-CC-Yolo resets before launching native Claude. In a PS5 proxy,
+        # that reset must happen in this parent process, not only in child pwsh.
+        & $parentReset -Quiet
+        $forwardArgs = @($args | Where-Object { $null -ne $_ } | ForEach-Object { [string]$_ })
+        $argumentJson = ConvertTo-Json -InputObject @($forwardArgs) -Compress
+        $encodedArguments = [Convert]::ToBase64String(
+            [Text.Encoding]::UTF8.GetBytes($argumentJson)
+        )
+        & $pwshPath -NoLogo -NoProfile -File $runnerPath `
+            -CommandName 'cc-yolo' `
+            -EncodedArguments $encodedArguments
+    }.GetNewClosure()
+}
+else {
+    $yoloProxy = {
+        throw '[cc-switcher] PowerShell 7 is required. Install pwsh and reopen this shell.'
+    }
+}
+Set-Item -Path 'Function:\global:cc-yolo' -Value $yoloProxy -Force

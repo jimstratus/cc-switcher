@@ -246,7 +246,7 @@
   and point Claude Code at models that are <b>5×–100× cheaper</b> — or completely free.</p>
   <div class="pills">
     <span class="pill"><b>18</b> providers</span>
-    <span class="pill"><b>1</b> OpenRouter key → 9 commands</span>
+    <span class="pill"><b>1</b> OpenRouter key → 10 commands</span>
     <span class="pill"><b>$0</b> free options</span>
     <span class="pill"><b>2M</b> max context</span>
   </div>
@@ -370,16 +370,16 @@ Import-Module ./cc-switcher/cc-switcher.psd1</pre>
   <div class="diagram"><div class="mermaid">
 flowchart TD
     start(["I'm new — where do I start?"]) --> q1{"Willing to spend<br/>anything?"}
-    q1 -->|"No, $0 only"| free["🆓 FREE<br/>cc-nemotron, cc-owl<br/>cc-nvidia · Ollama free"]
+    q1 -->|"No, $0 only"| free["🆓 FREE<br/>cc-nemotron<br/>cc-nvidia · Ollama free"]
     q1 -->|"A little, pay-as-I-go"| q2{"Want ONE key for<br/>many models?"}
     q1 -->|"Flat monthly"| sub["📅 SUBSCRIPTION<br/>Z.AI GLM $18 (best all-round)<br/>Xiaomi $6 (cheapest)<br/>MiniMax $20 · Kimi $19"]
-    q2 -->|"Yes (recommended)"| or["⭐ OpenRouter<br/>$10 → cc-glm, cc-gemini, cc-grok,<br/>cc-kimi, cc-mimo, cc-qwen, cc-minimax-or<br/>+ free models"]
+    q2 -->|"Yes (recommended)"| or["⭐ OpenRouter<br/>$10 → cc-glm, cc-gemini, cc-grok, cc-hy4,<br/>cc-kimi, cc-mimo, cc-qwen, cc-minimax-or,<br/>cc-owl + a free model"]
     q2 -->|"No, rock-bottom price"| ds["💸 DeepSeek direct<br/>cc-deepseek — cheapest<br/>serious coding"]
   </div></div>
   <div class="tw"><table class="tbl">
     <tr><th>If you…</th><th>Do this</th></tr>
-    <tr><td>Just want to explore for $0</td><td><code>cc-nemotron</code> / <code>cc-owl</code> (free via OpenRouter), or <code>cc-nvidia</code></td></tr>
-    <tr><td>Want the best first purchase</td><td>⭐ <b>OpenRouter</b>, $10 credits — one key, 9 commands</td></tr>
+    <tr><td>Just want to explore for $0</td><td><code>cc-nemotron</code> (free via OpenRouter), or <code>cc-nvidia</code></td></tr>
+    <tr><td>Want the best first purchase</td><td>⭐ <b>OpenRouter</b>, $10 credits — one key, 10 commands</td></tr>
     <tr><td>Want the absolute cheapest quality coding</td><td>💸 <b>DeepSeek</b> direct (<code>cc-deepseek</code>)</td></tr>
     <tr><td>Code daily, hate surprise bills</td><td>📅 <b>Z.AI GLM Coding Plan</b> ($18/mo)</td></tr>
   </table></div>
@@ -388,15 +388,15 @@ flowchart TD
 <!-- OPENROUTER -->
 <section id="openrouter"><div class="wrap">
   <p class="kicker">⭐ The fastest start</p>
-  <h2>OpenRouter — one key, nine providers</h2>
+  <h2>OpenRouter — one key, ten providers</h2>
   <p class="lead">OpenRouter is a universal adapter: one account and one key unlock hundreds of models.
-  In cc-switcher, a single <code>OPENROUTER_API_KEY</code> powers <b>nine</b> provider commands
+  In cc-switcher, a single <code>OPENROUTER_API_KEY</code> powers <b>ten</b> provider commands
   (plus the generic <code>cc-openrouter</code>) — so you sign up <i>once</i> and try almost the whole catalog.</p>
   <div class="pills" style="justify-content:flex-start;margin:14px 0">
-    <span class="pill">cc-glm</span><span class="pill">cc-gemini</span><span class="pill">cc-grok</span>
+    <span class="pill">cc-glm</span><span class="pill">cc-gemini</span><span class="pill">cc-grok</span><span class="pill">cc-hy4</span>
     <span class="pill">cc-kimi</span><span class="pill">cc-mimo</span><span class="pill">cc-qwen</span>
     <span class="pill">cc-minimax-or</span><span class="pill">cc-nemotron <b>free</b></span>
-    <span class="pill">cc-owl <b>free</b></span><span class="pill">cc-openrouter &lt;model&gt;</span>
+    <span class="pill">cc-owl <b>LongCat 2.0</b></span><span class="pill">cc-openrouter &lt;model&gt;</span>
   </div>
   <h3>Sign up &amp; get your key (5 min)</h3>
   <ol class="steps">
@@ -412,10 +412,10 @@ export OPENROUTER_API_KEY=<span class="k">"sk-or-v1-..."</span>
 $env:OPENROUTER_API_KEY = <span class="k">"sk-or-v1-..."</span>
 
 cc-doctor        <span class="c"># verify</span>
-cc-glm           <span class="c"># GLM-5.2 — great all-round coder, 1M context</span>
+cc-glm           <span class="c"># GLM-5.3 — great all-round coder, 1.31M context</span>
 cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
   <div class="note">OpenRouter is <b>pay-per-token only — no monthly plan.</b> The <code>:free</code> models
-  (<code>cc-nemotron</code>, <code>cc-owl</code>) cost nothing but are rate-limited.</div>
+  (<code>cc-nemotron</code>) cost nothing but is rate-limited; <code>cc-owl</code> now launches paid LongCat 2.0.</div>
 </div></section>
 
 <!-- PROVIDERS -->
@@ -429,7 +429,7 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
     <div class="card feature"><span class="tag">⭐ RECOMMENDED FIRST</span>
       <h4>OpenRouter</h4><div class="cmd">cc-glm · cc-qwen · cc-kimi · +6 more</div>
       <p class="meta"><b>Env:</b> <code>OPENROUTER_API_KEY</code> → <code>sk-or-v1-…</code></p>
-      <p class="meta"><b>Billing:</b> 💧 pay-per-token. One key, 9 commands + free models.</p>
+      <p class="meta"><b>Billing:</b> 💧 pay-per-token. One key, 10 commands + a free model.</p>
       <p class="links"><a href="https://openrouter.ai/sign-up">Sign up ↗</a> · <a href="https://openrouter.ai/settings/keys">Get key ↗</a></p>
     </div>
 
@@ -485,7 +485,7 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
     <div class="card"><h4>🆓 Ollama Cloud</h4>
       <div class="cmd">cc-ollama-glm · cc-ollama-minimax</div>
       <p class="meta"><b>Env:</b> <code>OLLAMA_API_KEY</code></p>
-      <p class="meta"><b>Billing:</b> 🆓 free tier · 📅 Pro $20 / Max $100. Hosted GLM-5.2 (976K) &amp; MiniMax M3 (512K).</p>
+      <p class="meta"><b>Billing:</b> 🆓 free tier · 📅 Pro $20 / Max $100. Hosted GLM-5.3 (1M) &amp; MiniMax M3 (512K).</p>
       <p class="links"><a href="https://ollama.com">Sign up ↗</a> · <a href="https://ollama.com/settings/keys">Get key ↗</a></p>
     </div>
 
@@ -531,7 +531,9 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
     <tr><td class="mono">cc-grok</td><td>Grok 4.x</td><td class="num">3.00</td><td class="num">15.00</td><td><span class="badge b-prem">premium</span></td></tr>
     <tr class="base"><td class="mono">—</td><td>Anthropic Sonnet 4.6</td><td class="num">3.00</td><td class="num">15.00</td><td>baseline</td></tr>
     <tr class="base"><td class="mono">—</td><td>Anthropic Opus 4.8</td><td class="num">5.00</td><td class="num">25.00</td><td>baseline</td></tr>
-    <tr><td class="mono">cc-nemotron / cc-owl / cc-nvidia</td><td>Nemotron · Owl · NIM</td><td class="num">FREE</td><td class="num">FREE</td><td><span class="badge b-free">🆓 free</span></td></tr>
+    <tr><td class="mono">cc-hy4</td><td>Tencent Hy4 preview</td><td class="num">0.834</td><td class="num">2.501</td><td><span class="badge b-mid">1M preview</span></td></tr>
+    <tr><td class="mono">cc-owl</td><td>Meituan LongCat 2.0</td><td class="num">0.30</td><td class="num">1.20</td><td><span class="badge b-cheap">paid successor</span></td></tr>
+    <tr><td class="mono">cc-nemotron / cc-nvidia</td><td>Nemotron · NIM</td><td class="num">FREE</td><td class="num">FREE</td><td><span class="badge b-free">🆓 free</span></td></tr>
   </table></div>
   <p class="meta">* DeepSeek V4-Pro promo; list $1.74/$3.48. Cache hits cost ~1/10 of input.</p>
 
@@ -574,7 +576,8 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
     <div class="row"><span class="lbl">cc-mimo</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
     <div class="row"><span class="lbl">cc-xiaomi</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
     <div class="row"><span class="lbl">cc-nemotron</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
-    <div class="row"><span class="lbl">cc-owl</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
+    <div class="row"><span class="lbl">cc-owl / LongCat</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
+    <div class="row"><span class="lbl">cc-hy4</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="val">1049K</span></div>
     <div class="row"><span class="lbl">cc-deepseek</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="val">1000K</span></div>
     <div class="row"><span class="lbl">cc-glm</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="val">1000K</span></div>
     <div class="row"><span class="lbl">cc-gemini</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="val">1000K</span></div>
@@ -626,7 +629,7 @@ cc-nemotron      <span class="c"># FREE — zero-risk first run</span></pre>
       <pre class="code"><span class="c"># sign up for OpenRouter (no card)</span>
 export OPENROUTER_API_KEY=<span class="k">"sk-or-v1-..."</span>
 cc-nemotron   <span class="c"># free, 1M ctx</span>
-cc-owl        <span class="c"># free, agentic</span></pre>
+cc-owl        <span class="c"># LongCat 2.0 successor, paid</span></pre>
       <p class="meta">Add <code>cc-nvidia</code> + Ollama free tier for more. Rate-limited, great for learning.</p>
     </div>
     <div class="card feature"><span class="tag">RECOMMENDED</span><h4>💧 B · Cheapest real coding</h4>
@@ -682,7 +685,8 @@ flowchart LR
     <tr><td class="mono">cc-qwen</td><td>Qwen3.7 Max (OpenRouter)</td><td><b>1M</b></td></tr>
     <tr><td class="mono">cc-ollama-glm</td><td>GLM-5.2 (Ollama Cloud)</td><td>976K</td></tr>
     <tr><td class="mono">cc-ollama-minimax</td><td>MiniMax M3 (Ollama Cloud)</td><td>512K</td></tr>
-    <tr><td class="mono">cc-owl</td><td>Owl Alpha (OpenRouter, free)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-hy4</td><td>Tencent Hy4 preview (OpenRouter)</td><td><b>1M</b></td></tr>
+    <tr><td class="mono">cc-owl</td><td>Meituan LongCat 2.0 (Owl Alpha successor)</td><td><b>~1M</b></td></tr>
     <tr><td class="mono">cc-codex</td><td>Unsupported direct OAuth migration guard</td><td>—</td></tr>
     <tr><td class="mono">cc-opencode &lt;model&gt;</td><td>OpenCode Go generic</td><td>—</td></tr>
     <tr><td class="mono">cc-opencode-minimax</td><td>MiniMax M3 via OpenCode Go</td><td>205K</td></tr>

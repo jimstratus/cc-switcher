@@ -125,11 +125,12 @@ function Invoke-CC-Owl-Alpha  { param([string[]]$ClaudeArgs) Invoke-CCProvider -
 function Invoke-CC-Nemotron   { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'nemotron' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Gemini     { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'gemini' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Grok       { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'grok' -ClaudeArgs $ClaudeArgs }
+function Invoke-CC-Hy4        { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'hy4' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-MiniMax-OR { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'minimax-or' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Ollama-Glm { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'ollama-glm' -ClaudeArgs $ClaudeArgs }
 function Invoke-CC-Ollama-MiniMax { param([string[]]$ClaudeArgs) Invoke-CCProvider -Id 'ollama-minimax' -ClaudeArgs $ClaudeArgs }
 
-# Atlas Cloud: serves any model — bare command uses the catalog's GLM-5.2 default,
+# Atlas Cloud: serves any model — bare command uses the catalog's GLM-5.3 default,
 # optional model arg overrides all three tiers with any Atlas model id. A leading
 # token starting with '-' (e.g. --version, --yolo) is a Claude flag, not a model
 # id, so forward it to claude instead of treating it as a model override.
@@ -159,7 +160,7 @@ function Invoke-CC-Nvidia {
 # OpenRouter: model param required (passes through to all three tiers)
 function Invoke-CC-OpenRouter {
     param([string]$Model, [string[]]$ClaudeArgs)
-    if (-not $Model) { $Model = "moonshotai/kimi-k2.7-code" }
+    if (-not $Model) { $Model = "moonshotai/kimi-k3" }
     $auth = $env:OPENROUTER_API_KEY
     Write-Host "[cc] OpenRouter model: $Model" -ForegroundColor Yellow
     Invoke-CCLaunch `

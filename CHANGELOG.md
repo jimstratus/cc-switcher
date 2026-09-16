@@ -2,8 +2,27 @@
 
 ## Unreleased
 
+### Changed
+
+- **2026-09 model refresh:** `cc-glm` now maps to `z-ai/glm-5.3` /
+  `z-ai/glm-5.3-flash` (1.31M via OpenRouter), and the direct legacy-named
+  `cc-zai-glm51` maps to `glm-5.3` / `glm-5.3-flash` (1M conservative
+  context). `cc-kimi` and bare `cc-openrouter` now use Kimi K3 (1M).
+  `cc-qwen` now maps its tiers to Qwen3.8 Max 0902, Qwen3.8 27B, and
+  Qwen3.8 Flash (all 1M). `cc-deepseek` now uses the canonical V4.1 Flash
+  ID, `cc-atlas` and `cc-ollama-glm` use GLM-5.3, and `cc-nemotron` / direct
+  `cc-nvidia` use current NVIDIA IDs. MiniMax M3 remains unchanged after
+  direct and OpenRouter model discovery confirmed it is still current.
+  `cc-owl` now preserves its familiar command while launching Meituan LongCat
+  2.0, Owl Alpha's public successor; this route is paid, not free.
+- Updated the Bash OpenRouter fallback completion list and the OpenCode Go
+  MiniMax completion to current model IDs.
+
 ### Added
 
+- **`cc-hy4`** — Tencent Hy4 preview through OpenRouter, using the existing
+  `OPENROUTER_API_KEY`. The 1M-context `tencent/hy4-preview` model is mapped
+  to all Claude Code tiers; Tencent documents Anthropic Messages compatibility.
 - **`cc-muse`** — Meta Muse Spark 1.2 through `https://api.meta.ai`, using
   `MODEL_API_KEY`. All Claude Code tiers map to `muse-spark-1.2`; launches also
   set `CLAUDE_CODE_SUBAGENT_MODEL=muse-spark-1.2` and `ENABLE_TOOL_SEARCH=true`.
@@ -11,6 +30,13 @@
 
 ### Fixed
 
+- Muse session-only overrides are now in Bash's managed-variable array, and
+  the Windows PowerShell 5 `cc-yolo` proxy clears provider overrides in its
+  parent process before starting native Claude. Muse explicitly records its
+  presently unverified context as `0` so auto-compaction remains enabled.
+- Removed retired model IDs from the PowerShell picker and Bash OpenRouter
+  fallback completion; refreshed both OpenCode Go completion lists from its
+  authenticated live model listing.
 - **Fresh PowerShell profiles expose every `cc-*` command again.** The tracked
   profile loader eagerly imports the module in PowerShell 7 and creates safe
   child-`pwsh` proxies in Windows PowerShell 5. This fixes both the initial
