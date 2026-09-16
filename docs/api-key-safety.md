@@ -50,7 +50,7 @@ echo '[ -f ~/.cc-switcher.env ] && source ~/.cc-switcher.env' >> ~/.bashrc
 | **Prepaid credits** | Load a fixed amount; you can't exceed it | OpenRouter, MiniMax credits, DeepSeek top-up |
 | **Per-key credit limit** | Set a cap when you create the key | OpenRouter (`Create Key → limit`) |
 | **Flat subscription** | Fixed monthly price, quota-limited (no per-token bill) | Z.AI GLM, MiniMax/Xiaomi/Kimi plans, OpenCode Go |
-| **Free tiers** | $0 — make mistakes here | `cc-nemotron`, `cc-owl`, `cc-nvidia`, Ollama free |
+| **Free tiers** | $0 — make mistakes here | `cc-nemotron`, `cc-nvidia`, Ollama free |
 | **Watch usage** | `cc-usage` (token history) · `cc-pricing` (live rates) | cc-switcher built-ins |
 
 **Beginner-safe default:** start on a **free model** (`cc-nemotron`) to learn the workflow, then
@@ -87,12 +87,13 @@ Act in this order — it takes two minutes:
 
 ---
 
-## 4. A note on the free "stealth" models
+## 4. Retired Owl Alpha migration
 
-`cc-owl` (Owl Alpha) is a **free cloaked/stealth model** — its provider may **log your prompts and
-completions** to improve the model. It's great for throwaway exploration, but **don't send secrets,
-proprietary code, or anything sensitive** through it. The same caution applies to any free tier: you're
-often paying with data instead of money. For private work, use a paid provider with a clear data policy.
+The retired OpenRouter Owl Alpha stealth model is no longer a free route.
+`cc-owl` now launches its public successor, Meituan LongCat 2.0, through the
+paid OpenRouter catalog. Use `cc-nemotron`, `cc-nvidia`, or Ollama's applicable
+free tier when a zero-cost session is required. Treat all third-party gateways
+according to their current data policy before sending secrets or proprietary code.
 
 ---
 

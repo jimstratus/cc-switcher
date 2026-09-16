@@ -13,12 +13,12 @@ bash port — the two implementations share the catalog and feature set.
 
 ---
 
-## Z.AI GLM-5.2 (`cc-zai-glm51`) — Slow
+## Z.AI GLM-5.3 (`cc-zai-glm51`) — Slow
 
 The Z.AI Anthropic-compatible endpoint (`https://api.z.ai/api/anthropic`) is
 China-based; round-trip latency from US is prohibitive for interactive coding.
 
-**Workaround:** Use `cc-glm` (OpenRouter route to `z-ai/glm-5.2`). Same model,
+**Workaround:** Use `cc-glm` (OpenRouter route to `z-ai/glm-5.3`). Same model,
 US/EU latency.
 
 This command is kept and tagged `[SLOW]` so it sorts last in `cc-launch` and
@@ -37,15 +37,15 @@ edit `providers.json` to a model id from
 
 ---
 
-## DeepSeek V4 — only two SKUs
+## DeepSeek V4.1 Flash — canonical identifier
 
-Verified 2026-05-01 against `https://api.deepseek.com/v1/models`: only
-`deepseek-v4-pro` and `deepseek-v4-flash` are exposed. There's no plain
-`deepseek-v4`. The catalog points both Opus and Sonnet at `deepseek-v4-pro`;
-Haiku at `deepseek-v4-flash`.
+Verified 2026-09-16 against `https://api.deepseek.com/v1/models`: the live
+identifiers are `deepseek-flash` and `deepseek-v4-pro`. `deepseek-flash` is
+DeepSeek V4.1 Flash; the retired `deepseek-v4-flash` identifier is temporarily
+routed for compatibility. The catalog maps all tiers to `deepseek-flash`.
 
-If DeepSeek ships a middle-tier model later, edit `data\providers.json`
-to remap Sonnet.
+When DeepSeek releases V4.1 Pro, review the tier mapping rather than assuming
+the previous V4 Pro identifier has become the new flagship.
 
 ---
 
@@ -64,16 +64,17 @@ context is `>= 500000`. No catalog edit required for these:
 | `cc-grok` (Grok 4.20) | yes | 2M |
 | `cc-mimo` (MiMo V2.5-Pro on OpenRouter) | yes | 1M (flagship/standard; fast tier 256K) |
 | `cc-xiaomi` (MiMo V2.5-Pro direct SGP) | yes | 1M (flagship only) |
-| `cc-nemotron` (Nemotron 3 Super, free) | yes | 1M (uniform across tiers) |
-| `cc-owl` (Owl Alpha, free) | yes | 1M (uniform across tiers) |
-| `cc-deepseek` (V4 Pro) | yes | 1M (uniform across tiers) |
-| `cc-glm`, `cc-zai-glm51` (GLM-5.2) | yes | 1M |
+| `cc-nemotron` (Nemotron 3 Ultra, free) | yes | 1M (uniform across tiers) |
+| `cc-owl` (LongCat 2.0, OpenRouter) | yes | ~1M (Owl Alpha's public successor; paid) |
+| `cc-deepseek` (V4.1 Flash) | yes | 1M (uniform across tiers) |
+| `cc-glm` (GLM-5.3) | yes | 1.31M |
+| `cc-zai-glm51` (GLM-5.3, direct) | yes | 1M (conservative) |
 | `cc-gemini` (Gemini 3.1 Pro) | yes | 1M |
 | `cc-minimax`, `cc-minimax-or` (MiniMax M3) | yes | 1M |
-| `cc-qwen` (Qwen3.7 Max on OpenRouter) | yes | 1M (flagship only) |
-| `cc-ollama-glm` (GLM-5.2, Ollama Cloud) | yes | 976K |
+| `cc-qwen` (Qwen3.8 Max / 27B / Flash on OpenRouter) | yes | 1M (all tiers) |
+| `cc-ollama-glm` (GLM-5.3, Ollama Cloud) | yes | 1M |
 | `cc-ollama-minimax` (MiniMax M3, Ollama Cloud) | yes | 512K |
-| `cc-kimi` (K2.7 Code) | no | 256K (below the 500K threshold) |
+| `cc-kimi` (Kimi K3) | yes | 1M |
 | `cc-opencode-minimax` | no | ~205K (OpenCode Go cap unverified) |
 | `cc-codex` | n/a | disabled (incompatible auth + wire protocol) |
 | `cc-nvidia` | no | 128K |
@@ -104,7 +105,7 @@ Acceptable for opus-primary workflows.
 ## OpenCode Go GLM removed
 
 `cc-opencode-glm51` and `cc-opencode-glm5t` were removed in 3.0.0 because
-`cc-glm` (OpenRouter) covers GLM-5.2 with US/EU latency and no local proxy.
+`cc-glm` (OpenRouter) covers GLM-5.3 with US/EU latency and no local proxy.
 
 The local Python proxy at `<your-tools-path>\claude-code-proxy` is now
 orphaned.
@@ -148,22 +149,16 @@ run `cc-reset`.
 
 ---
 
-## Owl Alpha — intermittent at peak times
+## `cc-owl`: LongCat 2.0 successor and pricing
 
-Owl Alpha (`cc-owl`, `openrouter/owl-alpha`) is a FREE cloaked model on
-OpenRouter's Stealth provider. Direct API testing (2026-05-26) confirms:
+OpenRouter retired the Owl Alpha stealth listing. `cc-owl` now retains that
+familiar command name while launching `meituan/longcat-2.0`, Meituan's public
+LongCat 2.0 release, through OpenRouter.
 
-- Anthropic Messages API: working (200 OK, proper format)
-- Tool calling: working (correct `tool_use` blocks)
-- Full agent loop (tool_use → tool_result → answer): working
-- 8-tool complex schema: working
+This is a paid route, not a free stealth model. At the 2026-09-16 audit,
+OpenRouter listed $0.30 per million input tokens and $1.20 per million output
+tokens; gateway pricing can change. The registry reports a roughly 1.05M-token
+window. A forced Anthropic Messages tool-use request succeeded on that date.
 
-However, the model can fail intermittently due to free-tier rate limits and
-provider load. Usage log shows both successful (24-turn May 17, 739-turn
-May 26) and failed (0-turn May 3) sessions.
-
-**Workaround:** Retry if first launch errors. If it consistently fails,
-switch to a paid provider like `cc-mimo` or `cc-deepseek` for the session.
-
-**Privacy note:** Prompts and completions may be logged by the Stealth
-provider for model improvement.
+LongCat 2.0 is text-only. Use a separate provider when image or audio input
+is required.

@@ -1,49 +1,49 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.5.0",
+  "version": "3.7.0",
   "_doc": {
     "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1/core.sh translates to Claude Code's env var contract.",
     "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",
     "qualityTier": "Sort/tag label: flagship | standard | budget | free | slow.",
     "envVars": "Extra ANTHROPIC_* or CLAUDE_CODE_* env vars to set during launch. Applied AFTER the auto-context block so a provider can override the auto-derived values.",
-    "_auto_context": "core.ps1/core.sh auto-sets CLAUDE_CODE_MAX_CONTEXT_TOKENS + DISABLE_COMPACT=1 whenever the flagship tier context is >=500K. Threshold cleanly separates 1M-class providers (deepseek, mimo, qwen, xiaomi v2.5-pro) from 256K models (kimi) and 200K models (minimax/glm) where losing auto-compact would be a bad trade. Source: contextByTier.flagship if present, else context. Tradeoff: when flagship/standard are large but fast is small (e.g. mimo flagship 1M / fast 256K), the env var stays at the flagship size for the whole session — /model haiku will display the larger value but the API will reject prompts beyond the fast model's real ceiling. Acceptable for opus-primary workflows. To opt a sub-500K provider in, set envVars explicitly in its block.",
+    "_auto_context": "core.ps1/core.sh auto-sets CLAUDE_CODE_MAX_CONTEXT_TOKENS + DISABLE_COMPACT=1 whenever the flagship tier context is >=500K. Threshold cleanly separates million-token class providers from sub-500K providers where losing auto-compact would be a bad trade. Source: contextByTier.flagship if present, else context. Tradeoff: when flagship/standard are large but fast is small (e.g. mimo flagship 1M / fast 256K), the env var stays at the flagship size for the whole session — /model haiku will display the larger value but the API will reject prompts beyond the fast model's real ceiling. Acceptable for opus-primary workflows. To opt a sub-500K provider in, set envVars explicitly in its block.",
     "_note_nvidia": "NVIDIA NIM model IDs change frequently — verify at https://build.nvidia.com/explore/discover before relying on a tier mapping.",
     "_tier_mapping": "flagship → /model opus, standard → /model sonnet, fast → /model haiku"
   },
   "providers": {
     "atlas": {
       "command": "cc-atlas",
-      "displayName": "Atlas Cloud Coding Plan (any model, GLM-5.2 default)",
+      "displayName": "Atlas Cloud Coding Plan (any model, GLM-5.3 default)",
       "qualityTier": "flagship",
       "baseUrl": "https://api.atlascloud.ai",
       "authVar": "ATLAS_CP_API_KEY",
       "tiers": {
-        "flagship": "zai-org/glm-5.2",
-        "standard": "zai-org/glm-5.2",
-        "fast": "zai-org/glm-5.2"
+        "flagship": "zai-org/glm-5.3",
+        "standard": "zai-org/glm-5.3",
+        "fast": "zai-org/glm-5.3"
       },
       "context": 1048576,
       "timeoutMs": 600000,
       "disableNonEssential": true,
       "envVars": { "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1" },
-      "notes": "Atlas Cloud Coding Plan — Anthropic-native endpoint at api.atlascloud.ai that serves ANY Atlas model (like cc-openrouter / cc-nvidia). 'cc-atlas <model>' overrides all three tiers with any Atlas model id in org/model form (e.g. zai-org/glm-5.2, deepseek-ai/deepseek-v4, minimax/minimax-m3); bare 'cc-atlas' uses the GLM-5.2 default in tiers below. Auth uses ATLAS_CP_API_KEY (the Coding Plan key, DISTINCT from the regular ATLAS_API_KEY used for Atlas's OpenAI-compatible /v1 API). Default GLM-5.2 is 1M context so core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 + DISABLE_COMPACT=1 (see _doc._auto_context). Caveat: when you override to a smaller-window model, the env var stays at 1M (over-promises) — use /compact manually near the real limit. Atlas docs recommend CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1 (set via envVars). Discover model ids at https://www.atlascloud.ai/models.",
+      "notes": "Atlas Cloud Coding Plan — Anthropic-native endpoint at api.atlascloud.ai that serves ANY Atlas model (like cc-openrouter / cc-nvidia). 'cc-atlas <model>' overrides all three tiers with any Atlas model id in org/model form (e.g. zai-org/glm-5.3, deepseek-ai/deepseek-v4, minimax/minimax-m3); bare 'cc-atlas' uses the GLM-5.3 default in tiers below. Auth uses ATLAS_CP_API_KEY (the Coding Plan key, DISTINCT from the regular ATLAS_API_KEY used for Atlas's OpenAI-compatible /v1 API). Default GLM-5.3 is configured at 1M context so core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 + DISABLE_COMPACT=1 (see _doc._auto_context). Caveat: when you override to a smaller-window model, the env var stays at 1M (over-promises) — use /compact manually near the real limit. Atlas docs recommend CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1 (set via envVars). Discover model ids at https://www.atlascloud.ai/models.",
       "docs": "https://www.atlascloud.ai/docs/coding-plan/api"
     },
     "deepseek": {
       "command": "cc-deepseek",
-      "displayName": "DeepSeek V4",
+      "displayName": "DeepSeek V4.1 Flash",
       "qualityTier": "flagship",
       "baseUrl": "https://api.deepseek.com/anthropic",
       "authVar": "DEEPSEEK_API_KEY",
       "tiers": {
-        "flagship": "deepseek-v4-pro",
-        "standard": "deepseek-v4-pro",
-        "fast": "deepseek-v4-flash"
+        "flagship": "deepseek-flash",
+        "standard": "deepseek-flash",
+        "fast": "deepseek-flash"
       },
       "context": 1000000,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "Direct API via Anthropic-native /anthropic endpoint. Only V4 Pro and V4 Flash exist — Standard tier maps to Pro (no middle SKU). All tiers are 1M context. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 from the 1M context (see _doc._auto_context). Tradeoff: no auto-compaction — use /compact manually near the limit.",
+      "notes": "Direct API via Anthropic-native /anthropic endpoint. deepseek-flash is the canonical identifier for current DeepSeek V4.1 Flash; DeepSeek has retired the old deepseek-v4-flash identifier, while deepseek-v4-pro is temporarily routed to V4.1 Flash. All tiers deliberately map to the current 1M-context model. core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 (use /compact manually near the limit).",
       "docs": "https://api-docs.deepseek.com"
     },
     "gemini": {
@@ -65,20 +65,20 @@
     },
     "glm": {
       "command": "cc-glm",
-      "displayName": "GLM-5.2 (Z.AI via OpenRouter)",
+      "displayName": "GLM-5.3 (Z.AI via OpenRouter)",
       "qualityTier": "flagship",
       "baseUrl": "https://openrouter.ai/api/v1",
       "authVar": "OPENROUTER_API_KEY",
       "tiers": {
-        "flagship": "z-ai/glm-5.2",
-        "standard": "z-ai/glm-5.2",
-        "fast": "z-ai/glm-4.7-flash"
+        "flagship": "z-ai/glm-5.3",
+        "standard": "z-ai/glm-5.3",
+        "fast": "z-ai/glm-5.3-flash"
       },
-      "context": 1000000,
+      "context": 1310720,
       "timeoutMs": 3000000,
       "disableNonEssential": false,
-      "notes": "GLM-5.2 SOTA open-weight, MIT licensed, 1M context (released 2026-06-13). Fast tier is GLM-4.7-Flash — no 5.2-branded air SKU exists. 1M crosses the 500K threshold so core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1 (use /compact manually near the limit). Use cc-glm instead of cc-zai-glm51 (China endpoint is slow).",
-      "docs": "https://openrouter.ai/z-ai/glm-5.2"
+      "notes": "GLM-5.3 via OpenRouter. The current flagship and Flash model both advertise 1,310,720-token context windows. The full model occupies flagship/standard; GLM-5.3 Flash occupies fast. The flagship crosses the 500K threshold, so core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1310720 + DISABLE_COMPACT=1 (use /compact manually near the limit). Use cc-glm instead of cc-zai-glm51 when US/EU latency matters.",
+      "docs": "https://openrouter.ai/z-ai/glm-5.3"
     },
     "grok": {
       "command": "cc-grok",
@@ -97,22 +97,39 @@
       "notes": "xAI Grok 4.20 via OpenRouter — 2M context (largest in the catalog), reasoning model. Single SKU on all three slots. core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=2000000 + DISABLE_COMPACT=1 from the 2M context.",
       "docs": "https://openrouter.ai/x-ai/grok-4.20"
     },
-    "kimi": {
-      "command": "cc-kimi",
-      "displayName": "Kimi K2.7 Code (Moonshot via OpenRouter)",
+    "hy4": {
+      "command": "cc-hy4",
+      "displayName": "Tencent Hy4 preview (OpenRouter)",
       "qualityTier": "flagship",
       "baseUrl": "https://openrouter.ai/api/v1",
       "authVar": "OPENROUTER_API_KEY",
       "tiers": {
-        "flagship": "moonshotai/kimi-k2.7-code",
-        "standard": "moonshotai/kimi-k2.7-code",
-        "fast": "moonshotai/kimi-k2.7-code"
+        "flagship": "tencent/hy4-preview",
+        "standard": "tencent/hy4-preview",
+        "fast": "tencent/hy4-preview"
       },
-      "context": 256000,
+      "context": 1048576,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "1T params / 32B active MoE. Context is 256K, NOT 1M — Kimi K2.7 ships only as 'K2.7 Code' and did not bump the window from K2.6. Single-tier (same model on all three slots), so it stays below the 500K auto-context threshold by design.",
-      "docs": "https://openrouter.ai/moonshotai/kimi-k2.7-code"
+      "notes": "Tencent's Hy4 preview is a 770B-total / 49B-active MoE productivity and agentic model. OpenRouter currently lists a 1,048,576-token context window and text-only modality. Tencent documents Anthropic Messages compatibility; an OpenRouter Anthropic request emitted the forced tool-use block on 2026-09-16, although its response used end_turn rather than tool_use as the stop reason. One preview SKU is mapped to all Claude Code tiers. This is a paid OpenRouter route; verify current pricing with cc-pricing before a long run.",
+      "docs": "https://www.tencent.com/tencent-releases-and-open-sources-tencent-hy4-preview/"
+    },
+    "kimi": {
+      "command": "cc-kimi",
+      "displayName": "Kimi K3 (Moonshot via OpenRouter)",
+      "qualityTier": "flagship",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authVar": "OPENROUTER_API_KEY",
+      "tiers": {
+        "flagship": "moonshotai/kimi-k3",
+        "standard": "moonshotai/kimi-k3",
+        "fast": "moonshotai/kimi-k3"
+      },
+      "context": 1048576,
+      "timeoutMs": 600000,
+      "disableNonEssential": true,
+      "notes": "Kimi K3 is Moonshot's current 2.8T-parameter multimodal reasoning model for coding and long-horizon agentic work. It has a 1,048,576-token context window and supports tool calling. Single-tier mapping keeps /model opus|sonnet|haiku on the same current model; core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 + DISABLE_COMPACT=1.",
+      "docs": "https://openrouter.ai/moonshotai/kimi-k3"
     },
     "minimax": {
       "command": "cc-minimax",
@@ -157,13 +174,12 @@
       "tiers": {
         "flagship": "xiaomi/mimo-v2.5-pro",
         "standard": "xiaomi/mimo-v2.5",
-        "fast": "xiaomi/mimo-v2-flash"
+        "fast": "xiaomi/mimo-v2.5"
       },
-      "context": 262144,
-      "contextByTier": { "flagship": 1048576, "standard": 1048576, "fast": 262144 },
+      "context": 1048576,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "Tier contexts differ: flagship/standard are 1M (1024K), V2-Flash (fast tier) is 256K. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship (see _doc._auto_context). Caveat: env var stays at 1M for the whole session, so /model haiku (v2-flash, 256K) will display 1M but the API will reject prompts beyond ~256K — acceptable for opus-primary workflows.",
+      "notes": "MiMo V2.5 Pro and MiMo V2.5 are the current OpenRouter models, each with a 1,048,576-token context window. The retired V2-Flash ID was removed from the fast slot; standard now supplies the fast slot as the supported fallback. core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 + DISABLE_COMPACT=1.",
       "docs": "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
     },
     "muse": {
@@ -185,20 +201,20 @@
     },
     "nemotron": {
       "command": "cc-nemotron",
-      "displayName": "NVIDIA Nemotron 3 Super FREE (OpenRouter)",
+      "displayName": "NVIDIA Nemotron 3 Ultra FREE (OpenRouter)",
       "qualityTier": "free",
       "baseUrl": "https://openrouter.ai/api/v1",
       "authVar": "OPENROUTER_API_KEY",
       "tiers": {
-        "flagship": "nvidia/nemotron-3-super-120b-a12b:free",
-        "standard": "nvidia/nemotron-3-super-120b-a12b:free",
-        "fast": "nvidia/nemotron-3-super-120b-a12b:free"
+        "flagship": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "standard": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "fast": "nvidia/nemotron-3-ultra-550b-a55b:free"
       },
       "context": 1048576,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "FREE via OpenRouter. 120B hybrid MoE (Mamba+Transformer), 12B active. 50%+ faster than transformer-only models. Multi-agent applications, cross-document reasoning. cc-nvidia (direct API) is separate — this is the OpenRouter-hosted free tier.",
-      "docs": "https://openrouter.ai/nvidia/nemotron-3-super-120b-a12b:free"
+      "notes": "FREE via OpenRouter. Nemotron 3 Ultra is the current 550B/55B-active open-weight free route and advertises a 1M-token context window. cc-nvidia (direct API) is separate — this is the OpenRouter-hosted free tier.",
+      "docs": "https://openrouter.ai/nvidia/nemotron-3-ultra-550b-a55b:free"
     },
     "nvidia": {
       "command": "cc-nvidia",
@@ -207,32 +223,32 @@
       "baseUrl": "https://integrate.api.nvidia.com/v1",
       "authVar": "NVIDIA_API_KEY",
       "tiers": {
-        "flagship": "moonshotai/kimi-k2-instruct",
-        "standard": "meta/llama-4-maverick-17b-128e-instruct",
-        "fast": "meta/llama-4-scout-17b-16e-instruct"
+        "flagship": "moonshotai/kimi-k3",
+        "standard": "nvidia/nemotron-3-ultra-550b-a55b",
+        "fast": "nvidia/nemotron-3.5-lightning-30b-a3b"
       },
       "context": 128000,
       "timeoutMs": 3000000,
       "disableNonEssential": true,
-      "notes": "Free tier with rate limits. Tier IDs are best-guess defaults — verify at https://build.nvidia.com/explore/discover and edit this JSON to taste. cc-nvidia <model-id> overrides all three tiers.",
+      "notes": "Free tier with rate limits. Defaults were verified against the authenticated NVIDIA model listing: Kimi K3 (flagship), Nemotron 3 Ultra (standard), and Nemotron 3.5 Lightning (fast). Context remains conservatively pinned to 128K because direct NIM tier windows vary. cc-nvidia <model-id> overrides all three tiers.",
       "docs": "https://build.nvidia.com"
     },
     "ollama-glm": {
       "command": "cc-ollama-glm",
-      "displayName": "GLM-5.2 (Ollama Cloud)",
+      "displayName": "GLM-5.3 (Ollama Cloud)",
       "qualityTier": "flagship",
       "baseUrl": "https://ollama.com",
       "authVar": "OLLAMA_API_KEY",
       "tiers": {
-        "flagship": "glm-5.2:cloud",
-        "standard": "glm-5.2:cloud",
-        "fast": "glm-5.2:cloud"
+        "flagship": "glm-5.3:cloud",
+        "standard": "glm-5.3:cloud",
+        "fast": "glm-5.3:cloud"
       },
-      "context": 976000,
+      "context": 1000000,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "GLM-5.2 on Ollama Cloud (hosted inference). Ollama speaks the Anthropic Messages API at https://ollama.com; auth via OLLAMA_API_KEY (key from ollama.com/settings/keys, sent as ANTHROPIC_AUTH_TOKEN). The model tag is exactly glm-5.2:cloud — the :cloud suffix is mandatory (it routes to hosted inference instead of a local pull). Context set to the 976K window Ollama lists for this tag (not the full 1M) so CLAUDE_CODE_MAX_CONTEXT_TOKENS doesn't over-promise. Smoke-test once: Ollama's docs mostly show the localhost:11434 path, the direct cloud Anthropic base is community/issue-attested.",
-      "docs": "https://docs.ollama.com/integrations/claude-code"
+      "notes": "GLM-5.3 on Ollama Cloud (hosted inference). Ollama speaks the Anthropic Messages API at https://ollama.com; auth via OLLAMA_API_KEY (key from ollama.com/settings/keys, sent as ANTHROPIC_AUTH_TOKEN). The model tag is exactly glm-5.3:cloud — the :cloud suffix is mandatory (it routes to hosted inference instead of a local pull). Ollama lists a 1M-token window, so core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1. Smoke-test once: Ollama's docs mostly show the localhost:11434 path, the direct cloud Anthropic base is community/issue-attested.",
+      "docs": "https://ollama.com/library/glm-5.3:cloud"
     },
     "ollama-minimax": {
       "command": "cc-ollama-minimax",
@@ -253,21 +269,20 @@
     },
     "qwen": {
       "command": "cc-qwen",
-      "displayName": "Qwen3.7 Max (Alibaba via OpenRouter)",
+      "displayName": "Qwen3.8 Max (0902) (Alibaba via OpenRouter)",
       "qualityTier": "flagship",
       "baseUrl": "https://openrouter.ai/api/v1",
       "authVar": "OPENROUTER_API_KEY",
       "tiers": {
-        "flagship": "qwen/qwen3.7-max",
-        "standard": "qwen/qwen3-coder",
-        "fast": "qwen/qwen3-coder-next"
+        "flagship": "qwen/qwen3.8-max-0902",
+        "standard": "qwen/qwen3.8-27b",
+        "fast": "qwen/qwen3.8-flash"
       },
-      "context": 262144,
-      "contextByTier": { "flagship": 1000000, "standard": 262144, "fast": 262144 },
+      "context": 1000000,
       "timeoutMs": 3000000,
       "disableNonEssential": false,
-      "notes": "Tier contexts differ: only Qwen3.7-Max (flagship) is 1M; Qwen3-Coder and Qwen3-Coder-Next are 256K each. The 'context' field shows the safe minimum across tiers. Qwen3.7-Max is the current flagship (released 2026-05-21, supersedes qwen3.6-plus). core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 from contextByTier.flagship (see _doc._auto_context). Caveat: /model sonnet|haiku (256K coders) will display 1M but the API will reject prompts beyond 256K — acceptable for opus-primary workflows.",
-      "docs": "https://openrouter.ai/qwen/qwen3.7-max"
+      "notes": "Qwen3.8 Max 0902 is Alibaba's current flagship for coding and agentic work. Qwen3.8 27B is the standard tier and Qwen3.8 Flash is the fast tier; all three expose a 1M-token context window and tool calling through OpenRouter. core.ps1/core.sh auto-derive CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 + DISABLE_COMPACT=1.",
+      "docs": "https://openrouter.ai/qwen/qwen3.8-max-0902"
     },
     "xiaomi": {
       "command": "cc-xiaomi",
@@ -326,36 +341,36 @@
     },
     "owl-alpha": {
       "command": "cc-owl",
-      "displayName": "Owl Alpha FREE (OpenRouter Stealth)",
-      "qualityTier": "free",
+      "displayName": "Meituan LongCat 2.0 (Owl Alpha successor)",
+      "qualityTier": "standard",
       "baseUrl": "https://openrouter.ai/api/v1",
       "authVar": "OPENROUTER_API_KEY",
       "tiers": {
-        "flagship": "openrouter/owl-alpha",
-        "standard": "openrouter/owl-alpha",
-        "fast": "openrouter/owl-alpha"
+        "flagship": "meituan/longcat-2.0",
+        "standard": "meituan/longcat-2.0",
+        "fast": "meituan/longcat-2.0"
       },
-      "context": 1048576,
+      "context": 1048756,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "FREE cloaked alpha model, 1M context, agentic-optimized. Tool calling verified working via Anthropic Messages API (2026-05-26). Stealth provider — prompts/completions may be logged. Intermittent at peak times; retry if first launch errors. Best for exploratory sessions.",
-      "docs": "https://openrouter.ai/openrouter/owl-alpha"
+      "notes": "LongCat 2.0 is Meituan's public successor to the retired OpenRouter Owl Alpha stealth release. It is a paid text-only OpenRouter route with an approximately 1.05M context; listed prices can change. A forced Anthropic Messages tool call succeeded on 2026-09-16. The cc-owl name stays as a compatibility command.",
+      "docs": "https://openrouter.ai/meituan/longcat-2.0"
     },
     "zai-glm51": {
       "command": "cc-zai-glm51",
-      "displayName": "Z.AI GLM-5.2 [SLOW — China endpoint]",
+      "displayName": "Z.AI GLM-5.3 [SLOW — China endpoint]",
       "qualityTier": "slow",
       "baseUrl": "https://api.z.ai/api/anthropic",
       "authVar": "ZAI_API_KEY",
       "tiers": {
-        "flagship": "glm-5.2[1m]",
-        "standard": "glm-5.2[1m]",
-        "fast": "glm-4.7"
+        "flagship": "glm-5.3",
+        "standard": "glm-5.3",
+        "fast": "glm-5.3-flash"
       },
       "context": 1000000,
       "timeoutMs": 3000000,
       "disableNonEssential": false,
-      "notes": "China-based endpoint. GLM-5.2 with the full 1M window — the [1m] suffix is required on this endpoint (bare glm-5.2 gives the default smaller window). Fast/haiku companion is glm-4.7 (replaces glm-4.5-air). Command is still cc-zai-glm51 for backward compatibility. Use cc-glm (OpenRouter) instead for the same model with US/EU latency.",
+      "notes": "China-based endpoint. Direct model discovery confirms glm-5.3 and glm-5.3-flash; the older [1m] suffix is not used for these current IDs. The 1M context setting remains conservative for the direct route. Command is still cc-zai-glm51 for backward compatibility. Use cc-glm (OpenRouter) instead for the same model with US/EU latency.",
       "docs": "https://docs.z.ai/devpack/tool/claude"
     }
   }

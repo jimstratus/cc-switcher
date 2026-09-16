@@ -178,28 +178,28 @@ flowchart TB
 ```mermaid
 flowchart TD
     start(["I'm new — where do I start?"]) --> q1{"Willing to spend<br/>anything?"}
-    q1 -->|"No, $0 only"| free["🆓 FREE PATH<br/>cc-nemotron, cc-owl (OpenRouter free)<br/>cc-nvidia (NVIDIA NIM)<br/>Ollama Cloud free tier"]
+    q1 -->|"No, $0 only"| free["🆓 FREE PATH<br/>cc-nemotron (OpenRouter free)<br/>cc-nvidia (NVIDIA NIM)<br/>Ollama Cloud free tier"]
     q1 -->|"A little, pay-as-I-go"| q2{"Want ONE key that<br/>unlocks many models?"}
     q1 -->|"Flat monthly, predictable"| sub["📅 SUBSCRIPTION PATH<br/>Z.AI GLM Plan ($18) — best all-round<br/>MiniMax Token Plan ($20)<br/>Xiaomi MiMo Lite ($6) — cheapest<br/>Kimi Code ($19)"]
-    q2 -->|"Yes (recommended)"| or["⭐ OpenRouter<br/>$10 credits unlocks cc-glm, cc-gemini,<br/>cc-grok, cc-kimi, cc-mimo, cc-qwen,<br/>cc-minimax-or + free models"]
+    q2 -->|"Yes (recommended)"| or["⭐ OpenRouter<br/>$10 credits unlocks cc-glm, cc-gemini,<br/>cc-grok, cc-hy4, cc-kimi, cc-mimo,<br/>cc-qwen, cc-minimax-or + a free model"]
     q2 -->|"No, I want the rock-bottom price"| ds["💸 DeepSeek direct<br/>cc-deepseek — frontier coding,<br/>cheapest serious pay-per-token"]
 ```
 
 **Short version:**
-- **Just exploring, $0:** `cc-nemotron` or `cc-owl` (free via OpenRouter), or `cc-nvidia`.
-- **Best first purchase:** **OpenRouter**, $10 of credits. One key, nine provider `cc-*` commands (two of them free) plus the generic `cc-openrouter`. *(See §6.)*
+- **Just exploring, $0:** `cc-nemotron` (free via OpenRouter), or `cc-nvidia`.
+- **Best first purchase:** **OpenRouter**, $10 of credits. One key, ten provider `cc-*` commands (one of them free) plus the generic `cc-openrouter`. *(See §6.)*
 - **Want the absolute cheapest quality coding:** **DeepSeek** direct.
 - **Code every day, hate surprise bills:** **Z.AI GLM Coding Plan** ($18/mo) — easiest signup, best value.
 
 ---
 
-## 6. ⭐ The fastest start: OpenRouter (one key, nine providers)
+## 6. ⭐ The fastest start: OpenRouter (one key, ten providers)
 
 OpenRouter is a "universal adapter" — one account and one API key gives you access to
 hundreds of models from dozens of companies. **In cc-switcher, a single
-`OPENROUTER_API_KEY` unlocks nine provider commands:**
+`OPENROUTER_API_KEY` unlocks ten provider commands:**
 
-`cc-glm` · `cc-gemini` · `cc-grok` · `cc-kimi` · `cc-mimo` · `cc-minimax-or` · `cc-qwen` · `cc-nemotron` (free) · `cc-owl` (free) · plus the generic `cc-openrouter <model>`
+`cc-glm` · `cc-gemini` · `cc-grok` · `cc-hy4` · `cc-kimi` · `cc-mimo` · `cc-minimax-or` · `cc-qwen` · `cc-nemotron` (free) · `cc-owl` (LongCat 2.0, paid) · plus the generic `cc-openrouter <model>`
 
 This is why it's the recommended starting point — you sign up **once** and can try
 almost the whole catalog.
@@ -227,13 +227,13 @@ almost the whole catalog.
 5. Reload your shell, run `cc-doctor` to confirm, then:
 
    ```bash
-   cc-glm           # GLM-5.2 — great all-round coder, 1M context
+   cc-glm           # GLM-5.3 — great all-round coder, 1.31M context
    cc-nemotron      # FREE — try it with zero risk
-   cc-qwen          # Qwen3.7 Max — cheap & strong, 1M context
+   cc-qwen          # Qwen3.8 Max — cheap & strong, 1M context
    ```
 
 > OpenRouter is **pay-per-token only — no monthly plan.** You're spending your prepaid
-> credits. The free `:free` models (`cc-nemotron`, `cc-owl`) cost nothing but are
+> credits. The free `:free` model (`cc-nemotron`) costs nothing but is
 > rate-limited (20 requests/min; 1,000/day once you've added $10).
 
 ---
@@ -258,9 +258,9 @@ up, and how to get the key. **You only need to set up the ones you actually want
 - **Get key:** <https://z.ai/manage-apikey/apikey-list>
 - **Coding Plan (subscription):** <https://z.ai/subscribe> — **Lite ~$18/mo**, Pro ~$72,
   Max ~$160 (cheaper with quarterly/yearly). Quotas are measured in *prompts*, and all
-  tiers include GLM-5.2. This is the **most popular coding subscription** for a reason:
+  tiers include GLM-5.3. This is the **most popular coding subscription** for a reason:
   easiest signup, best model-per-dollar, Opus-comparable quality.
-- **Note:** For most people `cc-glm` (GLM-5.2 via your OpenRouter key) is the simplest
+- **Note:** For most people `cc-glm` (GLM-5.3 via your OpenRouter key) is the simplest
   way to try GLM. Use the direct GLM Coding Plan once you've decided you love it.
 - **Docs:** <https://docs.z.ai/devpack/tool/claude>
 
@@ -284,9 +284,9 @@ up, and how to get the key. **You only need to set up the ones you actually want
 ### 📅/💧 Moonshot / Kimi — strong agentic coder · `cc-kimi` (via OpenRouter)
 - **Env var:** uses your `OPENROUTER_API_KEY` (or `KIMI_API_KEY` for the direct API)
 - **Sign up:** <https://platform.moonshot.ai> (international; `sk-...` key)
-- **Pricing:** PAYG K2.7-Code ~$0.19 (cache hit) / $0.95 (miss) / $4.00 output per 1M.
+- **Pricing:** PAYG Kimi K3 pricing varies by route; run `cc-pricing` for the current OpenRouter rate.
   **Kimi Code subscription:** Moderato **$19/mo** → Vivace $199.
-- **Note:** context is 256K (smaller than the 1M crowd) but a genuinely capable coder.
+- **Note:** Kimi K3 has a current 1M-class context window and is a genuinely capable coder.
 - **Docs:** <https://platform.moonshot.ai>
 
 ### 💸 Xiaomi MiMo — cheapest subscription of all · `cc-mimo` (OpenRouter), `cc-xiaomi` (direct)
@@ -311,14 +311,14 @@ up, and how to get the key. **You only need to set up the ones you actually want
 - **Sign up:** <https://ollama.com>
 - **Get key:** <https://ollama.com/settings/keys>
 - **Pricing:** Free tier (light usage) → Pro **$20/mo** (50× more) → Max $100. Hosted
-  GLM-5.2 (`glm-5.2:cloud`, 976K context) and MiniMax M3 (`minimax-m3:cloud`, 512K).
+  GLM-5.3 (`glm-5.3:cloud`, 1M context) and MiniMax M3 (`minimax-m3:cloud`, 512K).
   Speaks the Anthropic API natively.
 - **Docs:** <https://docs.ollama.com/integrations/claude-code>
 
 ### 📅 OpenCode Go — $10/mo flat, open-weight models · `cc-opencode`, `cc-opencode-minimax`
 - **Env var:** `OPENCODE_GO_API_KEY`
 - **Sign up:** <https://opencode.ai/auth>
-- **Pricing:** **Go = $5 first month, then $10/mo**, usage-capped. Includes GLM-5.2,
+- **Pricing:** **Go = $5 first month, then $10/mo**, usage-capped. Includes GLM-5.3,
   MiniMax M3, Kimi, Qwen, DeepSeek (open-weight subset). Cheapest flat subscription.
 - **Note:** on Go, MiniMax & Qwen route through the Anthropic-compatible surface (GLM/
   Kimi are OpenAI-only there) — that's why cc-switcher pins `cc-opencode-minimax`.
@@ -355,15 +355,16 @@ up, and how to get the key. **You only need to set up the ones you actually want
 | `cc-qwen` | Qwen3-Coder | $0.22 | $1.80 | 🟢 Cheap, coding-specialized |
 | `cc-minimax` / `cc-minimax-or` | MiniMax M3 | $0.30 | $1.20 | 🟢 Great value, 1M context |
 | `cc-deepseek` | DeepSeek V4-Pro | $0.44* | $0.87* | 🟢 Top coding, *promo price |
-| `cc-kimi` | Kimi K2.7-Code | ~$0.95 | ~$4.00 | 🟡 Strong, pricier output |
-| `cc-glm` / `cc-zai-glm51` | GLM-5.2 | $1.40 | $4.40 | 🟡 Opus-comparable quality |
-| `cc-qwen` | Qwen3.7 Max | $0.78 | $3.90 | 🟡 Strong flagship |
+| `cc-kimi` | Kimi K3 | ~$0.95 | ~$4.00 | 🟡 Strong, pricier output |
+| `cc-glm` / `cc-zai-glm51` | GLM-5.3 | $1.40 | $4.40 | 🟡 Opus-comparable quality |
+| `cc-qwen` | Qwen3.8 Max | $0.78 | $3.90 | 🟡 Strong flagship |
 | `cc-gemini` | Gemini 3.1 Pro | $2.00 | $12.00 | 🔴 Premium |
 | `cc-grok` | Grok 4.x | $3.00 | $15.00 | 🔴 Premium, biggest context |
 | — | *Anthropic Sonnet 4.6* | *$3.00* | *$15.00* | ⚪ Baseline |
 | — | *Anthropic Opus 4.8* | *$5.00* | *$25.00* | ⚪ Baseline (top quality) |
 | `cc-nemotron` | Nemotron 3 Super | **FREE** | **FREE** | 🆓 |
-| `cc-owl` | Owl Alpha | **FREE** | **FREE** | 🆓 (stealth; may log prompts) |
+| `cc-hy4` | Tencent Hy4 preview | $0.834 | $2.501 | 🟡 1M-context agentic preview |
+| `cc-owl` | Meituan LongCat 2.0 | $0.30 | $1.20 | 🟢 Owl Alpha successor (paid) |
 | `cc-nvidia` | NVIDIA NIM | **FREE** | **FREE** | 🆓 (rate-limited) |
 
 \* DeepSeek V4-Pro promo; list price is $1.74/$3.48. Cache hits cost ~1/10 of input.
@@ -412,16 +413,16 @@ Code's status bar shows the real size instead of 200K.
 ```mermaid
 xychart-beta
     title "Flagship context window by command (K tokens) — bigger = remembers more"
-    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "codex", "nvidia"]
+    x-axis ["grok", "mimo", "xiaomi", "nemotron", "longcat", "hy4", "deepseek", "glm", "gemini", "minimax", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "nvidia"]
     y-axis "K tokens" 0 --> 2100
-    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 200, 128]
+    bar [2000, 1049, 1049, 1049, 1049, 1049, 1000, 1311, 1000, 1000, 1000, 1000, 1000, 512, 1049, 128]
 ```
 
 **Highlights:**
 - 🥇 **`cc-grok` — 2,000K (2M)**: the largest in the catalog.
-- 🏅 **1M+ club:** `cc-deepseek`, `cc-glm`, `cc-gemini`, `cc-minimax(-or)`, `cc-qwen`, `cc-mimo`, `cc-xiaomi`, `cc-nemotron`, `cc-owl`, `cc-zai-glm51` — all ~1M, **and most are cheap.**
+- 🏅 **1M+ club:** `cc-deepseek`, `cc-glm`, `cc-gemini`, `cc-hy4`, `cc-kimi`, `cc-minimax(-or)`, `cc-qwen`, `cc-mimo`, `cc-xiaomi`, `cc-nemotron`, `cc-owl`, `cc-zai-glm51` — all ~1M, **and most are cheap.**
 - **`cc-ollama-glm` — 976K**, **`cc-ollama-minimax` — 512K**: big windows on Ollama Cloud's hosted tags.
-- **`cc-kimi` — 256K**: smaller, but still bigger than Anthropic's 200K default.
+- **`cc-kimi` — 1,049K**: Kimi K3 has the current 1M-class window.
 
 > ⚠️ For mixed-tier providers (e.g. `cc-mimo`, `cc-qwen`), only the flagship is the full
 > 1M; the cheaper `/model haiku` brain may be 256K. cc-switcher displays the big number
@@ -473,7 +474,7 @@ between an 80% and an 88% model is small — but the price difference is **6× t
 ### 🆓 Recipe A — "I want to spend $0"
 1. Sign up for OpenRouter (no card needed to start).
 2. `export OPENROUTER_API_KEY="sk-or-v1-..."`
-3. Run `cc-nemotron` (free, 1M context) or `cc-owl` (free, agentic).
+3. Run `cc-nemotron` (free, 1M context); `cc-owl` is now the paid LongCat 2.0 successor route.
 4. (Optional) Add NVIDIA NIM (`cc-nvidia`) and Ollama Cloud free tier for more free models.
 
 *Limit: free models are rate-limited; great for learning, not heavy work.*

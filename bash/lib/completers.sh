@@ -29,18 +29,20 @@ _cc_completer_openrouter() {
 
   # Fallback to catalog models
   local catalog_models=(
-    "moonshotai/kimi-k2.6"
-    "z-ai/glm-5.1"
-    "z-ai/glm-4.5-air"
-    "qwen/qwen3.6-plus"
-    "qwen/qwen3-coder"
-    "qwen/qwen3-coder-next"
+    "moonshotai/kimi-k3"
+    "z-ai/glm-5.3"
+    "z-ai/glm-5.3-flash"
+    "qwen/qwen3.8-max-0902"
+    "qwen/qwen3.8-27b"
+    "qwen/qwen3.8-flash"
+    "minimax/minimax-m3"
     "xiaomi/mimo-v2.5-pro"
     "xiaomi/mimo-v2.5"
     "xiaomi/mimo-v2-flash"
     "deepseek-ai/deepseek-v4-pro"
-    "meta/llama-4-maverick-17b-128e-instruct"
-    "meta/llama-4-scout-17b-16e-instruct"
+    "moonshotai/kimi-k3"
+    "nvidia/nemotron-3-ultra-550b-a55b"
+    "nvidia/nemotron-3.5-lightning-30b-a3b"
     "mistralai/mistral-nemo-12b-instruct"
     "nvidia/llama-3.1-nemotron-70b-instruct"
   )
@@ -56,7 +58,7 @@ _cc_completer_opencode() {
   cur="${COMP_WORDS[COMP_CWORD]}"
 
   local models=(
-    "minimax-m2.7"
+    "minimax-m3"
     "glm-5.1"
     "glm-5-turbo"
     "kimi-k2.6"
@@ -79,7 +81,6 @@ _cc_completer_nvidia() {
     "meta/llama-4-maverick-17b-128e-instruct"
     "meta/llama-4-scout-17b-16e-instruct"
     "meta/llama-3.3-70b-instruct"
-    "moonshotai/kimi-k2-instruct"
     "qwen/qwen3-235b-a22b"
     "deepseek-ai/deepseek-r1"
     "nvidia/llama-3.1-nemotron-70b-instruct"

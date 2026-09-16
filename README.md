@@ -10,7 +10,7 @@
    │   ╚██████╗╚██████╗       ███████║╚███╔███╔╝     ↳ any LLM    │
    │    ╚═════╝ ╚═════╝       ╚══════╝ ╚══╝╚══╝                   │
    │                                                              │
-   │    cc-switcher · v3.5.0  (PowerShell + Bash)                │
+   │    cc-switcher · v3.7.0  (PowerShell + Bash)                │
    │                                                              │
    └──────────────────────────────────────────────────────────────┘
 ```
@@ -49,7 +49,7 @@ flowchart LR
     sw -.->|"on session exit"| restore["restores prior env"]
 ```
 
-Each provider command sets all three Claude Code tiers (Opus / Sonnet / Haiku) at once. `/model` switches between them in-session. For 1M-class flagships (DeepSeek, MiMo v2.5-Pro, Qwen3.7 Max, Xiaomi MiMo v2.5-Pro), `cc-switcher` auto-derives `CLAUDE_CODE_MAX_CONTEXT_TOKENS` so Claude Code's status bar shows the model's full context window instead of the 200K default.
+Each provider command sets all three Claude Code tiers (Opus / Sonnet / Haiku) at once. `/model` switches between them in-session. For million-token flagships (DeepSeek, MiMo v2.5-Pro, Qwen3.8 Max, Kimi K3, Xiaomi MiMo v2.5-Pro), `cc-switcher` auto-derives `CLAUDE_CODE_MAX_CONTEXT_TOKENS` so Claude Code's status bar shows the model's full context window instead of the 200K default.
 
 ---
 
@@ -108,8 +108,8 @@ Each provider command sets all three Claude Code model tiers (Opus / Sonnet / Ha
 
 ```powershell
 cc-mimo                        # MiMo V2.5-Pro / V2.5 / V2-Flash via OpenRouter
-cc-deepseek                    # DeepSeek V4-Pro / V4-Pro / V4-Flash (direct, 1M context)
-cc-glm                         # GLM-5.2 via OpenRouter
+cc-deepseek                    # DeepSeek V4.1 Flash (direct, 1M context)
+cc-glm                         # GLM-5.3 via OpenRouter
 cc-openrouter <model-id>       # any OpenRouter model
 cc-nvidia                      # NVIDIA NIM defaults (free tier)
 cc-yolo                        # native Anthropic + --dangerously-skip-permissions
@@ -120,8 +120,8 @@ cc-reset                       # clear overrides, restore native Anthropic
 
 ```bash
 cc-mimo                        # MiMo V2.5-Pro / V2.5 / V2-Flash via OpenRouter
-cc-deepseek                    # DeepSeek V4-Pro / V4-Pro / V4-Flash (direct, 1M context)
-cc-glm                         # GLM-5.2 via OpenRouter
+cc-deepseek                    # DeepSeek V4.1 Flash (direct, 1M context)
+cc-glm                         # GLM-5.3 via OpenRouter
 cc-openrouter <model-id>       # any OpenRouter model
 cc-nvidia                      # NVIDIA NIM defaults (free tier)
 cc-yolo                        # native Anthropic + --dangerously-skip-permissions
@@ -136,28 +136,29 @@ Append `--yolo` to any `cc-*` command to launch with `--dangerously-skip-permiss
 
 | Command | Provider | Tiers (flagship / standard / fast) |
 |---|---|---|
-| `cc-atlas [model]` | Atlas Cloud Coding Plan (any model, direct) · GLM-5.2 default · **1M** | glm-5.2 default, override with arg |
-| `cc-deepseek` | DeepSeek V4 (direct) | v4-pro / v4-pro / v4-flash |
-| `cc-glm` | GLM-5.2 (OpenRouter) · **1M** | glm-5.2 / glm-5.2 / glm-4.7-flash |
+| `cc-atlas [model]` | Atlas Cloud Coding Plan (any model, direct) · GLM-5.3 default · **1M** | glm-5.3 default, override with arg |
+| `cc-deepseek` | DeepSeek V4.1 Flash (direct) · **1M** | deepseek-flash (all three) |
+| `cc-glm` | GLM-5.3 (OpenRouter) · **1.31M** | glm-5.3 / glm-5.3 / glm-5.3-flash |
 | `cc-gemini` | Gemini 3.1 Pro (Google via OpenRouter) · **1M** | gemini-3.1-pro-preview (all three) |
 | `cc-grok` | Grok 4.20 (xAI via OpenRouter) · **2M** | grok-4.20 (all three) |
-| `cc-kimi` | Kimi K2.7 Code (OpenRouter) · 256K | kimi-k2.7-code (all three) |
+| `cc-hy4` | Tencent Hy4 preview (OpenRouter) · **1M** | hy4-preview (all three) |
+| `cc-kimi` | Kimi K3 (OpenRouter) · **1M** | kimi-k3 (all three) |
 | `cc-minimax` | MiniMax M3 (direct) · **1M** | M3 (all three) |
 | `cc-minimax-or` | MiniMax M3 (OpenRouter, US-latency) · **1M** | minimax-m3 (all three) |
-| `cc-mimo` | MiMo V2.5 (Xiaomi via OpenRouter) | v2.5-pro / v2.5 / v2-flash |
+| `cc-mimo` | MiMo V2.5 (Xiaomi via OpenRouter) · **1M** | v2.5-pro / v2.5 / v2.5 |
 | `cc-muse` | Meta Muse Spark 1.2 (direct) | muse-spark-1.2 (all three) |
 | `cc-xiaomi` | Xiaomi MiMo (token-plan SGP, direct) | v2.5-pro / v2.5 / v2-pro |
-| `cc-nvidia [model]` | NVIDIA NIM (free) | tier defaults, override with arg |
-| `cc-nemotron` | NVIDIA Nemotron 3 Super (OpenRouter, free) · **1M** | nemotron-3-super-120b (all three) |
-| `cc-qwen` | Qwen3.7 Max (Alibaba via OpenRouter) · **1M** | qwen3.7-max / qwen3-coder / qwen3-coder-next |
-| `cc-ollama-glm` | GLM-5.2 (Ollama Cloud) · 976K | glm-5.2:cloud (all three) |
+| `cc-nvidia [model]` | NVIDIA NIM (free) | Kimi K3 / Nemotron 3 Ultra / Nemotron 3.5 Lightning |
+| `cc-nemotron` | NVIDIA Nemotron 3 Ultra (OpenRouter, free) · **1M** | nemotron-3-ultra-550b (all three) |
+| `cc-qwen` | Qwen3.8 Max (0902) (Alibaba via OpenRouter) · **1M** | qwen3.8-max-0902 / qwen3.8-27b / qwen3.8-flash |
+| `cc-ollama-glm` | GLM-5.3 (Ollama Cloud) · **1M** | glm-5.3:cloud (all three) |
 | `cc-ollama-minimax` | MiniMax M3 (Ollama Cloud) · 512K | minimax-m3:cloud (all three) |
-| `cc-owl` | Owl Alpha (OpenRouter Stealth, free) · **1M** | owl-alpha (all three) |
+| `cc-owl` | Meituan LongCat 2.0 (Owl Alpha successor, OpenRouter) · **~1M** | longcat-2.0 (all three) |
 | `cc-codex` | OpenAI Codex direct OAuth | **Unsupported migration guard** — see below |
 | `cc-opencode <model>` | OpenCode Go generic | model passed via arg |
 | `cc-opencode-minimax` | OpenCode Go MiniMax M3 (US) | minimax-m3 |
 | `cc-openrouter <model>` | OpenRouter generic | model passed via arg |
-| `cc-zai-glm51` | Z.AI GLM-5.2 [SLOW — China endpoint] · **1M** | glm-5.2[1m] / glm-5.2[1m] / glm-4.7 |
+| `cc-zai-glm51` | Z.AI GLM-5.3 [SLOW — China endpoint] · **1M** | glm-5.3 / glm-5.3 / glm-5.3-flash |
 
 ### Flagship context windows
 
@@ -166,12 +167,12 @@ For providers whose flagship tier is ≥ 500K tokens, `cc-switcher` automaticall
 ```mermaid
 xychart-beta
     title "Flagship-tier context window by provider (K tokens)"
-    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "opencode-mm", "nvidia"]
+    x-axis ["grok", "mimo", "xiaomi", "nemotron", "longcat", "hy4", "deepseek", "glm", "gemini", "minimax", "minimax-or", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "opencode-mm", "nvidia"]
     y-axis "K tokens" 0 --> 2100
-    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 205, 128]
+    bar [2000, 1049, 1049, 1049, 1049, 1049, 1000, 1311, 1000, 1000, 1000, 1000, 1000, 1000, 512, 1049, 205, 128]
 ```
 
-Every provider whose flagship tier is ≥ 500K (everything left of `kimi`) gets auto-context; `kimi` (256K) and below keep Claude Code's auto-compaction instead — see `docs/architecture.md` "Auto-context derivation" for the threshold rationale. Note `cc-opencode-minimax` runs MiniMax M3 but is pinned at ~205K because OpenCode Go's effective cap is unverified; use `cc-minimax` or `cc-minimax-or` for the guaranteed 1M window.
+Every provider whose flagship tier is ≥ 500K (everything except `cc-opencode-minimax` and `cc-nvidia`) gets auto-context; those two lower-context routes keep Claude Code's auto-compaction instead — see `docs/architecture.md` "Auto-context derivation" for the threshold rationale. Note `cc-opencode-minimax` runs MiniMax M3 but is pinned at ~205K because OpenCode Go's effective cap is unverified; use `cc-minimax` or `cc-minimax-or` for the guaranteed 1M window.
 
 The provider catalog is JSON. Add or change providers by editing `data/providers.json` **and** its synchronized copy `bash/data/providers.json` (CI enforces that the two match) — no script authoring required.
 
@@ -202,7 +203,7 @@ The provider catalog is JSON. Add or change providers by editing `data/providers
 ### PowerShell
 
 ```powershell
-$env:OPENROUTER_API_KEY   = "sk-or-..."   # OpenRouter (cc-glm, cc-gemini, cc-grok, cc-kimi, cc-mimo, cc-minimax-or, cc-nemotron, cc-owl, cc-qwen, cc-openrouter)
+$env:OPENROUTER_API_KEY   = "sk-or-..."   # OpenRouter (cc-glm, cc-gemini, cc-grok, cc-hy4, cc-kimi, cc-mimo, cc-minimax-or, cc-nemotron, cc-owl, cc-qwen, cc-openrouter)
 $env:DEEPSEEK_API_KEY     = "sk-..."      # DeepSeek direct
 $env:MINIMAX_API_KEY      = "..."         # MiniMax direct (cc-minimax)
 $env:NVIDIA_API_KEY       = "nvapi-..."   # NVIDIA NIM
@@ -218,7 +219,7 @@ $env:MODEL_API_KEY        = "..."         # Meta Muse Spark 1.2 direct (cc-muse)
 ### bash / zsh
 
 ```bash
-export OPENROUTER_API_KEY="sk-or-..."     # OpenRouter (cc-glm, cc-gemini, cc-grok, cc-kimi, cc-mimo, cc-minimax-or, cc-nemotron, cc-owl, cc-qwen, cc-openrouter)
+export OPENROUTER_API_KEY="sk-or-..."     # OpenRouter (cc-glm, cc-gemini, cc-grok, cc-hy4, cc-kimi, cc-mimo, cc-minimax-or, cc-nemotron, cc-owl, cc-qwen, cc-openrouter)
 export DEEPSEEK_API_KEY="sk-..."          # DeepSeek direct
 export MINIMAX_API_KEY="..."               # MiniMax direct (cc-minimax)
 export NVIDIA_API_KEY="nvapi-..."         # NVIDIA NIM

@@ -21,7 +21,7 @@ function Register-CCCompleters {
         -ParameterName 'Model' -ScriptBlock $orCompleter
 
     # cc-opencode: a smaller curated list since OpenCode Go's model API isn't public
-    $ocModels = @('minimax-m2.7','glm-5.1','glm-5-turbo','kimi-k2.6','qwen3.6-plus',
+    $ocModels = @('minimax-m3','glm-5.1','glm-5-turbo','kimi-k2.6','qwen3.6-plus',
                   'mimo-v2-pro','mimo-v2-omni')
     $ocCompleter = {
         param($wordToComplete, $commandAst, $cursorPosition)
@@ -41,10 +41,10 @@ function Register-CCCompleters {
         }
     }
     $script:_nvModelList = @(
-        'meta/llama-4-maverick-17b-128e-instruct',
-        'meta/llama-4-scout-17b-16e-instruct',
+        'moonshotai/kimi-k3',
+        'nvidia/nemotron-3-ultra-550b-a55b',
+        'nvidia/nemotron-3.5-lightning-30b-a3b',
         'meta/llama-3.3-70b-instruct',
-        'moonshotai/kimi-k2-instruct',
         'qwen/qwen3-235b-a22b',
         'deepseek-ai/deepseek-r1',
         'nvidia/llama-3.1-nemotron-70b-instruct',

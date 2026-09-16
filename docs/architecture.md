@@ -27,7 +27,7 @@ A `cc-*` invocation is a four-stage pipeline: wrapper → dispatcher → catalog
 
 `Import-Module cc-switcher.psd1` loads `cc-switcher.psm1`, which:
 
-1. Sets `$script:CCSwitcherRoot = $PSScriptRoot` and `$script:CCSwitcherVersion = '3.5.0'` (cc-switcher.psm1:7-8).
+1. Sets `$script:CCSwitcherRoot = $PSScriptRoot` and `$script:CCSwitcherVersion = '3.7.0'` (cc-switcher.psm1:7-8).
 2. Dot-sources every file in `lib/` in dependency order: `core` → `providers` → `codex` → `pricing` → `doctor` → `completers` → `usage` → `picker` → `update-check` (cc-switcher.psm1:11-19). Total parse time is well under 50ms.
 3. Calls `Register-CCCompleters` (cc-switcher.psm1:22, defined in `lib/completers.ps1`) to wire up tab completion for `cc-openrouter`, `cc-opencode`, and `cc-nvidia`.
 4. Registers public aliases via `Set-Alias` (cc-switcher.psm1:25-50).
@@ -95,7 +95,7 @@ The fix added them to `$snapshot` (`lib/core.ps1:46-47`) and to `Reset-CC`'s cle
 - else `context` (uniform catalog)
 - else `0` (skips auto-context)
 
-**Threshold.** `>= 500000` is deliberate. It cleanly separates 1M-class providers (DeepSeek 1M, MiMo v2.5-Pro 1M, Qwen3.7 Max 1M, Xiaomi v2.5-Pro 1M, Grok 2M) from 256K models (Kimi K2.7 Code, MiMo v2-Flash) and ~200K models (Codex 200K, OpenCode Go MiniMax ~205K) where the trade — losing Claude Code's auto-compaction safety net — is not worth a small bump above the 200K default. Above 500K, the gain is large (5x or more); below it, the gain is marginal.
+**Threshold.** `>= 500000` is deliberate. It cleanly separates million-token providers (DeepSeek, MiMo v2.5-Pro, Qwen3.8 Max, Kimi K3, Xiaomi v2.5-Pro, and Grok) from sub-500K routes such as OpenCode Go MiniMax (~205K) and NVIDIA NIM (128K), where the trade — losing Claude Code's auto-compaction safety net — is not worth a small bump above the 200K default. Above 500K, the gain is large (5x or more); below it, the gain is marginal.
 
 **What it sets.** Two vars, both required (per Claude Code's docs — `MAX_CONTEXT_TOKENS` is ignored unless `DISABLE_COMPACT=1` is also set):
 ```
@@ -130,14 +130,14 @@ The catalog uses semantic names: `flagship`, `standard`, `fast`. Claude Code's w
 
 `Invoke-CC-OpenRouter` (`lib/providers.ps1:126-136`) is special. It does NOT use the catalog and does NOT trigger auto-context. It's a thin wrapper for one-off OpenRouter model launches:
 
-- Takes a `-Model` arg (defaults to `moonshotai/kimi-k2.6`).
+- Takes a `-Model` arg (defaults to `moonshotai/kimi-k3`).
 - Sets the same model on all three tiers.
 - `FlagshipContext` defaults to 0, so auto-context never triggers.
 - Reads `OPENROUTER_API_KEY` directly from env.
 
 Use it for ad-hoc experimentation. If a particular OpenRouter model becomes a regular workflow, promote it to a catalog entry so it picks up auto-context, tier mapping, and `cc-doctor` coverage.
 
-`Invoke-CC-OpenCode` (`lib/providers.ps1:139-150`) is the OpenCode Go equivalent — same pattern, default `minimax-m2.7`, hardcoded base URL `https://opencode.ai/zen/go`, sets `disableNonEssential`.
+`Invoke-CC-OpenCode` (`lib/providers.ps1:174-185`) is the OpenCode Go equivalent — same pattern, default `minimax-m3`, hardcoded base URL `https://opencode.ai/zen/go`, sets `disableNonEssential`.
 
 ## Unsupported direct Codex OAuth
 
