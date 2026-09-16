@@ -30,6 +30,13 @@
 
 ### Fixed
 
+- Muse session-only overrides are now in Bash's managed-variable array, and
+  the Windows PowerShell 5 `cc-yolo` proxy clears provider overrides in its
+  parent process before starting native Claude. Muse explicitly records its
+  presently unverified context as `0` so auto-compaction remains enabled.
+- Removed retired model IDs from the PowerShell picker and Bash OpenRouter
+  fallback completion; refreshed both OpenCode Go completion lists from its
+  authenticated live model listing.
 - **Fresh PowerShell profiles expose every `cc-*` command again.** The tracked
   profile loader eagerly imports the module in PowerShell 7 and creates safe
   child-`pwsh` proxies in Windows PowerShell 5. This fixes both the initial

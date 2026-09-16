@@ -105,6 +105,14 @@ else {
         if ((Test-Path Env:ANTHROPIC_MODEL) -or $resetOutput -notmatch 'Native Anthropic restored') {
             throw 'The zero-argument PowerShell 5 cc-reset proxy failed.'
         }
+
+        $env:ANTHROPIC_BASE_URL = 'ps5-parent-yolo-base'
+        $env:CLAUDE_CODE_SUBAGENT_MODEL = 'ps5-parent-yolo-subagent'
+        $yoloOutput = cc-yolo --profile-yolo 6>&1 | Out-String
+        if ((Test-Path Env:ANTHROPIC_BASE_URL) -or (Test-Path Env:CLAUDE_CODE_SUBAGENT_MODEL) -or
+            $yoloOutput -notmatch '\[stub\] claude invoked --dangerously-skip-permissions --profile-yolo') {
+            throw 'The PowerShell 5 cc-yolo proxy did not reset its parent environment before launch.'
+        }
     }
     finally {
         foreach ($name in $resetNames) {

@@ -9,7 +9,7 @@ $managedNames = @(
     'ANTHROPIC_BASE_URL', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_MODEL',
     'ANTHROPIC_DEFAULT_OPUS_MODEL', 'ANTHROPIC_DEFAULT_SONNET_MODEL',
     'ANTHROPIC_DEFAULT_HAIKU_MODEL', 'ANTHROPIC_SMALL_FAST_MODEL',
-    'API_TIMEOUT_MS', 'CLAUDE_CODE_SUBAGENT_MODEL', 'ENABLE_TOOL_SEARCH',
+    'API_TIMEOUT_MS', 'CLAUDE_CODE_MAX_CONTEXT_TOKENS', 'CLAUDE_CODE_SUBAGENT_MODEL', 'ENABLE_TOOL_SEARCH',
     'MODEL_API_KEY', 'CC_BANNER'
 )
 $snapshot = @{}
@@ -22,6 +22,7 @@ try {
     $env:MODEL_API_KEY = 'sk-test-muse-1234567890'
     $env:ANTHROPIC_BASE_URL = 'original-base-url'
     $env:CLAUDE_CODE_SUBAGENT_MODEL = 'original-subagent'
+    Remove-Item Env:CLAUDE_CODE_MAX_CONTEXT_TOKENS -ErrorAction SilentlyContinue
     Remove-Item Env:ENABLE_TOOL_SEARCH -ErrorAction SilentlyContinue
 
     function global:claude {
@@ -36,6 +37,7 @@ try {
             Opus          = $env:ANTHROPIC_DEFAULT_OPUS_MODEL
             Sonnet        = $env:ANTHROPIC_DEFAULT_SONNET_MODEL
             Haiku         = $env:ANTHROPIC_DEFAULT_HAIKU_MODEL
+            Context       = $env:CLAUDE_CODE_MAX_CONTEXT_TOKENS
             SubagentModel = $env:CLAUDE_CODE_SUBAGENT_MODEL
             ToolSearch    = $env:ENABLE_TOOL_SEARCH
             Arguments     = @($Arguments)
@@ -52,6 +54,7 @@ try {
         if ($captured[$slot] -ne 'muse-spark-1.2') { throw "Muse mapping failed for $slot." }
     }
     if ($captured.ToolSearch -ne 'true') { throw 'ENABLE_TOOL_SEARCH was not enabled.' }
+    if ($null -ne $captured.Context) { throw 'Muse must retain Claude Code auto-compaction until its context window is verified.' }
     if ($captured.Arguments -notcontains '--muse-smoke') { throw 'Claude arguments were not forwarded.' }
     if ($env:ANTHROPIC_BASE_URL -ne 'original-base-url') { throw 'Base URL was not restored.' }
     if ($env:CLAUDE_CODE_SUBAGENT_MODEL -ne 'original-subagent') { throw 'Subagent model was not restored.' }

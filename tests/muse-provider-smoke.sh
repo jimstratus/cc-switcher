@@ -32,6 +32,7 @@ claude() {
   [[ "$ANTHROPIC_DEFAULT_HAIKU_MODEL" == "muse-spark-1.2" ]]
   [[ "$CLAUDE_CODE_SUBAGENT_MODEL" == "muse-spark-1.2" ]]
   [[ "$ENABLE_TOOL_SEARCH" == "true" ]]
+  [[ -z "${CLAUDE_CODE_MAX_CONTEXT_TOKENS:-}" ]]
   [[ "${1:-}" == "--muse-smoke" ]]
 }
 
@@ -39,6 +40,7 @@ export MODEL_API_KEY="sk-test-muse-1234567890"
 export ANTHROPIC_BASE_URL="original-base-url"
 export CLAUDE_CODE_SUBAGENT_MODEL="original-subagent"
 unset ENABLE_TOOL_SEARCH
+unset CLAUDE_CODE_MAX_CONTEXT_TOKENS
 
 cc-muse --muse-smoke >/dev/null
 

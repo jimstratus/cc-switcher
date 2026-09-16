@@ -193,11 +193,13 @@
         "standard": "muse-spark-1.2",
         "fast": "muse-spark-1.2"
       },
+      "context": 0,
       "timeoutMs": 3000000,
       "envVars": {
         "CLAUDE_CODE_SUBAGENT_MODEL": "muse-spark-1.2",
         "ENABLE_TOOL_SEARCH": "true"
-      }
+      },
+      "notes": "Muse Spark 1.2 has no provider-published context window available to verify, so context is explicitly 0 and cc-switcher does not disable Claude Code auto-compaction. Update this field only from provider documentation or a live model listing."
     },
     "nemotron": {
       "command": "cc-nemotron",
@@ -353,7 +355,7 @@
       "context": 1048756,
       "timeoutMs": 600000,
       "disableNonEssential": true,
-      "notes": "LongCat 2.0 is Meituan's public successor to the retired OpenRouter Owl Alpha stealth release. It is a paid text-only OpenRouter route with an approximately 1.05M context; listed prices can change. A forced Anthropic Messages tool call succeeded on 2026-09-16. The cc-owl name stays as a compatibility command.",
+      "notes": "LongCat 2.0 is Meituan's public successor to the retired OpenRouter Owl Alpha stealth release. It is a paid text-only OpenRouter route. OpenRouter's live registry reports the exact 1,048,756-token context field; listed prices can change. A forced Anthropic Messages tool call succeeded on 2026-09-16. The cc-owl name stays as a compatibility command.",
       "docs": "https://openrouter.ai/meituan/longcat-2.0"
     },
     "zai-glm51": {

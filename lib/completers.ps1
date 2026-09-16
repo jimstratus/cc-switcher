@@ -21,8 +21,8 @@ function Register-CCCompleters {
         -ParameterName 'Model' -ScriptBlock $orCompleter
 
     # cc-opencode: a smaller curated list since OpenCode Go's model API isn't public
-    $ocModels = @('minimax-m3','glm-5.1','glm-5-turbo','kimi-k2.6','qwen3.6-plus',
-                  'mimo-v2-pro','mimo-v2-omni')
+    $ocModels = @('minimax-m3','glm-5.3','glm-5.3-flash','kimi-k3','qwen3.8-max',
+                  'qwen3.8-flash','mimo-v2.5-pro','hy4-preview')
     $ocCompleter = {
         param($wordToComplete, $commandAst, $cursorPosition)
         $script:_ocModelList | Where-Object { $_ -like "*$wordToComplete*" } | ForEach-Object {

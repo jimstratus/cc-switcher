@@ -38,9 +38,9 @@ _cc_completer_openrouter() {
     "minimax/minimax-m3"
     "xiaomi/mimo-v2.5-pro"
     "xiaomi/mimo-v2.5"
-    "xiaomi/mimo-v2-flash"
-    "deepseek-ai/deepseek-v4-pro"
-    "moonshotai/kimi-k3"
+    "deepseek/deepseek-v4.1-flash"
+    "meituan/longcat-2.0"
+    "tencent/hy4-preview"
     "nvidia/nemotron-3-ultra-550b-a55b"
     "nvidia/nemotron-3.5-lightning-30b-a3b"
     "mistralai/mistral-nemo-12b-instruct"
@@ -59,12 +59,13 @@ _cc_completer_opencode() {
 
   local models=(
     "minimax-m3"
-    "glm-5.1"
-    "glm-5-turbo"
-    "kimi-k2.6"
-    "qwen3.6-plus"
-    "mimo-v2-pro"
-    "mimo-v2-omni"
+    "glm-5.3"
+    "glm-5.3-flash"
+    "kimi-k3"
+    "qwen3.8-max"
+    "qwen3.8-flash"
+    "mimo-v2.5-pro"
+    "hy4-preview"
   )
   mapfile -t COMPREPLY < <(compgen -W "${models[*]}" -- "$cur")
 }
