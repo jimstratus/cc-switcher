@@ -108,11 +108,25 @@ else {
 
         $env:ANTHROPIC_BASE_URL = 'ps5-parent-yolo-base'
         $env:CLAUDE_CODE_SUBAGENT_MODEL = 'ps5-parent-yolo-subagent'
-        # The earlier launch block has already removed its temporary claude.cmd.
-        # This assertion targets the parent-shell reset contract, not child launch output.
-        cc-yolo --profile-yolo 6>&1 | Out-Null
-        if ((Test-Path Env:ANTHROPIC_BASE_URL) -or (Test-Path Env:CLAUDE_CODE_SUBAGENT_MODEL)) {
-            throw 'The PowerShell 5 cc-yolo proxy did not reset its parent environment before launch.'
+        $yoloMockBin = Join-Path ([System.IO.Path]::GetTempPath()) ("cc-switcher-yolo-{0}" -f [guid]::NewGuid())
+        $yoloPreviousPath = $env:PATH
+        try {
+            New-Item -ItemType Directory -Path $yoloMockBin | Out-Null
+            Set-Content -LiteralPath (Join-Path $yoloMockBin 'claude.cmd') -Encoding Ascii -Value @(
+                '@echo off'
+                'echo [stub] claude invoked %*'
+                'exit /b 0'
+            )
+            $env:PATH = "$yoloMockBin;$yoloPreviousPath"
+            $yoloOutput = cc-yolo --profile-yolo 6>&1 | Out-String
+            if ((Test-Path Env:ANTHROPIC_BASE_URL) -or (Test-Path Env:CLAUDE_CODE_SUBAGENT_MODEL) -or
+                $yoloOutput -notmatch '\[stub\] claude invoked --dangerously-skip-permissions --profile-yolo') {
+                throw 'The PowerShell 5 cc-yolo proxy did not reset its parent environment before launch.'
+            }
+        }
+        finally {
+            $env:PATH = $yoloPreviousPath
+            Remove-Item -LiteralPath $yoloMockBin -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
     finally {
