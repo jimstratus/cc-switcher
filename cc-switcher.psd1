@@ -1,14 +1,14 @@
 @{
     RootModule        = 'cc-switcher.psm1'
-    ModuleVersion     = '3.4.0'
+    ModuleVersion     = '3.5.0'
     GUID              = 'a1f2c0e1-cc01-4cc0-9cc0-0001cc000001'
     Author            = 'Ryan Mander'
     Description       = 'Claude Code multi-provider launcher (DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, etc.) with tier mapping per provider, live pricing, health checks, token usage tracking, and tab completion.'
     PowerShellVersion = '7.0'
     FunctionsToExport = @(
-        'Invoke-CCLaunch','Invoke-CCProvider','Reset-CC','Get-CC-Status',
+        'Invoke-CCLaunch','Invoke-CCProvider','Reset-CC','Get-CC-Status','Get-CCManagedEnvironmentNames',
         'Invoke-CC-Atlas','Invoke-CC-DeepSeek','Invoke-CC-Glm','Invoke-CC-Kimi',
-        'Invoke-CC-MiniMax','Invoke-CC-MiMo','Invoke-CC-Nvidia','Invoke-CC-Qwen','Invoke-CC-Xiaomi',
+        'Invoke-CC-MiniMax','Invoke-CC-MiMo','Invoke-CC-Muse','Invoke-CC-Nvidia','Invoke-CC-Qwen','Invoke-CC-Xiaomi',
         'Invoke-CC-Codex','Invoke-CC-Codex-Login','Invoke-CC-Codex-Logout',
         'Invoke-CC-OpenRouter','Invoke-CC-OpenCode','Invoke-CC-OpenCode-MiniMax',
         'Invoke-CC-ZAI-GLM51','Invoke-CC-Yolo',
@@ -20,7 +20,7 @@
         'Get-CCProviders','Get-CCCatalog','Get-CCLivePricing'
     )
     AliasesToExport   = @(
-        'cc-atlas','cc-deepseek','cc-glm','cc-kimi','cc-minimax','cc-mimo','cc-nvidia','cc-qwen','cc-xiaomi',
+        'cc-atlas','cc-deepseek','cc-glm','cc-kimi','cc-minimax','cc-mimo','cc-muse','cc-nvidia','cc-qwen','cc-xiaomi',
         'cc-codex','cc-codex-login','cc-codex-logout',
         'cc-opencode','cc-opencode-minimax','cc-openrouter','cc-zai-glm51',
         'cc-owl','cc-nemotron',

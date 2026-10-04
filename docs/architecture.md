@@ -27,7 +27,7 @@ A `cc-*` invocation is a four-stage pipeline: wrapper → dispatcher → catalog
 
 `Import-Module cc-switcher.psd1` loads `cc-switcher.psm1`, which:
 
-1. Sets `$script:CCSwitcherRoot = $PSScriptRoot` and `$script:CCSwitcherVersion = '3.4.0'` (cc-switcher.psm1:7-8).
+1. Sets `$script:CCSwitcherRoot = $PSScriptRoot` and `$script:CCSwitcherVersion = '3.5.0'` (cc-switcher.psm1:7-8).
 2. Dot-sources every file in `lib/` in dependency order: `core` → `providers` → `codex` → `pricing` → `doctor` → `completers` → `usage` → `picker` → `update-check` (cc-switcher.psm1:11-19). Total parse time is well under 50ms.
 3. Calls `Register-CCCompleters` (cc-switcher.psm1:22, defined in `lib/completers.ps1`) to wire up tab completion for `cc-openrouter`, `cc-opencode`, and `cc-nvidia`.
 4. Registers public aliases via `Set-Alias` (cc-switcher.psm1:25-50).
@@ -50,7 +50,7 @@ A typical invocation, end to end (using `cc-mimo` as the example):
 7. **Flagship context resolves.** `contextByTier.flagship` if present, else uniform `context` field, else `0` (`lib/providers.ps1:85-90`).
 8. **`Invoke-CCLaunch` runs** (`lib/core.ps1:6-137`). See "The env-var contract" below.
 9. **`& claude` runs** with any `$ClaudeArgs` passed through (`lib/core.ps1:121-125`).
-10. **Session ends → env restores.** The `finally` block at `lib/core.ps1:132-136` walks `$snapshot.Keys` and writes each value back via `[Environment]::SetEnvironmentVariable($k, $snapshot[$k], 'Process')`. `$null` values clear the var.
+10. **Session ends → env restores.** The `finally` block walks `$snapshot.Keys`, writes prior values back, and removes keys whose prior value was `$null` through the PowerShell environment provider.
 
 ## The env-var contract
 
@@ -76,7 +76,7 @@ The "snapshot at runtime if not already keyed" line refers to the loop at `lib/c
 
 ## Snapshot / restore lifecycle
 
-The snapshot hashtable at `lib/core.ps1:35-48` is initialized with the *current* value of every env var the function will touch. The `try` block sets new values; the `finally` block writes the snapshotted values back. A `$null` value in the snapshot becomes a cleared env var (`[Environment]::SetEnvironmentVariable($k, $null, 'Process')`).
+The snapshot hashtable at `lib/core.ps1:35-48` is initialized with the *current* value of every env var the function will touch. The `try` block sets new values; the `finally` block writes the snapshotted values back. A `$null` value is removed with `Remove-Item Env:<name>`; this avoids Windows PowerShell/.NET binding null as an empty-but-present environment variable.
 
 **Why every set var must be in the snapshot.** If `Invoke-CCLaunch` sets a var that isn't snapshotted, the prior value (if any) is lost permanently, AND the new value leaks into the parent shell after `claude` exits. The next `cc-*` invocation inherits the leak.
 
@@ -148,7 +148,7 @@ Both `cc-codex` and `cc-codex-login` stop immediately and recommend one of two s
 - `codex login --device-auth` for the native Codex CLI and ChatGPT subscription.
 - `cc-openrouter openai/gpt-5.4` for GPT through an Anthropic-compatible gateway (requires `OPENROUTER_API_KEY` and is billed by that gateway).
 
-`cc-codex-logout` remains as cleanup for the historical `~/.config/codex-oauth/token.json` cache. The catalog entry has `disabled: true` so `cc-launch`, `cc-pick`, and direct dispatcher calls cannot bypass the guard.
+`cc-codex-logout` remains as cleanup for the historical `~/.config/codex-oauth/token.json` cache. The catalog entry has `disabled: true` so `cc-launch`, `cc-pick`, and direct dispatcher calls cannot bypass the guard. This retires only the obsolete direct public-API path, not third-party Codex OAuth in general. A Codex app-server bridge that could supersede the guard remains a separate follow-up in [issue #24](https://github.com/jimstratus/cc-switcher/issues/24).
 
 ## Token usage tracking
 

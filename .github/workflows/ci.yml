@@ -53,7 +53,7 @@ jobs:
             [[ "$out" == *"codex login --device-auth"* ]] || { echo "FAIL: cc-codex-login guard missing migration guidance"; exit 1; }
             out=$(invoke_cc_provider codex "" 2>&1) && { echo "FAIL: dispatcher bypassed disabled guard"; exit 1; }
             [[ "$out" == *"disabled"* ]] || { echo "FAIL: dispatcher did not report disabled reason"; exit 1; }
-            printf '0\n' | cc-launch >/dev/null 2>&1 || { echo "FAIL: cc-launch cancel path"; exit 1; }
+            printf "0\n" | cc-launch >/dev/null 2>&1 || { echo "FAIL: cc-launch cancel path"; exit 1; }
             unset DEEPSEEK_API_KEY
             cc-deepseek 2>&1 | grep -q "Auth token is empty" || { echo "FAIL: no-key error path"; exit 1; }
             export DEEPSEEK_API_KEY=sk-citestkey1234567890
@@ -63,6 +63,9 @@ jobs:
             [[ -z "${ANTHROPIC_BASE_URL:-}" ]] || { echo "FAIL: base url leaked"; exit 1; }
             echo "smoke test OK"
           '
+
+      - name: Muse provider mapping and restore
+        run: bash tests/muse-provider-smoke.sh
 
       - name: Install layout
         run: |
@@ -114,3 +117,21 @@ jobs:
           }
           if ($errors) { $errors | ForEach-Object { Write-Error $_.ToString() }; exit 1 }
           Test-ModuleManifest ./cc-switcher.psd1 | Out-Null
+
+      - name: Muse provider mapping and restore
+        shell: pwsh
+        run: ./tests/muse-provider-smoke.ps1
+
+  powershell-profile:
+    name: PowerShell profile loader - PS7 + Windows PS5 proxy
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PowerShell 7 profile smoke test
+        shell: pwsh
+        run: ./tests/profile-loader-smoke.ps1
+
+      - name: Windows PowerShell 5 profile proxy smoke test
+        shell: powershell
+        run: ./tests/profile-loader-smoke.ps1

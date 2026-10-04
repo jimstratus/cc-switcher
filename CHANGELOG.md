@@ -4,12 +4,12 @@
 
 ### Changed
 
-- **Retired `cc-codex` as a Claude Code provider (product decision).** The direct
-  ChatGPT OAuth integration can never produce a working session: Codex's device
+- **Retired the obsolete direct `cc-codex` OAuth launch path.** Codex's device
   login (`codex login --device-auth`) issues a ChatGPT-scoped token that OpenAI's
   public API does not accept, and `api.openai.com/v1` does not implement Claude
-  Code's Anthropic Messages wire protocol — so no supported credential +
-  transport combination exists. `cc-codex` and `cc-codex-login` now fail
+  Code's Anthropic Messages wire protocol. This direct path cannot produce a
+  working session; a Codex-specific bridge remains a separate follow-up in
+  issue #24. `cc-codex` and `cc-codex-login` now fail
   immediately with migration guidance instead of running the retired
   `oauth.openai.com/v1/*` device flow (HTTP 403): use native
   `codex login --device-auth`, or `cc-openrouter openai/gpt-5.4` with
@@ -20,6 +20,33 @@
 - Added generic catalog `disabled` / `disabledReason` handling in both ports so
   menus and direct dispatcher calls cannot bypass a retired integration guard,
   and `cc-doctor` reports disabled entries without probing them.
+
+### Added
+
+- **`cc-muse`** — Meta Muse Spark 1.2 through `https://api.meta.ai`, using
+  `MODEL_API_KEY`. All Claude Code tiers map to `muse-spark-1.2`; launches also
+  set `CLAUDE_CODE_SUBAGENT_MODEL=muse-spark-1.2` and `ENABLE_TOOL_SEARCH=true`.
+- `MODEL_API_KEY` added to the `cc-status` / `cc-doctor` key list.
+
+### Fixed
+
+- **Fresh PowerShell profiles expose every `cc-*` command again.** The tracked
+  profile loader eagerly imports the module in PowerShell 7 and creates safe
+  child-`pwsh` proxies in Windows PowerShell 5. This fixes both the initial
+  `cc-minimax is not recognized` error and the partial PS5 import that left
+  `Invoke-CCLaunch` undefined after `cc-help`.
+- Windows PowerShell 5 proxies serialize forwarded arguments and bind only
+  parameters declared by the target `cc-*` command, preserving Claude flags
+  such as `-p` and `-Verbose` as raw arguments.
+- PowerShell resolves user-specific Codex cache and Claude session locations
+  through .NET's cross-platform user profile instead of the Windows-only
+  `USERPROFILE` variable, so launches also work in Linux PowerShell and CI.
+- PowerShell environment restoration now removes variables that were originally
+  absent instead of leaving empty-string entries behind. This keeps catalog
+  `envVars`, including Muse tool-search settings, strictly session-scoped.
+- Bash catalog parsing normalizes both fields from CRLF records emitted by
+  native `jq.exe`, preventing hidden carriage returns in provider `envVars`
+  under Windows Git Bash.
 
 ## 3.4.0 — 2026-07-10
 

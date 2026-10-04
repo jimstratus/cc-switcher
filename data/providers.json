@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "_doc": {
     "tiers": "Each provider has three tier slots: flagship (highest quality), standard (default), fast (cheapest/quickest). These map 1:1 to Claude Code's internal slots — flagship→opus, standard→sonnet, fast→haiku — used by `/model opus|sonnet|haiku` inside a session. The catalog uses semantic names; core.ps1/core.sh translates to Claude Code's env var contract.",
     "contextByTier": "Per-tier max context (tokens) when tiers differ. Picker shows min-max range. Omit when uniform.",
@@ -166,6 +166,23 @@
       "notes": "Tier contexts differ: flagship/standard are 1M (1024K), V2-Flash (fast tier) is 256K. The 'context' field shows the safe minimum across tiers. Verified 2026-05-03 via OpenRouter pricing API. core.ps1/core.sh auto-derives CLAUDE_CODE_MAX_CONTEXT_TOKENS=1048576 from contextByTier.flagship (see _doc._auto_context). Caveat: env var stays at 1M for the whole session, so /model haiku (v2-flash, 256K) will display 1M but the API will reject prompts beyond ~256K — acceptable for opus-primary workflows.",
       "docs": "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
     },
+    "muse": {
+      "command": "cc-muse",
+      "displayName": "Meta Muse Spark 1.2",
+      "qualityTier": "standard",
+      "baseUrl": "https://api.meta.ai",
+      "authVar": "MODEL_API_KEY",
+      "tiers": {
+        "flagship": "muse-spark-1.2",
+        "standard": "muse-spark-1.2",
+        "fast": "muse-spark-1.2"
+      },
+      "timeoutMs": 3000000,
+      "envVars": {
+        "CLAUDE_CODE_SUBAGENT_MODEL": "muse-spark-1.2",
+        "ENABLE_TOOL_SEARCH": "true"
+      }
+    },
     "nemotron": {
       "command": "cc-nemotron",
       "displayName": "NVIDIA Nemotron 3 Super FREE (OpenRouter)",
@@ -287,7 +304,7 @@
       "requiresOAuth": true,
       "disabled": true,
       "disabledReason": "ChatGPT OAuth tokens cannot authenticate the public OpenAI API, which also lacks an Anthropic Messages endpoint. Use native 'codex login --device-auth', or 'cc-openrouter openai/gpt-5.4' with OPENROUTER_API_KEY.",
-      "notes": "Retired as a launchable provider; retained as a migration guard. Direct ChatGPT OAuth cannot power Claude Code (incompatible credential scope AND wire protocol), so cc-codex and cc-codex-login fail fast with supported alternatives instead of completing a login that cannot yield a working session. cc-codex-logout still removes the legacy token cache.",
+      "notes": "The obsolete direct OAuth launch path is retired; this entry remains a disabled migration guard. ChatGPT OAuth tokens cannot authenticate the public OpenAI API, which lacks Claude Code's Anthropic Messages protocol. cc-codex and cc-codex-login fail fast with alternatives; cc-codex-logout removes the legacy token cache. A Codex-specific protocol bridge is tracked separately in issue #24.",
       "docs": "https://codex.openai.com"
     },
     "opencode-minimax": {
