@@ -19,7 +19,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Getting Started](https://img.shields.io/badge/docs-Getting%20Started-3ad07a?logo=github)](https://jimstratus.github.io/cc-switcher/)
 
-> Multi-shell module for launching Claude Code against any Anthropic-compatible LLM provider — DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, Codex, and more.
+> Multi-shell module for launching Claude Code against any Anthropic-compatible LLM provider — DeepSeek, MiMo, GLM, Qwen, MiniMax, Kimi, NVIDIA NIM, and more.
 
 `cc-switcher` flips the `ANTHROPIC_*` environment variables that Claude Code reads on startup, points them at an alternative provider's Anthropic-compatible endpoint, and launches `claude` for you. When the session exits it restores the previous environment, so your shell never gets stuck on a non-default provider.
 
@@ -175,6 +175,15 @@ Every provider whose flagship tier is ≥ 500K (everything left of `kimi`) gets 
 
 The provider catalog is JSON. Add or change providers by editing `data/providers.json` **and** its synchronized copy `bash/data/providers.json` (CI enforces that the two match) — no script authoring required.
 
+### OpenAI Codex — obsolete direct OAuth path retired
+
+`cc-codex` does not currently launch Claude Code. Codex's ChatGPT device login issues an OAuth token that OpenAI's public API does not accept, and that API does not implement the Anthropic Messages protocol Claude Code speaks. The obsolete direct public-API path is therefore retired; a Codex-specific bridge is tracked separately in [issue #24](https://github.com/jimstratus/cc-switcher/issues/24). `cc-codex` and `cc-codex-login` remain disabled migration guards and fail immediately instead of completing a login that cannot produce a working session through that direct path:
+
+- **Native Codex CLI:** `codex login --device-auth` (uses your ChatGPT subscription).
+- **GPT from Claude Code:** `cc-openrouter openai/gpt-5.4` with `OPENROUTER_API_KEY` (separately billed by OpenRouter; does not consume a ChatGPT subscription).
+
+`cc-codex-logout` remains available to delete the legacy `~/.config/codex-oauth/token.json` cache.
+
 ---
 
 ## Utility commands
@@ -258,7 +267,7 @@ cc-switcher/
 │   └── lib/
 │       ├── core.sh                    # invoke-cc-launch, reset-cc, get-cc-status
 │       ├── providers.sh               # catalog loader + dispatcher
-│       ├── codex.sh                   # OAuth device flow
+│       ├── codex.sh                   # unsupported direct OAuth guard + legacy cache cleanup
 │       ├── pricing.sh                 # OpenRouter live pricing
 │       ├── doctor.sh                  # cc-doctor health check
 │       ├── completers.sh              # bash tab completion

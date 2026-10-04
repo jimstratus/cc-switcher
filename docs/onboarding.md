@@ -412,9 +412,9 @@ Code's status bar shows the real size instead of 200K.
 ```mermaid
 xychart-beta
     title "Flagship context window by command (K tokens) — bigger = remembers more"
-    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "codex", "nvidia"]
+    x-axis ["grok", "mimo", "xiaomi", "nemotron", "owl", "deepseek", "glm", "gemini", "minimax", "qwen", "zai", "ollama-glm", "ollama-mm", "kimi", "nvidia"]
     y-axis "K tokens" 0 --> 2100
-    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 200, 128]
+    bar [2000, 1049, 1049, 1049, 1049, 1000, 1000, 1000, 1000, 1000, 1000, 976, 512, 256, 128]
 ```
 
 **Highlights:**

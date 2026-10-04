@@ -149,7 +149,8 @@ invoke_cc_doctor() {
     # Check if we have auth for this provider
     local has_key=false
     if [[ "$auth_var" == "_codex_oauth_token" ]]; then
-      # Special case: codex uses OAuth — valid only if a non-expired token exists
+      # Special case: historical codex OAuth cache — valid only if a non-expired
+      # token exists (no supported provider uses this path today)
       local tok
       tok=$(get_cc_codex_token 2>/dev/null)
       [[ -n "$tok" ]] && has_key=true

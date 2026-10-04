@@ -5,7 +5,8 @@ Tags: codex, oauth, device-flow, app-server, protocol-bridge, powershell, bash
 
 ## Context
 `cc-codex-login` failed before displaying a device code with HTTP 403. We needed
-to determine whether the failure was account-specific or caused by the client.
+to determine whether the failure was account-specific or caused by the client,
+and to choose a supported direction for the Codex integration.
 
 ## What we tried
 1. Traced the PowerShell and bash implementations and their token-cache readers.
@@ -49,11 +50,29 @@ the existing PowerShell/Bash scripts with only their allowed dependencies, so
 the project must approve either a runtime prerequisite or shipped native bridge
 executables before implementation.
 
+## Decision and follow-up
+PR #25 proposed formal retirement (the original issue #24, option 3) of the
+obsolete direct OAuth launch path. An adapter targeting the public OpenAI API
+cannot use ChatGPT credentials, and replacing Claude Code with a native Codex
+launcher would break the `cc-*` provider-command contract.
+
+`cc-codex` / `cc-codex-login` remain as migration guards pointing to
+`codex login --device-auth` (native CLI) or `cc-openrouter openai/gpt-5.4`
+(Claude Code with separate OpenRouter billing). The catalog entry carries
+`disabled: true` so menus and dispatchers stop before auth or launch. The retired
+path writes no credentials; `cc-codex-logout` removes its legacy token cache.
+
+The corrected issue #24 now tracks a Codex app-server bridge that could
+supersede this guard. That is a distinct transport/runtime implementation, not a
+repair to the obsolete public-API path, and is not implemented by this PR.
+
 ## Takeaway
 Treat authentication and transport as separate contracts. Delegate authentication
 to Codex, never copy its token cache, and translate Claude Code traffic through a
 tested local bridge. Do not infer that Codex OAuth itself is unsupported merely
-because its token cannot be used as a public API key.
+because its token cannot be used as a public API key. Until a compatible bridge
+exists, fail with migration guidance instead of completing a login that cannot
+produce a working session through the direct path.
 
 ## References
 - `lib/codex.ps1`

@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+### Changed
+
+- **Retired the obsolete direct `cc-codex` OAuth launch path.** Codex's device
+  login (`codex login --device-auth`) issues a ChatGPT-scoped token that OpenAI's
+  public API does not accept, and `api.openai.com/v1` does not implement Claude
+  Code's Anthropic Messages wire protocol. This direct path cannot produce a
+  working session; a Codex-specific bridge remains a separate follow-up in
+  issue #24. `cc-codex` and `cc-codex-login` now fail
+  immediately with migration guidance instead of running the retired
+  `oauth.openai.com/v1/*` device flow (HTTP 403): use native
+  `codex login --device-auth`, or `cc-openrouter openai/gpt-5.4` with
+  `OPENROUTER_API_KEY` for GPT from Claude Code (separately billed).
+  `cc-codex-logout` remains available to delete the legacy token cache at
+  `~/.config/codex-oauth/token.json`. No credentials are written by the retired
+  path anymore.
+- Added generic catalog `disabled` / `disabledReason` handling in both ports so
+  menus and direct dispatcher calls cannot bypass a retired integration guard,
+  and `cc-doctor` reports disabled entries without probing them.
+
 ### Added
 
 - **`cc-muse`** — Meta Muse Spark 1.2 through `https://api.meta.ai`, using
@@ -28,17 +47,6 @@
 - Bash catalog parsing normalizes both fields from CRLF records emitted by
   native `jq.exe`, preventing hidden carriage returns in provider `envVars`
   under Windows Git Bash.
-- **`cc-codex-login` no longer runs a dead OAuth flow.** The previous code used
-  retired `oauth.openai.com/v1/*` endpoints and failed at device authorization
-  with HTTP 403. More importantly, current Codex device auth returns a ChatGPT
-  OAuth token that OpenAI explicitly does not accept on the public API, and
-  `api.openai.com/v1` does not implement Claude Code's Anthropic Messages wire
-  protocol. `cc-codex` and `cc-codex-login` now fail immediately with honest
-  migration guidance: use native `codex login --device-auth`, or use
-  `cc-openrouter openai/gpt-5.4` with `OPENROUTER_API_KEY` for GPT from Claude
-  Code. `cc-codex-logout` remains available to delete any legacy cached token.
-- Added generic catalog `disabled` / `disabledReason` handling in both ports so
-  menus and direct dispatcher calls cannot bypass a retired integration guard.
 
 ## 3.4.0 — 2026-07-10
 
